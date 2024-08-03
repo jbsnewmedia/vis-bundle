@@ -1,0 +1,45 @@
+services:
+    _defaults:
+        autowire: true
+        autoconfigure: true
+        public: false
+
+    JBSNewMedia\VisBundle\:
+        resource: '../src/'
+        exclude:
+            - '../../DependencyInjection/'
+            - '../../Entity/'
+            - '../../Kernel.php'
+        tags: [ 'controller.service_arguments' ]
+
+    JBSNewMedia\VisBundle\Security\VisAuthenticator:
+        arguments:
+            $urlGenerator: '@router'
+            $translator: '@translator'
+        tags: [ 'security.authenticator' ]
+
+    JBSNewMedia\VisBundle\Service\Vis:
+
+    JBSNewMedia\VisBundle\Entity\:
+        resource: '../src/Entity/'
+
+    JBSNewMedia\VisBundle\EventListener\PluginListener:
+        arguments:
+            - '@JBSNewMedia\VisBundle\Service\PluginManager'
+        tags:
+            - { name: kernel.event_listener, event: kernel.request }
+
+    JBSNewMedia\VisBundle\Service\PluginManager:
+        arguments:
+            $pluginLocator: !tagged_locator
+                tag: 'vis.plugin'
+
+    JBSNewMedia\VisBundle\Plugin\ManagerPlugin:
+        tags:
+            - { name: 'vis.plugin' }
+
+    JBSNewMedia\VisBundle\Twig\DynamicFilterExtension:
+        arguments:
+            $twig: '@twig'
+        tags:
+            - { name: 'twig.extension' }

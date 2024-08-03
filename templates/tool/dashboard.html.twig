@@ -1,0 +1,21 @@
+{% extends '@VisBundle/tool/base.html.twig' %}
+
+{% block vis_container %}
+
+    {{ parent() }}
+    <!-- Content Start -->
+    <div class="card">
+        <div class="card-header">
+            <h5 class="card-title">Card title</h5>
+            <h6 class="card-subtitle text-muted">Card subtitle</h6>
+        </div>
+        <div class="card-body">
+            <p class="card-text">id: <span id="testref"></span></p>
+            <p class="card-text">class1: <span class="testref"></span></p>
+            <p class="card-text">class2: <span class="testref"></span></p>
+        </div>
+    </div>
+    sdfd
+    {{ dump(vis.getSidebar('manager')) }}
+
+{% endblock %}

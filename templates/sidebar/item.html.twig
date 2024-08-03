@@ -1,0 +1,53 @@
+{% if item.children is not empty %}
+
+    <li class="avalynx-simpleadmin-sidenav-item">
+        <h2 class="avalynx-simpleadmin-sidenav-header">
+            <button class="avalynx-simpleadmin-sidenav-button{% if item.active %} active{% else %} collapsed{% endif %}" type="button" data-bs-toggle="collapse" data-bs-target="#avalynx-simpleadmin-sidenav-{{ item.id }}" aria-expanded="false" aria-controls="avalynx-simpleadmin-sidenav-{{ item.id }}">
+                {% if item.icon != '' %}{{ item.icon|raw }}{% endif %}
+                <span class="title">{{ item.label }}</span>
+                {{ item.badge|raw }}
+                {{ item.counter|raw }}
+            </button>
+        </h2>
+        <div id="avalynx-simpleadmin-sidenav-{{ item.id }}" class="avalynx-simpleadmin-sidenav-collapse {% if item.active == false %} collapse{% endif %}">
+            <div class="avalynx-simpleadmin-sidenav-body">
+                <ul class="avalynx-simpleadmin-sidenav-sub1">
+
+                    {% for child in item.children %}
+
+                        {% if child.route != '' %}
+
+                        <li class="avalynx-simpleadmin-sidenav-sub1-item">
+                            <h2 class="avalynx-simpleadmin-sidenav-sub1-header">
+                                <a class="avalynx-simpleadmin-sidenav-sub1-link{% if child.active %} active{% endif %}" type="button" href="{{ path(child.route, child.routeparameters is not empty ? child.routeparameters : {}) }}" {% if child.target is defined %} target="{{ child.target }}"{% endif %}>
+                                    {% if child.icon != '' %}{{ child.icon|raw }}{% endif %}
+                                    <span class="title">{{ child.label }}</span>
+                                    {{ child.badge|raw }}
+                                    {{ child.counter|raw }}
+                                </a>
+                            </h2>
+                        </li>
+
+                        {% endif %}
+
+                    {% endfor %}
+
+                </ul>
+            </div>
+        </div>
+    </li>
+
+{% else %}
+
+    <li class="avalynx-simpleadmin-sidenav-item">
+        <h2 class="avalynx-simpleadmin-sidenav-header">
+            <a class="avalynx-simpleadmin-sidenav-link{% if item.active %} active{% endif %}" type="button" href="{{ path(item.route, item.routeparameters is not empty ? item.routeparameters : {}) }}" {% if item.target is defined %} target="{{ item.target }}"{% endif %}>
+                {% if item.icon != '' %}{{ item.icon|raw }}{% endif %}
+                <span class="title">{{ item.label }}</span>
+                {{ item.badge|raw }}
+                {{ item.counter|raw }}
+            </a>
+        </h2>
+    </li>
+
+{% endif %}
