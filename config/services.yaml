@@ -12,6 +12,19 @@ services:
             - '../../Kernel.php'
         tags: [ 'controller.service_arguments' ]
 
+    JBSNewMedia\VisBundle\Command\VisUserCreateCommand:
+        arguments:
+            $userPasswordHasher: '@security.password_hasher'
+            $entityManager: '@doctrine.orm.entity_manager'
+        tags:
+            - { name: 'console.command' }
+
+    JBSNewMedia\VisBundle\Command\VisCoreCreateCommand:
+        arguments:
+            $kernel: '@kernel'
+        tags:
+            - { name: 'console.command' }
+
     JBSNewMedia\VisBundle\Security\VisAuthenticator:
         arguments:
             $urlGenerator: '@router'
