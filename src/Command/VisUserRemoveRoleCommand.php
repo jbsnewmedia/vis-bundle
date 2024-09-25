@@ -17,17 +17,16 @@ use Symfony\Component\Validator\Constraints\Length;
 use Symfony\Component\Validator\Validation;
 
 #[AsCommand(
-    name: 'vis:user:create',
-    description: 'Create a new vis user',
+    name: 'vis:user:removerole',
+    description: 'Remove a role from a vis user',
 )]
-class VisUserCreateCommand extends Command
+class VisUserRemoveRoleCommand extends Command
 {
     protected bool $error = false;
 
     protected string $errorMessage = '';
 
     public function __construct(
-        private readonly UserPasswordHasherInterface $userPasswordHasher,
         private readonly EntityManagerInterface $entityManager
     ) {
         parent::__construct();
@@ -51,34 +50,41 @@ class VisUserCreateCommand extends Command
             $violations = $validator->validate($email, $emailConstraint);
 
             if (0 === count($violations)) {
+                $user = $this->entityManager->getRepository(User::class)->findOneBy(['email' => $email]);
+
+                if ($user === null) {
+                    $io->error('User with email '.$email.' not found.');
+
+                    return Command::FAILURE;
+                }
+
                 while (true) {
-                    $password = $io->askHidden('Please enter your password (at least 6 characters): ');
+                    $role = $io->ask('Please enter the role to remove (or type "quit" to exit): ');
 
-                    $passwordViolations = $validator->validate($password, new Length(['min' => 6]));
-
-                    if (0 === count($passwordViolations)) {
-                        $user = new User();
-                        $user->setEmail($email);
-                        $user->setPassword(
-                            $this->userPasswordHasher->hashPassword(
-                                $user,
-                                $password
-                            )
-                        );
-
-                        try {
-                            $this->entityManager->persist($user);
-                            $this->entityManager->flush();
-                            $io->success('User with email '.$email.' created successfully.');
-                        } catch (\Exception $e) {
-                            $io->error('An error occurred while creating the user: '.$e->getMessage());
-                        }
+                    if ('quit' === strtolower((string) $role)) {
+                        $io->comment('Command aborted by user.');
 
                         return Command::SUCCESS;
-                    } else {
-                        foreach ($passwordViolations as $violation) {
-                            $io->error((string) $violation->getMessage());
-                        }
+                    }
+
+                    if (!in_array($role, $user->getRoles())) {
+                        $io->error('Role '.$role.' not found in user with email '.$email.'.');
+
+                        return Command::FAILURE;
+                    }
+
+                    $user->removeRole($role);
+
+                    try {
+                        $this->entityManager->persist($user);
+                        $this->entityManager->flush();
+                        $io->success('Role '.$role.' removed from user with email '.$email.' successfully.');
+
+                        return Command::SUCCESS;
+                    } catch (\Exception $e) {
+                        $io->error('An error occurred while removing role '.$role.' from user with email '.$email.'.');
+
+                        return Command::FAILURE;
                     }
                 }
             } else {

@@ -357,22 +357,24 @@ class RegistrationController extends AbstractController
                 'roles' => 'ROLE_USER',
             ],
         ];
-
         $accessControlsNew = [];
-        if (null !== $data['security']['access_control']) {
-            foreach ($data['security']['access_control'] as $accessControl) {
-                if (!isset($accessControls[$accessControl['path']])) {
-                    $accessControlsNew[] = '- { path: '.$accessControls[$accessControl['path']]['path'].', roles: '.$accessControls[$accessControl['path']]['roles'].'}';
-                }
+        if (!isset($data['security']) || !isset($data['security']['access_control']) || [] === $data['security']['access_control']) {
+            foreach ($accessControls as $accessControl) {
+                $accessControlsNew[] = [
+                    'path' => $accessControl['path'],
+                    'roles' => $accessControl['roles'],
+                ];
             }
         }
 
         if ([] !== $accessControlsNew) {
-            if (null === $data['security']['access_control']) {
+            if (!isset($data['security']) || !isset($data['security']['access_control'])) {
                 $data['security']['access_control'] = [];
             }
             $data['security']['access_control'] = array_merge($accessControlsNew, $data['security']['access_control']);
         }
+
+        dump($data['security']['access_control']);
 
         $yamlContent = Yaml::dump($data, 6, 4);
         $filesystem->dumpFile($yamlFile, $yamlContent);

@@ -12,7 +12,7 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 
 class ManagerPlugin extends AbstractPlugin
 {
-    public function __construct(public Vis $vis, protected TranslatorInterface $translator)
+    public function __construct(protected Vis $vis, protected TranslatorInterface $translator)
     {
         parent::__construct();
     }
