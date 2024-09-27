@@ -47,10 +47,6 @@ services:
             $pluginLocator: !tagged_locator
                 tag: 'vis.plugin'
 
-    JBSNewMedia\VisBundle\Plugin\ManagerPlugin:
-        tags:
-            - { name: 'vis.plugin' }
-
     JBSNewMedia\VisBundle\Twig\DynamicFilterExtension:
         arguments:
             $twig: '@twig'
