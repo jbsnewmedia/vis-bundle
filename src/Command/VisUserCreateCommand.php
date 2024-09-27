@@ -40,9 +40,10 @@ class VisUserCreateCommand extends Command
         $emailConstraint = new Email();
 
         while (true) {
-            $email = $io->ask('Please enter your email (or type "quit" to exit): ');
+            $ioInput = $io->ask('Please enter your email (or type "quit" to exit): ');
+            $email = is_string($ioInput) ? trim($ioInput) : '';
 
-            if ('quit' === strtolower((string) $email)) {
+            if ('quit' === strtolower( $email)) {
                 $io->comment('Command aborted by user.');
 
                 return Command::SUCCESS;
@@ -52,7 +53,8 @@ class VisUserCreateCommand extends Command
 
             if (0 === count($violations)) {
                 while (true) {
-                    $password = $io->askHidden('Please enter your password (at least 6 characters): ');
+                    $ioInput = $io->askHidden('Please enter your password (at least 6 characters): ');
+                    $password = is_string($ioInput) ? trim($ioInput) : '';
 
                     $passwordViolations = $validator->validate($password, new Length(['min' => 6]));
 

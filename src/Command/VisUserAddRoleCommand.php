@@ -37,9 +37,10 @@ class VisUserAddRoleCommand extends Command
         $emailConstraint = new Email();
 
         while (true) {
-            $email = $io->ask('Please enter your email (or type "quit" to exit): ');
+            $ioInput = $io->ask('Please enter your email (or type "quit" to exit): ');
+            $email = is_string($ioInput) ? trim($ioInput) : '';
 
-            if ('quit' === strtolower((string) $email)) {
+            if ('quit' === strtolower($email)) {
                 $io->comment('Command aborted by user.');
 
                 return Command::SUCCESS;
@@ -57,9 +58,10 @@ class VisUserAddRoleCommand extends Command
                 }
 
                 while (true) {
-                    $role = $io->ask('Please enter the role to add (or type "quit" to exit): ');
+                    $ioInput = $io->ask('Please enter the role to add (or type "quit" to exit): ');
+                    $role = is_string($ioInput) ? trim($ioInput) : '';
 
-                    if ('quit' === strtolower((string) $role)) {
+                    if ('quit' === strtolower($role)) {
                         $io->comment('Command aborted by user.');
 
                         return Command::SUCCESS;

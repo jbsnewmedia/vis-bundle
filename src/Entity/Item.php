@@ -21,11 +21,15 @@ class Item
     protected string $label = '';
 
     protected string $route = '';
+
     /**
      * @var array<string, string|int>
      */
     protected array $routeParameters = [];
 
+    /**
+     * @var array<string, string>
+     */
     protected array $roles = [];
 
     public \Closure $callbackFunction;
@@ -166,11 +170,17 @@ class Item
         unset($this->roles[$role]);
     }
 
+    /**
+     * @return array<string, string>
+     */
     public function getRoles(): array
     {
         return $this->roles;
     }
 
+    /**
+     * @param array<string, string> $roles
+     */
     public function setRoles(array $roles): void
     {
         $this->roles = $roles;

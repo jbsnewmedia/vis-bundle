@@ -292,7 +292,12 @@ class RegistrationController extends AbstractController
             return false;
         }
 
-        if (!isset($data['security'])) {
+        if (!is_array($data)) {
+            $this->errorMessages[] = 'Parsed YAML content is not an array.';
+            return false;
+        }
+
+        if (!isset($data['security']) || !is_array($data['security'])) {
             $data['security'] = [];
         }
 
@@ -357,7 +362,7 @@ class RegistrationController extends AbstractController
                 'roles' => 'ROLE_USER',
             ],
         ];
-        if (!isset($data['security']) || !isset($data['security']['access_control']) || [] === $data['security']['access_control']) {
+        if (!array_key_exists('security', $data) || !array_key_exists('access_control', $data['security']) || [] === $data['security']['access_control']) {
             $data['security']['access_control'] = [];
             foreach ($accessControls as $accessControl) {
                 $data['security']['access_control'][] = [
