@@ -81,7 +81,7 @@ class VisUserRemoveRoleCommand extends Command
                         $io->success('Role '.$role.' removed from user with email '.$email.' successfully.');
 
                         return Command::SUCCESS;
-                    } catch (\Exception $e) {
+                    } catch (\Exception) {
                         $io->error('An error occurred while removing role '.$role.' from user with email '.$email.'.');
 
                         return Command::FAILURE;

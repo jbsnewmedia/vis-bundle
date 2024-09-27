@@ -75,7 +75,7 @@ class VisUserAddRoleCommand extends Command
                         $io->success('Role '.$role.' added to user with email '.$email.' successfully.');
 
                         return Command::SUCCESS;
-                    } catch (\Exception $e) {
+                    } catch (\Exception) {
                         $io->error('An error occurred while adding role '.$role.' to user with email '.$email.'.');
 
                         return Command::FAILURE;

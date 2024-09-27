@@ -294,6 +294,7 @@ class RegistrationController extends AbstractController
 
         if (!is_array($data)) {
             $this->errorMessages[] = 'Parsed YAML content is not an array.';
+
             return false;
         }
 

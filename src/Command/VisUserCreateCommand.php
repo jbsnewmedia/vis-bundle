@@ -43,7 +43,7 @@ class VisUserCreateCommand extends Command
             $ioInput = $io->ask('Please enter your email (or type "quit" to exit): ');
             $email = is_string($ioInput) ? trim($ioInput) : '';
 
-            if ('quit' === strtolower( $email)) {
+            if ('quit' === strtolower($email)) {
                 $io->comment('Command aborted by user.');
 
                 return Command::SUCCESS;

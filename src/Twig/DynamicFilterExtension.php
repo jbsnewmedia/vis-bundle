@@ -11,7 +11,7 @@ use Twig\TwigFilter;
 class DynamicFilterExtension extends AbstractExtension
 {
     /**
-     * @var array<string, null|TwigFilter>
+     * @var array<string, TwigFilter|null>
      */
     private array $filter = [];
 
