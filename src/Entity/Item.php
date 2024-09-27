@@ -6,6 +6,8 @@ namespace JBSNewMedia\VisBundle\Entity;
 
 class Item
 {
+    use \JBSNewMedia\VisBundle\Trait\RolesTrait;
+
     protected string $type = '';
 
     protected int $order = 0;
@@ -26,11 +28,6 @@ class Item
      * @var array<string, string|int>
      */
     protected array $routeParameters = [];
-
-    /**
-     * @var array<string, string>
-     */
-    protected array $roles = [];
 
     public \Closure $callbackFunction;
 
@@ -158,37 +155,6 @@ class Item
     public function getRouteParameters(): array
     {
         return $this->routeParameters;
-    }
-
-    public function addRole(string $role): void
-    {
-        $this->roles[$role] = $role;
-    }
-
-    public function removeRole(string $role): void
-    {
-        unset($this->roles[$role]);
-    }
-
-    /**
-     * @return array<string, string>
-     */
-    public function getRoles(): array
-    {
-        return $this->roles;
-    }
-
-    /**
-     * @param array<string, string> $roles
-     */
-    public function setRoles(array $roles): void
-    {
-        $this->roles = $roles;
-    }
-
-    public function hasRole(string $role): bool
-    {
-        return isset($this->roles[$role]);
     }
 
     public function setCallbackFunction(\Closure $callbackFunction): void

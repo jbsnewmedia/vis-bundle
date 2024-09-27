@@ -6,10 +6,13 @@ namespace JBSNewMedia\VisBundle\Entity;
 
 class Tool
 {
+    use \JBSNewMedia\VisBundle\Trait\RolesTrait;
+
     protected string $title = '';
 
     public function __construct(protected string $id)
     {
+        $this->setId($id);
     }
 
     public function setId(string $id): void

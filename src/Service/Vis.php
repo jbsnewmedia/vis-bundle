@@ -11,11 +11,15 @@ use JBSNewMedia\VisBundle\Entity\Topbar\Topbar;
 use JBSNewMedia\VisBundle\Entity\Topbar\TopbarButtonDarkmode;
 use JBSNewMedia\VisBundle\Entity\Topbar\TopbarButtonSidebar;
 use JBSNewMedia\VisBundle\Entity\Topbar\TopbarDropdown;
+use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
 class Vis
 {
+
+    use \JBSNewMedia\VisBundle\Trait\RolesTrait;
+
     protected string $tool = '';
 
     /**
@@ -33,8 +37,15 @@ class Vis
      */
     protected array $sidebar = [];
 
-    public function __construct(protected TranslatorInterface $translator, protected UrlGeneratorInterface $router)
+    public function __construct(
+        protected TranslatorInterface $translator,
+        protected UrlGeneratorInterface $router,
+        protected Security $security)
     {
+        $user = $this->security->getUser();
+        if (null !== $user) {
+            $this->setRoles($user->getRoles());
+        }
     }
 
     public function setTool(string $tool): self
@@ -57,8 +68,17 @@ class Vis
         return isset($this->tools[$tool]);
     }
 
-    public function addTool(Tool $tool): self
+    public function addTool(Tool $tool): bool
     {
+        if ($tool->getRoles()===[]) {
+            $tool->addRole('ROLE_USER');
+        }
+
+        $commonRoles = array_intersect($tool->getRoles(), $this->getRoles());
+        if (empty($commonRoles)) {
+            return false;
+        }
+
         $this->tools[$tool->getId()] = $tool;
 
         $item = new TopbarButtonDarkmode($tool->getId());
@@ -81,7 +101,7 @@ class Vis
         $item->setOrder(100);
         $this->addTopbar($item);
 
-        return $this;
+        return true;
     }
 
     /**
@@ -92,11 +112,22 @@ class Vis
         return $this->tools;
     }
 
-    public function addTopbar(Topbar $item): void
+    public function addTopbar(Topbar $item): bool
     {
+        if ($item->getRoles()===[]) {
+            $item->addRole('ROLE_USER');
+        }
+
+        $commonRoles = array_intersect($item->getRoles(), $this->getRoles());
+        if (empty($commonRoles)) {
+            return false;
+        }
+
         $this->topbar[$item->getTool()][$item->getPosition()][$item->getId()] = $item;
 
         uasort($this->topbar[$item->getTool()][$item->getPosition()], [$this, 'sortItems']);
+
+        return true;
     }
 
     /**
@@ -119,8 +150,17 @@ class Vis
         return $this->topbar[$tool][$position];
     }
 
-    public function addSidebar(Sidebar $item, string $parent = ''): void
+    public function addSidebar(Sidebar $item, string $parent = ''): bool
     {
+        if ($item->getRoles()===[]) {
+            $item->addRole('ROLE_USER');
+        }
+
+        $commonRoles = array_intersect($item->getRoles(), $this->getRoles());
+        if (empty($commonRoles)) {
+            return false;
+        }
+
         if (null === $item->getCallbackFunction()) {
             $this->sidebar[$item->getTool()][$item->getId()] = $item;
         } else {
@@ -131,6 +171,8 @@ class Vis
         }
 
         uasort($this->sidebar[$item->getTool()], [$this, 'sortItems']);
+
+        return true;
     }
 
     /**
