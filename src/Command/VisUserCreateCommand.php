@@ -28,7 +28,7 @@ class VisUserCreateCommand extends Command
 
     public function __construct(
         private readonly UserPasswordHasherInterface $userPasswordHasher,
-        private readonly EntityManagerInterface $entityManager
+        private readonly EntityManagerInterface $entityManager,
     ) {
         parent::__construct();
     }

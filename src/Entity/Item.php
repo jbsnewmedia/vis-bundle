@@ -26,6 +26,8 @@ class Item
      */
     protected array $routeParameters = [];
 
+    protected array $roles = [];
+
     public \Closure $callbackFunction;
 
     public function __construct(protected string $tool, protected string $id)
@@ -152,6 +154,31 @@ class Item
     public function getRouteParameters(): array
     {
         return $this->routeParameters;
+    }
+
+    public function addRole(string $role): void
+    {
+        $this->roles[$role] = $role;
+    }
+
+    public function removeRole(string $role): void
+    {
+        unset($this->roles[$role]);
+    }
+
+    public function getRoles(): array
+    {
+        return $this->roles;
+    }
+
+    public function setRoles(array $roles): void
+    {
+        $this->roles = $roles;
+    }
+
+    public function hasRole(string $role): bool
+    {
+        return isset($this->roles[$role]);
     }
 
     public function setCallbackFunction(\Closure $callbackFunction): void

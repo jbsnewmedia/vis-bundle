@@ -11,9 +11,7 @@ use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
-use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Validator\Constraints\Email;
-use Symfony\Component\Validator\Constraints\Length;
 use Symfony\Component\Validator\Validation;
 
 #[AsCommand(
@@ -27,7 +25,7 @@ class VisUserAddRoleCommand extends Command
     protected string $errorMessage = '';
 
     public function __construct(
-        private readonly EntityManagerInterface $entityManager
+        private readonly EntityManagerInterface $entityManager,
     ) {
         parent::__construct();
     }
@@ -52,7 +50,7 @@ class VisUserAddRoleCommand extends Command
             if (0 === count($violations)) {
                 $user = $this->entityManager->getRepository(User::class)->findOneBy(['email' => $email]);
 
-                if ($user === null) {
+                if (null === $user) {
                     $io->error('User with email '.$email.' not found.');
 
                     return Command::FAILURE;

@@ -11,7 +11,7 @@ use Twig\TwigFilter;
 class DynamicFilterExtension extends AbstractExtension
 {
     /**
-     * @var array Filter
+     * @var array<string, null|TwigFilter>
      */
     private array $filter = [];
 
@@ -35,6 +35,7 @@ class DynamicFilterExtension extends AbstractExtension
         if (!isset($this->filter[$filterName])) {
             $this->filter[$filterName] = $this->twig->getFilter($filterName);
         }
+
         if (null === $this->filter[$filterName]) {
             throw new \RuntimeException(sprintf('Filter "%s" does not exist.', $filterName));
         }
