@@ -1,10 +1,11 @@
 <?php
 
+declare(strict_types=1);
+
 namespace JBSNewMedia\VisBundle\Trait;
 
 trait RolesTrait
 {
-
     /**
      * @var array<string, string>
      */
@@ -40,5 +41,4 @@ trait RolesTrait
     {
         return isset($this->roles[$role]);
     }
-
 }

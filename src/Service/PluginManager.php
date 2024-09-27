@@ -15,7 +15,7 @@ class PluginManager
     /**
      * @param ServiceLocator<T> $pluginLocator
      */
-    public function __construct(private readonly ServiceLocator $pluginLocator)
+    public function __construct(protected readonly ServiceLocator $pluginLocator)
     {
     }
 

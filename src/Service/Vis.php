@@ -10,6 +10,7 @@ use JBSNewMedia\VisBundle\Entity\Tool;
 use JBSNewMedia\VisBundle\Entity\Topbar\Topbar;
 use JBSNewMedia\VisBundle\Entity\Topbar\TopbarButtonDarkmode;
 use JBSNewMedia\VisBundle\Entity\Topbar\TopbarButtonSidebar;
+use JBSNewMedia\VisBundle\Entity\Topbar\TopbarButtonTools;
 use JBSNewMedia\VisBundle\Entity\Topbar\TopbarDropdown;
 use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
@@ -17,7 +18,6 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 
 class Vis
 {
-
     use \JBSNewMedia\VisBundle\Trait\RolesTrait;
 
     protected string $tool = '';
@@ -26,6 +26,8 @@ class Vis
      * @var Tool[]
      */
     protected array $tools = [];
+
+    protected int $toolsCounter = 0;
 
     /**
      * @var array<string, array<string, Topbar[]>>
@@ -70,7 +72,7 @@ class Vis
 
     public function addTool(Tool $tool): bool
     {
-        if ($tool->getRoles()===[]) {
+        if ([] === $tool->getRoles()) {
             $tool->addRole('ROLE_USER');
         }
 
@@ -80,16 +82,21 @@ class Vis
         }
 
         $this->tools[$tool->getId()] = $tool;
+        $this->incToolsCounter();
+
+        $item = new TopbarButtonTools($tool->getId());
+        $item->setLabel($this->translator->trans('main.toggle.darkmode', domain: 'vis'));
+        $this->addTopbar($item);
 
         $item = new TopbarButtonDarkmode($tool->getId());
         $item->setLabel($this->translator->trans('main.toggle.darkmode', domain: 'vis'));
         $this->addTopbar($item);
 
-        $item = new TopbarButtonSidebar($tool->getId(), 'toggle_darkmode_start', 'start');
+        $item = new TopbarButtonSidebar($tool->getId());
         $item->setLabel($this->translator->trans('main.toggle.sidebar', domain: 'vis'));
         $this->addTopbar($item);
 
-        $item = new TopbarButtonSidebar($tool->getId());
+        $item = new TopbarButtonSidebar($tool->getId(), 'toggle_sidebar_end', 'end', ['display' => 'large']);
         $item->setLabel($this->translator->trans('main.toggle.sidebar', domain: 'vis'));
         $this->addTopbar($item);
 
@@ -112,9 +119,24 @@ class Vis
         return $this->tools;
     }
 
+    protected function incToolsCounter(): void
+    {
+        ++$this->toolsCounter;
+    }
+
+    protected function decToolsCounter(): void
+    {
+        --$this->toolsCounter;
+    }
+
+    public function getToolsCounter(): int
+    {
+        return $this->toolsCounter;
+    }
+
     public function addTopbar(Topbar $item): bool
     {
-        if ($item->getRoles()===[]) {
+        if ([] === $item->getRoles()) {
             $item->addRole('ROLE_USER');
         }
 
@@ -152,7 +174,7 @@ class Vis
 
     public function addSidebar(Sidebar $item, string $parent = ''): bool
     {
-        if ($item->getRoles()===[]) {
+        if ([] === $item->getRoles()) {
             $item->addRole('ROLE_USER');
         }
 
