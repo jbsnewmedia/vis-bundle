@@ -12,6 +12,7 @@ use JBSNewMedia\VisBundle\Entity\Topbar\TopbarButtonDarkmode;
 use JBSNewMedia\VisBundle\Entity\Topbar\TopbarButtonSidebar;
 use JBSNewMedia\VisBundle\Entity\Topbar\TopbarButtonTools;
 use JBSNewMedia\VisBundle\Entity\Topbar\TopbarDropdown;
+use JBSNewMedia\VisBundle\Entity\Topbar\TopbarLiveSearchTools;
 use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
@@ -26,6 +27,8 @@ class Vis
      * @var Tool[]
      */
     protected array $tools = [];
+
+    protected string $toolId = '';
 
     protected int $toolsCounter = 0;
 
@@ -57,6 +60,8 @@ class Vis
         }
         $this->tool = $tool;
 
+        $this->setToolId($this->tools[$tool]->getId());
+
         return $this;
     }
 
@@ -68,6 +73,16 @@ class Vis
     public function isTool(string $tool): bool
     {
         return isset($this->tools[$tool]);
+    }
+
+    public function setToolId(string $toolId):void
+    {
+        $this->toolId = $toolId;
+    }
+
+    public function getToolId(): string
+    {
+        return $this->toolId;
     }
 
     public function addTool(Tool $tool): bool
@@ -84,8 +99,8 @@ class Vis
         $this->tools[$tool->getId()] = $tool;
         $this->incToolsCounter();
 
-        $item = new TopbarButtonTools($tool->getId());
-        $item->setLabel($this->translator->trans('main.toggle.darkmode', domain: 'vis'));
+        $item = new TopbarLiveSearchTools($tool->getId());
+        $item->setLabel($this->translator->trans('main.livesearch.tools', domain: 'vis'));
         $this->addTopbar($item);
 
         $item = new TopbarButtonDarkmode($tool->getId());
