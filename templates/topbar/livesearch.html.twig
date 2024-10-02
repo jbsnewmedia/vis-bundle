@@ -1,25 +1,17 @@
-{% if vis.toolscounter > 1 %}
-
-    <button class="btn btn-link justify-content-center align-items-center" id="dropdownMenuTool" data-bs-toggle="dropdown" aria-expanded="false" title="Projekt wechseln">
-        <i class="fa-solid fa-diagram-project fa-fw"></i>
+{% if item.dataCounter > 1 %}
+    <button class="{{ item.class }}" data-bs-toggle="dropdown" aria-expanded="false" title="{{ item.label }}" id="{{ item.id }}">
+        {{ item.content|dynamic_filter(item.contentFilter) }}
     </button>
-    <ul class="dropdown-menu dropdown-menu-end rounded-0 me-1 avalynx-livesearch<?php if ($c > 10): ?> avalynx-livesearch-show<?php endif ?>"
-        aria-labelledby="dropdownMenuTool">
-
+    <ul class="dropdown-menu dropdown-menu-end rounded-0 me-1 avalynx-simpleadmin-livesearch{% if vis.toolscounter > item.countForSearch %} avalynx-simpleadmin-livesearch-show{% endif %}" aria-labelledby="{{ item.id }}">
         <li>
             <span class="dropdown-item-text">
-                <input type="text" class="form-control avalynx-livesearch-input" placeholder="Suchen...">
+                <input type="text" class="form-control avalynx-simpleadmin-livesearch-input" placeholder="{{ item.labelSearch }}">
             </span>
         </li>
-
-        {% for tool_id, tool_details in vis.tools %}
-
-            <li class="dnone">
-                <a class="dropdown-item{% if vis.toolId == tool_details.id %} active{% endif %}" href="{{ path('vis_' ~ tool_details.id) }}">{{ tool_details.title }}</a>
+        {% for data_id, data_details in item.data %}
+            <li class="d-none">
+                <a class="dropdown-item{% if item.dataKey == data_id %} active{% endif %}" href="{{ path(data_details.route, data_details.routeparameters|default({})) }}">{{ data_details.label }}</a>
             </li>
-
         {% endfor %}
-
     </ul>
-
 {% endif %}
