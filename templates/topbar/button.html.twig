@@ -1,3 +1,7 @@
 <button class="{{ item.class }}" onclick="{{ item.onClick }}" title="{{ item.label }}" id="{{ item.id }}">
-    {{ item.content|dynamic_filter(item.contentFilter) }}
+    {% if item.contentFilter == '' %}
+        {{ item.content }}
+    {% else %}
+        {{ item.content|dynamic_filter(item.contentFilter) }}
+    {% endif %}
 </button>

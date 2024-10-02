@@ -10,7 +10,7 @@ use JBSNewMedia\VisBundle\Entity\Tool;
 use JBSNewMedia\VisBundle\Entity\Topbar\Topbar;
 use JBSNewMedia\VisBundle\Entity\Topbar\TopbarButtonDarkmode;
 use JBSNewMedia\VisBundle\Entity\Topbar\TopbarButtonSidebar;
-use JBSNewMedia\VisBundle\Entity\Topbar\TopbarDropdown;
+use JBSNewMedia\VisBundle\Entity\Topbar\TopbarDropdownProfile;
 use JBSNewMedia\VisBundle\Entity\Topbar\TopbarLiveSearchTools;
 use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
@@ -90,6 +90,10 @@ class Vis
             $tool->addRole('ROLE_USER');
         }
 
+        if (in_array($tool->getId(), ['register', 'login', 'logout', 'profile', 'settings'], true)) {
+            return false;
+        }
+
         $commonRoles = array_intersect($tool->getRoles(), $this->getRoles());
         if (empty($commonRoles)) {
             return false;
@@ -116,12 +120,34 @@ class Vis
         $item->setLabel($this->translator->trans('main.toggle.sidebar', domain: 'vis'));
         $this->addTopbar($item);
 
-        $item = new TopbarDropdown($tool->getId(), 'profile_end');
+        $item = new TopbarDropdownProfile($tool->getId(), 'profile_end');
         $item->setLabel($this->translator->trans('main.profile', domain: 'vis'));
         $item->setClass('btn btn-link justify-content-center align-items-center');
         $item->setContent('<img src="'.$this->router->generate('jbs_new_media_assets_composer', ['namespace' => 'jbsnewmedia', 'package' => 'vis-bundle', 'asset' => 'assets/img/profile.jpg']).'" class="h-100 rounded-circle" alt="profile-image">');
-        $item->setContentFilter('raw');
         $item->setOrder(100);
+        $item->setData([
+            /*
+            'vis_settings' => [
+                'route' => 'vis_settings',
+                'routeParameters' => [],
+                'icon' => '<i class="fa-solid fa-cog fa-fw"></i>',
+                'label' => $this->translator->trans('main.profile.settings', domain: 'vis'),
+            ],
+            'vis_line_1' => [
+                'route' => '',
+                'routeParameters' => [],
+                'icon' => '',
+                'label' => '---',
+            ],
+            */
+            'vis_logout' => [
+                'route' => 'vis_logout',
+                'routeParameters' => [],
+                'icon' => '<i class="fa-solid fa-right-from-bracket fa-fw"></i>',
+                'label' => $this->translator->trans('main.profile.logout', domain: 'vis'),
+            ],
+        ]);
+        $item->setDataKey('vis_logout');
         $this->addTopbar($item);
 
         return true;

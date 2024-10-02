@@ -14,7 +14,7 @@ class TopbarLiveSearchTools extends TopbarLiveSearch
 
     public function __construct(
         string $tool,
-        string $id = 'toggle_tools_end',
+        string $id = 'dropdown_tools_end',
         string $position = 'end',
     ) {
         parent::__construct($tool, $id);

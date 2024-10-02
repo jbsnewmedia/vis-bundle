@@ -1,6 +1,10 @@
 {% if item.dataCounter > 1 %}
     <button class="{{ item.class }}" data-bs-toggle="dropdown" aria-expanded="false" title="{{ item.label }}" id="{{ item.id }}">
-        {{ item.content|dynamic_filter(item.contentFilter) }}
+        {% if item.contentFilter == '' %}
+            {{ item.content }}
+        {% else %}
+            {{ item.content|dynamic_filter(item.contentFilter) }}
+        {% endif %}
     </button>
     <ul class="dropdown-menu dropdown-menu-end rounded-0 me-1 avalynx-simpleadmin-livesearch{% if vis.toolscounter > item.countForSearch %} avalynx-simpleadmin-livesearch-show{% endif %}" aria-labelledby="{{ item.id }}">
         <li>

@@ -26,7 +26,7 @@ class TopbarLiveSearch extends Topbar
         parent::__construct($tool, $id);
         $this->setType('livesearch');
         $this->setLabelSearch('Search');
-        $this->setCountForSearch(1);
+        $this->setCountForSearch(10);
         $this->generateTemplate();
     }
 
@@ -37,6 +37,15 @@ class TopbarLiveSearch extends Topbar
     {
         $this->data = $data;
         $this->setDataCounter(count($data));
+    }
+
+    /**
+     * @param array<string, array{route: string, routeParameters: array<string, string|int>, label: string}> $data
+     */
+    public function addData(array $data): void
+    {
+        $this->data = array_merge($this->data, $data);
+        $this->setDataCounter(count($this->data));
     }
 
     /**
