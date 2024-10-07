@@ -36,6 +36,12 @@ services:
     JBSNewMedia\VisBundle\Entity\:
         resource: '../src/Entity/'
 
+    JBSNewMedia\VisBundle\EventListener\ControllerListener:
+        arguments:
+            - '@JBSNewMedia\VisBundle\Service\Vis'
+        tags:
+            - { name: 'kernel.event_subscriber' }
+
     JBSNewMedia\VisBundle\EventListener\PluginListener:
         arguments:
             - '@JBSNewMedia\VisBundle\Service\PluginManager'

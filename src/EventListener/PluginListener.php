@@ -18,7 +18,6 @@ class PluginListener
      */
     public function __construct(protected PluginManager $pluginManager)
     {
-        $this->pluginManager = $pluginManager;
     }
 
     public function onKernelRequest(RequestEvent $event): void
