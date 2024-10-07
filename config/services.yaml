@@ -37,8 +37,6 @@ services:
         resource: '../src/Entity/'
 
     JBSNewMedia\VisBundle\EventListener\ControllerListener:
-        arguments:
-            - '@JBSNewMedia\VisBundle\Service\Vis'
         tags:
             - { name: 'kernel.event_subscriber' }
 
@@ -56,5 +54,12 @@ services:
     JBSNewMedia\VisBundle\Twig\DynamicFilterExtension:
         arguments:
             $twig: '@twig'
+        tags:
+            - { name: 'twig.extension' }
+
+    JBSNewMedia\VisBundle\Twig\VisTransExtension:
+        arguments:
+            $translator: '@translator'
+            $vis: '@JBSNewMedia\VisBundle\Service\Vis'
         tags:
             - { name: 'twig.extension' }

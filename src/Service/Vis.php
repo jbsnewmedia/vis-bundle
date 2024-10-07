@@ -41,6 +41,11 @@ class Vis
      */
     protected array $sidebar = [];
 
+    /**
+     * @var array<string, array<string, string>
+     */
+    protected array $routes = [];
+
     public function __construct(
         protected TranslatorInterface $translator,
         protected UrlGeneratorInterface $router,
@@ -187,6 +192,12 @@ class Vis
             return false;
         }
 
+        if ($item->getRoute() !== '') {
+            $this->routes[$item->getTool()][$item->getRoute()] = [
+                'route' => $item->getRoute(),
+                'parent' => ''
+            ];
+        }
         $this->topbar[$item->getTool()][$item->getPosition()][$item->getId()] = $item;
 
         uasort($this->topbar[$item->getTool()][$item->getPosition()], [$this, 'sortItems']);
@@ -223,6 +234,13 @@ class Vis
         $commonRoles = array_intersect($item->getRoles(), $this->getRoles());
         if (empty($commonRoles)) {
             return false;
+        }
+
+        if ($item->getRoute() !== '') {
+            $this->routes[$item->getTool()][$item->getRoute()] = [
+                'route'=>$item->getRoute(),
+                'parent'=>$item->getParent(),
+            ];
         }
 
         if (null === $item->getCallbackFunction()) {
@@ -268,11 +286,22 @@ class Vis
         $routes = explode('-', $route);
         $level = count($routes);
 
-        if (!isset($this->sidebar[$tool][$routes[0]])) {
+        if (!isset($this->routes[$tool][$routes[0]])) {
             throw new \InvalidArgumentException('Vis: Sidebar route "'.$routes[0].'" does not exist');
         }
-        $child = $this->sidebar[$tool][$routes[0]];
-        $child->setActive(true);
+        $routeInfo = $this->routes[$tool][$routes[0]];
+        if ('' === $routeInfo['parent']) {
+            $child = $this->sidebar[$tool][$routes[0]];
+            $child->setActive(true);
+        } else {
+            if (!isset($this->sidebar[$tool][$routeInfo['parent']])) {
+                throw new \InvalidArgumentException('Vis: Sidebar parent "'.$routeInfo['parent'].'" does not exist');
+            }
+            $parent = $this->sidebar[$tool][$routeInfo['parent']];
+            $parent->setActive(true);
+            $child = $this->sidebar[$tool][$routeInfo['parent']]->getChild($routes[0]);
+            $child->setActive(true);
+        }
 
         for ($i = 1; $i < $level; ++$i) {
             if (!$child->isChild($routes[$i])) {

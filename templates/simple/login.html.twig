@@ -7,20 +7,20 @@
 <div class="container-fluid container-xxl col-12 col-sm-10 col-lg-12 col-xl-10 col-xxl-8">
     <div class="row border m-0 mt-5 m-md-5 ">
         <div class="col d-none py-3 d-lg-flex justify-content-center align-items-center">
-            <img src="{{ getAssetComposerFile('main.logo'|trans([], 'vis')) }}" class="img-fluid m-5 avalynx-simpleadmin-main-logo avalynx-simpleadmin-lightmode-flex" style="max-width: 100%; height: auto;" title="{{ 'main.title'|trans([], 'vis') }}" alt="{{ 'main.title.alt'|trans([], 'vis') }}">
-            <img src="{{ getAssetComposerFile('main.logo.dark'|trans([], 'vis')) }}" class="img-fluid m-5 avalynx-simpleadmin-main-logo avalynx-simpleadmin-darkmode-flex d-none" style="max-width: 100%; height: auto;" title="{{ 'main.title'|trans([], 'vis') }}" alt="{{ 'main.title.alt'|trans([], 'vis') }}">
+            <img src="{{ getAssetComposerFile('main.logo'|vistrans) }}" class="img-fluid m-5 avalynx-simpleadmin-main-logo avalynx-simpleadmin-lightmode-flex" style="max-width: 100%; height: auto;" title="{{ 'main.title'|vistrans }}" alt="{{ 'main.title.alt'|vistrans }}">
+            <img src="{{ getAssetComposerFile('main.logo.dark'|vistrans) }}" class="img-fluid m-5 avalynx-simpleadmin-main-logo avalynx-simpleadmin-darkmode-flex d-none" style="max-width: 100%; height: auto;" title="{{ 'main.title'|vistrans }}" alt="{{ 'main.title.alt'|vistrans }}">
         </div>
         <div class="col">
             <div class="m-2 m-md-5">
                 <div class="mt-5 pt-lg-4">
                     <div class="w-100">
-                        <h3 class="mb-3">{{ 'login.title'|trans([], 'vis') }}</h3>
+                        <h3 class="mb-3">{{ 'login.title'|vistrans }}</h3>
                         {% if app.user %}
-                            <p class="mb-3">{{ 'login.loggedin'|trans([], 'vis') }}</p>
+                            <p class="mb-3">{{ 'login.loggedin'|vistrans }}</p>
                         {% else %}
-                            {% set login_description = 'login.description'|trans([], 'vis') %}
+                            {% set login_description = 'login.description'|vistrans %}
                             {%  if login_description != '' %}
-                                <p class="mb-3">{{ 'login.description'|trans([], 'vis') }}</p>
+                                <p class="mb-3">{{ 'login.description'|vistrans }}</p>
                             {% endif %}
                         {% endif %}
                     </div>
@@ -29,35 +29,35 @@
                 {% if app.user %}
 
                     <div class="form-group mb-4">
-                        <label class="form-label" for="_username">{{ 'login.email'|trans([], 'vis') }}:</label>
+                        <label class="form-label" for="_username">{{ 'login.email'|vistrans }}:</label>
                         <div class="form-control">{{ app.user.email }}</div>
                         <span class="invalid-feedback"></span>
                     </div>
 
-                    <a class="btn btn-primary w-100 mb-4" href="{{ path('vis_logout') }}">{{ 'logout.title'|trans([], 'vis') }}</a>
+                    <a class="btn btn-primary w-100 mb-4" href="{{ path('vis_logout') }}">{{ 'logout.title'|vistrans }}</a>
 
                 {% else %}
 
                     <form method="post" id="vis-login-form" action="{{ path('vis_login') }}">
 
                         <div class="form-group mb-4">
-                            <label class="form-label" for="_username">{{ 'login.email'|trans([], 'vis') }}:</label>
+                            <label class="form-label" for="_username">{{ 'login.email'|vistrans }}:</label>
                             <input type="text" name="_username" id="_username" class="form-control"/>
                             <span class="invalid-feedback"></span>
                         </div>
 
                         <div class="form-group mb-4">
-                            <label class="form-label" for="_password">{{ 'login.password'|trans([], 'vis') }}:</label>
+                            <label class="form-label" for="_password">{{ 'login.password'|vistrans }}:</label>
                             <input type="password" name="_password" id="_password" class="form-control"/>
                             <span class="invalid-feedback"></span>
                         </div>
 
-                        <button type="submit" class="btn btn-primary w-100 mb-4">{{ 'login.submit'|trans([], 'vis') }}</button>
+                        <button type="submit" class="btn btn-primary w-100 mb-4">{{ 'login.submit'|vistrans }}</button>
 
                         <div class="form-group">
                             <div class="form-check">
                                 <input type="checkbox" name="_remember_me" id="_remember_me" class="form-check-input" value="1"/>
-                                <label class="form-check-label" for="_remember_me">{{ 'login.rememberme'|trans([], 'vis') }}</label>
+                                <label class="form-check-label" for="_remember_me">{{ 'login.rememberme'|vistrans }}</label>
                                 <span class="invalid-feedback"></span>
                             </div>
                         </div>
