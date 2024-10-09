@@ -42,9 +42,10 @@ class Vis
     protected array $sidebar = [];
 
     /**
-     * @var array<string, array<string, string>
+     * @var array<string, array<string, array<string, string>|string>>
      */
     protected array $routes = [];
+
 
     public function __construct(
         protected TranslatorInterface $translator,
@@ -192,10 +193,10 @@ class Vis
             return false;
         }
 
-        if ($item->getRoute() !== '') {
+        if ('' !== $item->getRoute()) {
             $this->routes[$item->getTool()][$item->getRoute()] = [
                 'route' => $item->getRoute(),
-                'parent' => ''
+                'parent' => '',
             ];
         }
         $this->topbar[$item->getTool()][$item->getPosition()][$item->getId()] = $item;
@@ -236,10 +237,10 @@ class Vis
             return false;
         }
 
-        if ($item->getRoute() !== '') {
+        if ('' !== $item->getRoute()) {
             $this->routes[$item->getTool()][$item->getRoute()] = [
-                'route'=>$item->getRoute(),
-                'parent'=>$item->getParent(),
+                'route' => $item->getRoute(),
+                'parent' => $item->getParent(),
             ];
         }
 
@@ -286,11 +287,11 @@ class Vis
         $routes = explode('-', $route);
         $level = count($routes);
 
-        if (!isset($this->routes[$tool][$routes[0]])) {
+        if (!isset($this->routes[$tool][$routes[0]]) || !is_array($this->routes[$tool][$routes[0]])) {
             throw new \InvalidArgumentException('Vis: Sidebar route "'.$routes[0].'" does not exist');
         }
         $routeInfo = $this->routes[$tool][$routes[0]];
-        if ('' === $routeInfo['parent']) {
+        if (is_array($routeInfo) && isset($routeInfo['parent']) && '' === $routeInfo['parent']) {
             $child = $this->sidebar[$tool][$routes[0]];
             $child->setActive(true);
         } else {

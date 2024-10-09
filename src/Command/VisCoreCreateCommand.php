@@ -372,9 +372,11 @@ class RegistrationController extends AbstractController
                 ];
             }
         } else {
-            foreach ($data['security']['access_control'] as $accessControl) {
-                if (isset($accessControls[$accessControl['path']])) {
-                    unset($accessControls[$accessControl['path']]);
+            if ((isset($data['security']['access_control'])) && is_array($data['security']['access_control'])) {
+                foreach ($data['security']['access_control'] as $accessControl) {
+                    if (isset($accessControls[$accessControl['path']])) {
+                        unset($accessControls[$accessControl['path']]);
+                    }
                 }
             }
 
@@ -383,8 +385,10 @@ class RegistrationController extends AbstractController
                 $accessControlsNew[] = $accessControl;
             }
 
-            foreach ($data['security']['access_control'] as $accessControl) {
-                $accessControlsNew[] = $accessControl;
+            if ((isset($data['security']['access_control'])) && is_array($data['security']['access_control'])) {
+                foreach ($data['security']['access_control'] as $accessControl) {
+                    $accessControlsNew[] = $accessControl;
+                }
             }
 
             $data['security']['access_control'] = $accessControlsNew;
