@@ -1,0 +1,34 @@
+{% extends '@VisBundle/tool/base.html.twig' %}
+
+{% do addAssetComposer('avalynx/avalynx-datatable/dist/css/avalynx-datatable.css') %}
+{% do addAssetComposer('avalynx/avalynx-datatable/dist/js/avalynx-datatable.js') %}
+
+{% block vis_container %}
+
+    {{ parent() }}
+
+<div class="card">
+    <div class="card-header">
+        DataTable example
+    </div>
+    <div class="card-body">
+        <div class="" id="avalynx-datatable"></div>
+    </div>
+</div>
+
+    <script>
+
+        new AvalynxDataTable("avalynx-datatable", {
+            apiUrl: "{{ path('vis_demo_table_datatable_api') }}",
+
+            perPage: 10,
+            search: "",
+            sorting: {
+                "name": "asc",
+                "age": "desc"
+            }
+        }, {});
+
+    </script>
+
+{% endblock %}
