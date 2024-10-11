@@ -1,19 +1,74 @@
-{% extends '@VisBundle/base.html.twig' %}
+{% extends '@VisBundle/simple/base.html.twig' %}
 
-{% block title %}Register{% endblock %}
+{% do addAssetComposer('avalynx/avalynx-form/src/js/avalynx-form.js') %}
 
-{% block body %}
-    <h1>Register</h1>
+{% block content %}
+    {{ parent() }}
+    <div class="container-fluid container-xxl col-12 col-sm-10 col-lg-12 col-xl-10 col-xxl-8">
+        <div class="row border m-0 mt-5 m-md-5 ">
+            <div class="col d-none py-3 d-lg-flex justify-content-center align-items-center">
+                <img src="{{ getAssetComposerFile('main.logo'|vistrans) }}" class="img-fluid m-5 avalynx-simpleadmin-main-logo avalynx-simpleadmin-lightmode-flex" style="max-width: 100%; height: auto;" title="{{ 'main.title'|vistrans }}" alt="{{ 'main.title.alt'|vistrans }}">
+                <img src="{{ getAssetComposerFile('main.logo.dark'|vistrans) }}" class="img-fluid m-5 avalynx-simpleadmin-main-logo avalynx-simpleadmin-darkmode-flex d-none" style="max-width: 100%; height: auto;" title="{{ 'main.title'|vistrans }}" alt="{{ 'main.title.alt'|vistrans }}">
+            </div>
+            <div class="col">
+                <div class="m-2 m-md-5">
+                    <div class="mt-5 pt-lg-4">
+                        <div class="w-100">
+                            <h3 class="mb-3">{{ 'register.title'|vistrans }}</h3>
+                        </div>
+                    </div>
 
-    {{ form_errors(registrationForm) }}
+                    {% if app.user %}
 
-    {{ form_start(registrationForm) }}
-        {{ form_row(registrationForm.email) }}
-        {{ form_row(registrationForm.plainPassword, {
-            label: 'Password'
-        }) }}
-        {{ form_row(registrationForm.agreeTerms) }}
+                        <div class="form-group mb-4">
+                            <label class="form-label" for="_username">{{ 'register.email'|vistrans }}:</label>
+                            <div class="form-control">{{ app.user.email }}</div>
+                            <span class="invalid-feedback"></span>
+                        </div>
 
-        <button type="submit" class="btn">Register</button>
-    {{ form_end(registrationForm) }}
+                        <a class="btn btn-primary w-100 mb-4" href="{{ path('vis_logout') }}">{{ 'logout.title'|vistrans }}</a>
+
+                    {% else %}
+
+                        <form method="post" id="vis-register-form" action="{{ path('vis_register') }}">
+
+                            <div class="form-group mb-4">
+                                <label class="form-label" for="_username">{{ 'register.email'|vistrans }}:</label>
+                                <input type="text" name="_username" id="_username" class="form-control"/>
+                                <span class="invalid-feedback"></span>
+                            </div>
+
+                            <div class="form-group mb-4">
+                                <label class="form-label" for="_password">{{ 'register.password'|vistrans }}:</label>
+                                <input type="password" name="_password" id="_password" class="form-control"/>
+                                <span class="invalid-feedback"></span>
+                            </div>
+
+                            <div class="form-group mb-4">
+                                <div class="form-check">
+                                    <input type="checkbox" name="_remember_me" id="_remember_me" class="form-check-input" value="1"/>
+                                    <label class="form-check-label" for="_remember_me">{{ 'register.rememberme'|vistrans }}</label>
+                                    <span class="invalid-feedback"></span>
+                                </div>
+                            </div>
+
+                            <button type="submit" class="btn btn-primary w-100">{{ 'register.submit'|vistrans }}</button>
+
+                            <input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}">
+
+                        </form>
+
+                    {% endif %}
+
+                </div>
+            </div>
+        </div>
+        <div class="row justify-content-center mt-5">
+            <div class="col text-muted text-center"><small>v3.0.0-alpha</small></div>
+        </div>
+    </div>
+
+    <script>
+        const visForm = new AvalynxForm('vis-register-form');
+    </script>
 {% endblock %}

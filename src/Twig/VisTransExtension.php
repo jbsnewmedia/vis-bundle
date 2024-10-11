@@ -33,8 +33,12 @@ class VisTransExtension extends AbstractExtension
             return $this->cache[$var];
         }
 
-        $trans = $this->translator->trans($var, [], 'vis_'.$this->vis->getToolId());
-        if ($trans === $var) {
+        if ('' !== $this->vis->getToolId()) {
+            $trans = $this->translator->trans($var, [], 'vis_'.$this->vis->getToolId());
+            if ($trans === $var) {
+                $trans = $this->translator->trans($var, [], 'vis');
+            }
+        } else {
             $trans = $this->translator->trans($var, [], 'vis');
         }
 
