@@ -149,7 +149,7 @@ class MainController extends AbstractController
 
         $cookieTool = $request->cookies->get(\'vis_tool\');
 
-        return $this->render(\'@VisBundle/simple/change.html.twig\', [
+        return $this->render(\'@Vis/simple/change.html.twig\', [
             \'tools\' => $tools,
             \'cookieTool\' => $cookieTool,
         ]);
@@ -187,7 +187,7 @@ class SecurityController extends AbstractController
     #[Route(path: \'/vis/login\', name: \'vis_login\')]
     public function login(AuthenticationUtils $authenticationUtils): Response
     {
-        return $this->render(\'@VisBundle/simple/login.html.twig\');
+        return $this->render(\'@Vis/simple/login.html.twig\');
     }
 
     #[Route(path: \'/vis/logout\', name: \'vis_logout\')]
@@ -254,7 +254,7 @@ class RegistrationController extends AbstractController
             return $this->redirectToRoute(\'vis_login\');
         }
 
-        return $this->render(\'@VisBundle/simple/register.html.twig\', [
+        return $this->render(\'@Vis/simple/register.html.twig\', [
             \'registrationForm\' => $form,
         ]);
     }

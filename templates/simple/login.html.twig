@@ -1,11 +1,11 @@
-{% extends '@VisBundle/simple/base.html.twig' %}
+{% extends '@Vis/simple/base.html.twig' %}
 
 {% do addAssetComposer('avalynx/avalynx-form/src/js/avalynx-form.js') %}
 
 {% block content %}
     {{ parent() }}
-<div class="container-fluid container-xxl col-12 col-sm-10 col-lg-12 col-xl-10 col-xxl-8">
-    <div class="row border m-0 mt-5 m-md-5 ">
+<div class="container-fluid container-xxl col-12 col-sm-10 col-lg-12 col-xl-10 col-xxl-8 pt-5 p-md-5">
+    <div class="row border m-0">
         <div class="col d-none py-3 d-lg-flex justify-content-center align-items-center">
             <img src="{{ getAssetComposerFile('main.logo'|vistrans) }}" class="img-fluid m-5 avalynx-simpleadmin-main-logo avalynx-simpleadmin-lightmode-flex" style="max-width: 100%; height: auto;" title="{{ 'main.title'|vistrans }}" alt="{{ 'main.title.alt'|vistrans }}">
             <img src="{{ getAssetComposerFile('main.logo.dark'|vistrans) }}" class="img-fluid m-5 avalynx-simpleadmin-main-logo avalynx-simpleadmin-darkmode-flex d-none" style="max-width: 100%; height: auto;" title="{{ 'main.title'|vistrans }}" alt="{{ 'main.title.alt'|vistrans }}">

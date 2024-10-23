@@ -20,14 +20,6 @@ class VisExtension extends Extension implements PrependExtensionInterface
 
     public function prepend(ContainerBuilder $container): void
     {
-        $bundlePath = \realpath(__DIR__.'/../..');
 
-        $config = [
-            'paths' => [
-                $bundlePath.'/templates/' => 'VisBundle',
-            ],
-        ];
-
-        $container->prependExtensionConfig('twig', $config);
     }
 }
