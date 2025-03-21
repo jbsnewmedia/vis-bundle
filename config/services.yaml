@@ -33,8 +33,8 @@ services:
 
     JBSNewMedia\VisBundle\Service\Vis:
 
-    JBSNewMedia\VisBundle\Entity\:
-        resource: '../src/Entity/'
+    JBSNewMedia\VisBundle\Model\:
+        resource: '../src/Model/'
 
     JBSNewMedia\VisBundle\EventListener\ControllerListener:
         tags:
