@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace JBSNewMedia\VisBundle\Entity\Topbar;
+namespace JBSNewMedia\VisBundle\Model\Topbar;
 
 use JBSNewMedia\VisBundle\Service\Vis;
 

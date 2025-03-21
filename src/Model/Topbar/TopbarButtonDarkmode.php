@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace JBSNewMedia\VisBundle\Entity\Topbar;
+namespace JBSNewMedia\VisBundle\Model\Topbar;
 
 class TopbarButtonDarkmode extends TopbarButton
 {

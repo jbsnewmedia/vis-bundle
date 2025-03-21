@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace JBSNewMedia\VisBundle\Entity\Sidebar;
+namespace JBSNewMedia\VisBundle\Model\Sidebar;
 
-use JBSNewMedia\VisBundle\Entity\Item;
+use JBSNewMedia\VisBundle\Model\Item;
 use JBSNewMedia\VisBundle\Service\Vis;
 
 class Sidebar extends Item

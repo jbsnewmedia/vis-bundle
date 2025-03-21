@@ -304,7 +304,7 @@ class RegistrationController extends AbstractController
 
         $data['security']['providers']['vis_user_provider'] = [
             'entity' => [
-                'class' => \JBSNewMedia\VisBundle\Entity\User::class,
+                'class' => \JBSNewMedia\VisBundle\Model\User::class,
                 'property' => 'email',
             ],
         ];

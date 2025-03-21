@@ -4,14 +4,14 @@ declare(strict_types=1);
 
 namespace JBSNewMedia\VisBundle\Service;
 
-use JBSNewMedia\VisBundle\Entity\Item;
-use JBSNewMedia\VisBundle\Entity\Sidebar\Sidebar;
-use JBSNewMedia\VisBundle\Entity\Tool;
-use JBSNewMedia\VisBundle\Entity\Topbar\Topbar;
-use JBSNewMedia\VisBundle\Entity\Topbar\TopbarButtonDarkmode;
-use JBSNewMedia\VisBundle\Entity\Topbar\TopbarButtonSidebar;
-use JBSNewMedia\VisBundle\Entity\Topbar\TopbarDropdownProfile;
-use JBSNewMedia\VisBundle\Entity\Topbar\TopbarLiveSearchTools;
+use JBSNewMedia\VisBundle\Model\Item;
+use JBSNewMedia\VisBundle\Model\Sidebar\Sidebar;
+use JBSNewMedia\VisBundle\Model\Tool;
+use JBSNewMedia\VisBundle\Model\Topbar\Topbar;
+use JBSNewMedia\VisBundle\Model\Topbar\TopbarButtonDarkmode;
+use JBSNewMedia\VisBundle\Model\Topbar\TopbarButtonSidebar;
+use JBSNewMedia\VisBundle\Model\Topbar\TopbarDropdownProfile;
+use JBSNewMedia\VisBundle\Model\Topbar\TopbarLiveSearchTools;
 use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
