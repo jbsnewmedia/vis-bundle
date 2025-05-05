@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace JBSNewMedia\VisBundle\Model;
+namespace JBSNewMedia\VisBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use JBSNewMedia\VisBundle\Repository\VisUserRepository;

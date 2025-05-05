@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace JBSNewMedia\VisBundle\Command;
 
 use Doctrine\ORM\EntityManagerInterface;
-use JBSNewMedia\VisBundle\Model\User;
+use JBSNewMedia\VisBundle\Entity\User;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
