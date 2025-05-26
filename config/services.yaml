@@ -4,62 +4,41 @@ services:
         autoconfigure: true
         public: false
 
+    # Auto-configure all services except those explicitly excluded
     JBSNewMedia\VisBundle\:
         resource: '../src/'
         exclude:
-            - '../../DependencyInjection/'
-            - '../../Entity/'
-            - '../../Kernel.php'
-        tags: [ 'controller.service_arguments' ]
+            - '../src/DependencyInjection/'
+            - '../src/Entity/'
+            - '../src/Kernel.php'
 
+    # Controllers need the service_arguments tag
+    JBSNewMedia\VisBundle\Controller\:
+        resource: '../src/Controller/'
+        tags: ['controller.service_arguments']
+
+    # Commands with specific dependencies
     JBSNewMedia\VisBundle\Command\VisUserCreateCommand:
         arguments:
             $userPasswordHasher: '@security.password_hasher'
             $entityManager: '@doctrine.orm.entity_manager'
-        tags:
-            - { name: 'console.command' }
 
     JBSNewMedia\VisBundle\Command\VisCoreCreateCommand:
         arguments:
             $kernel: '@kernel'
-        tags:
-            - { name: 'console.command' }
 
-    JBSNewMedia\VisBundle\Security\VisAuthenticator:
-        arguments:
-            $urlGenerator: '@router'
-            $translator: '@translator'
-        tags: [ 'security.authenticator' ]
-
-    JBSNewMedia\VisBundle\Service\Vis:
-
-    JBSNewMedia\VisBundle\Model\:
-        resource: '../src/Model/'
-
-    JBSNewMedia\VisBundle\EventListener\ControllerListener:
-        tags:
-            - { name: 'kernel.event_subscriber' }
-
-    JBSNewMedia\VisBundle\EventListener\PluginListener:
-        arguments:
-            - '@JBSNewMedia\VisBundle\Service\PluginManager'
-        tags:
-            - { name: kernel.event_listener, event: kernel.request }
-
+    # Plugin manager with tagged locator
     JBSNewMedia\VisBundle\Service\PluginManager:
         arguments:
             $pluginLocator: !tagged_locator
                 tag: 'vis.plugin'
 
+    # Twig extensions with specific dependencies
     JBSNewMedia\VisBundle\Twig\DynamicFilterExtension:
         arguments:
             $twig: '@twig'
-        tags:
-            - { name: 'twig.extension' }
 
     JBSNewMedia\VisBundle\Twig\VisTransExtension:
         arguments:
             $translator: '@translator'
             $vis: '@JBSNewMedia\VisBundle\Service\Vis'
-        tags:
-            - { name: 'twig.extension' }

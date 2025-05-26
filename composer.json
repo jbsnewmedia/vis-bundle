@@ -10,12 +10,12 @@
     }
   ],
   "require": {
-    "php": ">=8.0",
-    "symfony/framework-bundle": "^6.0|^7.0",
-    "jbsnewmedia/symfony-web-pack": "*",
-    "jbsnewmedia/avalynx-web-pack": "*",
-    "avalynx/avalynx-simpleadmin": "*",
-    "fortawesome/font-awesome": "^6"
+    "php": ">=8.1",
+    "avalynx/avalynx-simpleadmin": "^1.0",
+    "fortawesome/font-awesome": "^6.0",
+    "jbsnewmedia/avalynx-web-pack": "^1.0",
+    "jbsnewmedia/symfony-web-pack": "^1.0",
+    "symfony/framework-bundle": "^6.0|^7.0"
   },
   "autoload": {
     "psr-4": {
@@ -29,7 +29,8 @@
   "config": {
     "allow-plugins": {
       "bamarni/composer-bin-plugin": true
-    }
+    },
+    "sort-packages": true
   },
   "extra": {
     "bamarni-bin": {
