@@ -46,7 +46,6 @@ class Vis
      */
     protected array $routes = [];
 
-
     public function __construct(
         protected TranslatorInterface $translator,
         protected UrlGeneratorInterface $router,

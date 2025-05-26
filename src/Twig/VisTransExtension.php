@@ -23,7 +23,7 @@ class VisTransExtension extends AbstractExtension
     public function getFilters(): array
     {
         return [
-            new TwigFilter('vistrans', [$this, 'translateKey']),
+            new TwigFilter('vistrans', $this->translateKey(...)),
         ];
     }
 
