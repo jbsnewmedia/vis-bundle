@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace JBSNewMedia\VisBundle\Model;
+namespace JBSNewMedia\VisBundle\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -26,7 +26,7 @@ class Client
     /**
      * @var Collection<int, ClientToTool>
      */
-    #[ORM\OneToMany(mappedBy: 'client', targetEntity: ClientToTools::class)]
+    #[ORM\OneToMany(mappedBy: 'client', targetEntity: ClientToTool::class)]
     private Collection $tools;
 
     public function __construct()

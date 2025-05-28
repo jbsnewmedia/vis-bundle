@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace JBSNewMedia\VisBundle\Model;
+namespace JBSNewMedia\VisBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity]
-#[ORM\Table(name: '`vis_client_to_tools`')]
-class ClientToTools
+#[ORM\Table(name: '`vis_client_to_tool`')]
+class ClientToTool
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
