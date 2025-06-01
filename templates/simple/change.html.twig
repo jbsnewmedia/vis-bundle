@@ -1,24 +1,24 @@
-{% extends '@VisBundle/simple/base.html.twig' %}
+{% extends '@Vis/simple/base.html.twig' %}
 
 {% do addAssetComposer('avalynx/avalynx-form/src/js/avalynx-form.js') %}
 {% do addAssetComposer('avalynx/avalynx-select/src/js/avalynx-select.js') %}
 
 {% block content %}
     {{ parent() }}
-<div class="container-fluid container-xxl col-12 col-sm-10 col-lg-12 col-xl-10 col-xxl-8">
-    <div class="row border m-0 mt-5 m-md-5 ">
+    <div class="container-fluid container-xxl col-12 col-sm-10 col-lg-12 col-xl-10 col-xxl-8 pt-5 p-md-5">
+        <div class="row border m-0">
         <div class="col d-none py-3 d-lg-flex justify-content-center align-items-center">
-            <img src="{{ getAssetComposerFile('main.logo'|trans([], 'vis')) }}" class="img-fluid m-5 avalynx-simpleadmin-main-logo avalynx-simpleadmin-lightmode-flex" style="max-width: 100%; height: auto;" title="{{ 'main.title'|trans([], 'vis') }}" alt="{{ 'main.title.alt'|trans([], 'vis') }}">
-            <img src="{{ getAssetComposerFile('main.logo.dark'|trans([], 'vis')) }}" class="img-fluid m-5 avalynx-simpleadmin-main-logo avalynx-simpleadmin-darkmode-flex d-none" style="max-width: 100%; height: auto;" title="{{ 'main.title'|trans([], 'vis') }}" alt="{{ 'main.title.alt'|trans([], 'vis') }}">
+            <img src="{{ getAssetComposerFile('main.logo'|vistrans) }}" class="img-fluid m-5 avalynx-simpleadmin-main-logo avalynx-simpleadmin-lightmode-flex" style="max-width: 100%; height: auto;" title="{{ 'main.title'|vistrans }}" alt="{{ 'main.title.alt'|vistrans }}">
+            <img src="{{ getAssetComposerFile('main.logo.dark'|vistrans) }}" class="img-fluid m-5 avalynx-simpleadmin-main-logo avalynx-simpleadmin-darkmode-flex d-none" style="max-width: 100%; height: auto;" title="{{ 'main.title'|vistrans }}" alt="{{ 'main.title.alt'|vistrans }}">
         </div>
         <div class="col">
             <div class="m-2 m-md-5">
                 <div class="mt-5 pt-lg-4">
                     <div class="w-100">
-                        <h3 class="mb-3">{{ 'change.title'|trans([], 'vis') }}</h3>
-                        {% set change_description = 'change.description'|trans([], 'vis') %}
+                        <h3 class="mb-3">{{ 'change.title'|vistrans }}</h3>
+                        {% set change_description = 'change.description'|vistrans %}
                         {%  if change_description != '' %}
-                            <p class="mb-3">{{ 'change.description'|trans([], 'vis') }}</p>
+                            <p class="mb-3">{{ 'change.description'|vistrans }}</p>
                         {% endif %}
                     </div>
                 </div>
@@ -26,9 +26,9 @@
                 <form method="post" id="vis-change-form" action="{{ path('vis') }}">
 
                     <div class="form-group mb-4">
-                        <label class="form-label" for="_tool">{{ 'change.tool'|trans([], 'vis') }}:</label>
+                        <label class="form-label" for="_tool">{{ 'change.tool'|vistrans }}:</label>
                         <select class="form-select avalynx-select" name="_tool" id="_tool">
-                            <option value="">{{ 'change.select'|trans([], 'vis') }}</option>
+                            <option value="">{{ 'change.select'|vistrans }}</option>
                             {% for tool in tools %}
                                 <option{% if (cookieTool == tool.id) %} selected="selected"{% endif %} value="{{ tool.id }}">{{ tool.title }}</option>
                             {% endfor %}
@@ -36,12 +36,12 @@
                         <span class="invalid-feedback"></span>
                     </div>
 
-                    <button type="submit" class="btn btn-primary w-100 mb-4">{{ 'change.submit'|trans([], 'vis') }}</button>
+                    <button type="submit" class="btn btn-primary w-100 mb-4">{{ 'change.submit'|vistrans }}</button>
 
                     <div class="form-group">
                         <div class="form-check">
                             <input type="checkbox" name="_remember_me"{% if (cookieTool != '') %} checked{% endif %} id="_remember_me" class="form-check-input" value="1"/>
-                            <label class="form-check-label" for="_remember_me">{{ 'change.rememberme'|trans([], 'vis') }}</label>
+                            <label class="form-check-label" for="_remember_me">{{ 'change.rememberme'|vistrans }}</label>
                             <span class="invalid-feedback"></span>
                         </div>
                     </div>

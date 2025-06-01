@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace JBSNewMedia\VisBundle\Entity\Sidebar;
+namespace JBSNewMedia\VisBundle\Model\Sidebar;
 
 class SidebarItem extends Sidebar
 {

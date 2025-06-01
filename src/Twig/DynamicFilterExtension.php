@@ -10,6 +10,11 @@ use Twig\TwigFilter;
 
 class DynamicFilterExtension extends AbstractExtension
 {
+    /**
+     * @var array<string, TwigFilter|null>
+     */
+    private array $filter = [];
+
     public function __construct(private readonly Environment $twig)
     {
     }
@@ -23,12 +28,19 @@ class DynamicFilterExtension extends AbstractExtension
 
     public function dynamicFilter(string $string, string $filterName): string
     {
-        $filter = $this->twig->getFilter($filterName);
-        if (null === $filter) {
+        if ('raw' === $filterName) {
+            return $string;
+        }
+
+        if (!isset($this->filter[$filterName])) {
+            $this->filter[$filterName] = $this->twig->getFilter($filterName);
+        }
+
+        if (null === $this->filter[$filterName]) {
             throw new \RuntimeException(sprintf('Filter "%s" does not exist.', $filterName));
         }
 
-        $callable = $filter->getCallable();
+        $callable = $this->filter[$filterName]->getCallable();
         if (!is_callable($callable)) {
             throw new \RuntimeException(sprintf('Filter "%s" is not callable.', $filterName));
         }

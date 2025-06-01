@@ -2,10 +2,12 @@
 
 declare(strict_types=1);
 
-namespace JBSNewMedia\VisBundle\Entity;
+namespace JBSNewMedia\VisBundle\Model;
 
 class Item
 {
+    use \JBSNewMedia\VisBundle\Trait\RolesTrait;
+
     protected string $type = '';
 
     protected int $order = 0;
@@ -21,6 +23,7 @@ class Item
     protected string $label = '';
 
     protected string $route = '';
+
     /**
      * @var array<string, string|int>
      */

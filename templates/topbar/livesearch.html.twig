@@ -1,0 +1,21 @@
+{% if item.dataCounter > 1 %}
+    <button class="{{ item.class }}" data-bs-toggle="dropdown" aria-expanded="false" title="{{ item.label }}" id="{{ item.id }}">
+        {% if item.contentFilter == '' %}
+            {{ item.content }}
+        {% else %}
+            {{ item.content|dynamic_filter(item.contentFilter) }}
+        {% endif %}
+    </button>
+    <ul class="dropdown-menu dropdown-menu-end rounded-0 me-1 avalynx-simpleadmin-livesearch{% if vis.toolscounter > item.countForSearch %} avalynx-simpleadmin-livesearch-show{% endif %}" aria-labelledby="{{ item.id }}">
+        <li>
+            <span class="dropdown-item-text">
+                <input type="text" class="form-control avalynx-simpleadmin-livesearch-input" placeholder="{{ item.labelSearch }}">
+            </span>
+        </li>
+        {% for data_id, data_details in item.data %}
+            <li class="d-none">
+                <a class="dropdown-item{% if item.dataKey == data_id %} active{% endif %}" href="{{ path(data_details.route, data_details.routeparameters|default({})) }}">{{ data_details.label }}</a>
+            </li>
+        {% endfor %}
+    </ul>
+{% endif %}

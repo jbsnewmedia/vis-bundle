@@ -6,21 +6,21 @@
   "authors": [
     {
       "name": "Juergen Schwind",
-      "email": "info@juergen.schwind.de"
+      "email": "juergen.schwind@jbs-newmedia.de"
     }
   ],
-  "require": {
-    "php": ">=8.0",
-    "symfony/framework-bundle": "^6.0|^7.0",
-    "jbsnewmedia/symfony-web-pack": "*",
-    "jbsnewmedia/avalynx-web-pack": "*",
-    "avalynx/avalynx-simpleadmin": "*",
-    "fortawesome/font-awesome": "^6"
-  },
   "autoload": {
     "psr-4": {
-      "JBSNewMedia\\VisBundle\\": "src/"
+        "JBSNewMedia\\VisBundle\\": "src/"
     }
+  },
+  "require": {
+    "php": ">=8.1",
+    "avalynx/avalynx-simpleadmin": "^1.0",
+    "fortawesome/font-awesome": "^6.0",
+    "jbsnewmedia/avalynx-web-pack": "^1.0",
+    "jbsnewmedia/symfony-web-pack": "^1.0",
+    "symfony/framework-bundle": "^6.4|^7.0"
   },
   "require-dev": {
     "bamarni/composer-bin-plugin": "^1.8"

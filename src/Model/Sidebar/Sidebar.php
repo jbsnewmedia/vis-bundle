@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace JBSNewMedia\VisBundle\Entity\Sidebar;
+namespace JBSNewMedia\VisBundle\Model\Sidebar;
 
-use JBSNewMedia\VisBundle\Entity\Item;
+use JBSNewMedia\VisBundle\Model\Item;
 use JBSNewMedia\VisBundle\Service\Vis;
 
 class Sidebar extends Item
@@ -25,7 +25,9 @@ class Sidebar extends Item
     {
         if ('' === $this->getTemplate()) {
             if (file_exists(__DIR__.'/../../../templates/sidebar/'.$this->getType().'.html.twig')) {
-                $this->setTemplate('@VisBundle/sidebar/'.$this->getType().'.html.twig');
+                $this->setTemplate('@Vis/sidebar/'.$this->getType().'.html.twig');
+            } else {
+                throw new \Exception('Template not found: topbar/'.$this->getType().'.html.twig');
             }
         }
     }

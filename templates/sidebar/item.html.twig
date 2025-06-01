@@ -2,14 +2,14 @@
 
     <li class="avalynx-simpleadmin-sidenav-item">
         <h2 class="avalynx-simpleadmin-sidenav-header">
-            <button class="avalynx-simpleadmin-sidenav-button{% if item.active %} active{% else %} collapsed{% endif %}" type="button" data-bs-toggle="collapse" data-bs-target="#avalynx-simpleadmin-sidenav-{{ item.id }}" aria-expanded="false" aria-controls="avalynx-simpleadmin-sidenav-{{ item.id }}">
+            <button class="avalynx-simpleadmin-sidenav-button{% if item.active %} active{% else %} collapsed{% endif %}" type="button" data-bs-toggle="collapse" data-bs-target="#avalynx-simpleadmin-sidenav-{{ item.id }}" aria-expanded="{% if item.active %}true{% else %}false{% endif %}" aria-controls="avalynx-simpleadmin-sidenav-{{ item.id }}">
                 {% if item.icon != '' %}{{ item.icon|raw }}{% endif %}
                 <span class="title">{{ item.label }}</span>
                 {{ item.badge|raw }}
                 {{ item.counter|raw }}
             </button>
         </h2>
-        <div id="avalynx-simpleadmin-sidenav-{{ item.id }}" class="avalynx-simpleadmin-sidenav-collapse {% if item.active == false %} collapse{% endif %}">
+        <div id="avalynx-simpleadmin-sidenav-{{ item.id }}" class="avalynx-simpleadmin-sidenav-collapse collapse{% if item.active == true %} show{% endif %}">
             <div class="avalynx-simpleadmin-sidenav-body">
                 <ul class="avalynx-simpleadmin-sidenav-sub1">
 

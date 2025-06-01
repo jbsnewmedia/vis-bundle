@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace JBSNewMedia\VisBundle\Entity\Topbar;
+namespace JBSNewMedia\VisBundle\Model\Topbar;
 
-use JBSNewMedia\VisBundle\Entity\Item;
+use JBSNewMedia\VisBundle\Model\Item;
 
 class Topbar extends Item
 {
@@ -14,8 +14,10 @@ class Topbar extends Item
 
     protected string $contentFilter = '';
 
-    public function __construct(string $tool, string $id)
-    {
+    public function __construct(
+        string $tool,
+        string $id,
+    ) {
         parent::__construct($tool, $id);
     }
 
@@ -53,7 +55,9 @@ class Topbar extends Item
     {
         if ('' === $this->getTemplate()) {
             if (file_exists(__DIR__.'/../../../templates/topbar/'.$this->getType().'.html.twig')) {
-                $this->setTemplate('@VisBundle/topbar/'.$this->getType().'.html.twig');
+                $this->setTemplate('@Vis/topbar/'.$this->getType().'.html.twig');
+            } else {
+                throw new \Exception('Template not found: topbar/'.$this->getType().'.html.twig');
             }
         }
     }
