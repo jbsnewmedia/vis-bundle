@@ -76,13 +76,10 @@ abstract class AbstractBundle extends \Symfony\Component\HttpKernel\Bundle\Abstr
         if (!$this->isActive()) {
             return;
         }
-        $routes->import($this->getPath() . '/Controller', 'attribute');
+        $routes->import($this->getPath() . '/src/Controller', 'attribute');
     }
 
-    public function rebuildContainer(): bool
-    {
-        return true;
-    }
+
 
     public function getBasePath(): string
     {
