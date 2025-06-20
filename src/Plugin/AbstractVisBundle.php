@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace JBSNewMedia\VisBundle\Plugin;
 
-use JBSNewMedia\Vis\Core\PluginInstallContext;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\Config\Loader\DelegatingLoader;
 use Symfony\Component\Config\Loader\LoaderResolver;
@@ -18,8 +17,8 @@ abstract class AbstractVisBundle extends AbstractBundle
 {
     final public function __construct(private readonly bool $active, private string $basePath, ?string $projectDir = null)
     {
-        if ($projectDir && mb_strpos($this->basePath, '/') !== 0) {
-            $this->basePath = $projectDir . '/' . $this->basePath;
+        if ($projectDir && 0 !== mb_strpos($this->basePath, '/')) {
+            $this->basePath = $projectDir.'/'.$this->basePath;
         }
 
         $this->path = $this->computePluginClassPath();
@@ -44,10 +43,10 @@ abstract class AbstractVisBundle extends AbstractBundle
          * Register Plugin Template Path
          */
         if (isset($container->getExtensions()['twig'])) {
-            if (file_exists($this->getBasePath() . '/src/Resources/view')) {
+            if (file_exists($this->getBasePath().'/src/Resources/view')) {
                 $container->prependExtensionConfig('twig', [
                     'paths' => [
-                        $this->getPath() . '/Resources/view' => $this->getName(),
+                        $this->getPath().'/Resources/view' => $this->getName(),
                     ],
                 ]);
             }
@@ -63,8 +62,8 @@ abstract class AbstractVisBundle extends AbstractBundle
          * Services der Plugins laden.
          */
         $delegatingLoader = new DelegatingLoader($loaderResolver);
-        $serviceFiles = glob($this->getPath() . '/Resources/config/services.*');
-        if ($serviceFiles !== false) {
+        $serviceFiles = glob($this->getPath().'/Resources/config/services.*');
+        if (false !== $serviceFiles) {
             foreach ($serviceFiles as $path) {
                 $delegatingLoader->load($path);
             }
@@ -76,7 +75,7 @@ abstract class AbstractVisBundle extends AbstractBundle
         if (!$this->isActive()) {
             return;
         }
-        $routes->import($this->getPath() . '/src/Controller', 'attribute');
+        $routes->import($this->getPath().'/src/Controller', 'attribute');
     }
 
     public function getBasePath(): string
@@ -89,10 +88,10 @@ abstract class AbstractVisBundle extends AbstractBundle
         $canonicalizedPluginClassPath = parent::getPath();
         $canonicalizedPluginPath = realpath($this->basePath);
 
-        if ($canonicalizedPluginPath !== false && mb_strpos($canonicalizedPluginClassPath, $canonicalizedPluginPath) === 0) {
+        if (false !== $canonicalizedPluginPath && 0 === mb_strpos($canonicalizedPluginClassPath, $canonicalizedPluginPath)) {
             $relativePluginClassPath = mb_substr($canonicalizedPluginClassPath, mb_strlen($canonicalizedPluginPath));
 
-            return $this->basePath . $relativePluginClassPath;
+            return $this->basePath.$relativePluginClassPath;
         }
 
         return parent::getPath();
