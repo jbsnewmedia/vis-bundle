@@ -2,7 +2,7 @@
   "name": "jbsnewmedia/vis-bundle",
   "type": "symfony-bundle",
   "license": "MIT",
-  "description": "VIS Bundle",
+  "description": "VisBundle is a comprehensive Symfony bundle designed as a complete admin interface, integrating user and role management with dynamic sidebar and topbar components for building robust administration panels.",
   "authors": [
     {
       "name": "Juergen Schwind",
