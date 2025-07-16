@@ -128,7 +128,7 @@ class Vis
         $item = new TopbarDropdownProfile($tool->getId(), 'profile_end');
         $item->setLabel($this->translator->trans('main.profile', domain: 'vis'));
         $item->setClass('btn btn-link justify-content-center align-items-center');
-        $item->setContent('<img src="'.$this->router->generate('jbs_new_media_assets_composer', ['namespace' => 'jbsnewmedia', 'package' => 'vis-bundle', 'asset' => 'assets/img/profile.jpg']).'" class="h-100 rounded-circle" alt="profile-image">');
+        $item->setContent('<img src="'.$this->router->generate('vis_profile_image', ['userIdentifier' => $this->security->getUser()->getId()]).'" class="h-100 rounded-circle" alt="profile-image">');
         $item->setOrder(100);
         $item->setData([
             /*
