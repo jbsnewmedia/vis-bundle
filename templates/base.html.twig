@@ -1,18 +1,18 @@
 <!DOCTYPE html>
-<html>
-<head>
-    <meta charset="UTF-8">
-    <title>{% block title %}VIS{% endblock %}</title>
-    {% block stylesheets %}
-        {{ renderAssetComposerStylesheets() }}
-    {% endblock %}
+<html lang="{{ app.request.locale|default('en')|replace({'_':'-'}) }}">
+    <head>
+        <meta charset="UTF-8">
+        <title>{% block title %}VIS{% endblock %}</title>
+        {% block stylesheets %}
+            {{ renderAssetComposerStylesheets() }}
+        {% endblock %}
 
-    {% block javascripts %}
-        {{ renderAssetComposerJavascripts() }}
+        {% block javascripts %}
+            {{ renderAssetComposerJavascripts() }}
+        {% endblock %}
+    </head>
+    <body id="avalynx-simpleadmin-body">
+    {% block body %}
     {% endblock %}
-</head>
-<body id="avalynx-simpleadmin-body">
-{% block body %}
-{% endblock %}
-</body>
+    </body>
 </html>
