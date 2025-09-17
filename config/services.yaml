@@ -30,8 +30,7 @@ services:
     # Plugin manager with tagged locator
     JBSNewMedia\VisBundle\Service\PluginManager:
         arguments:
-            $pluginLocator: !tagged_locator
-                tag: 'vis.plugin'
+            $visPluginCollector: '@JBSNewMedia\VisBundle\Service\VisPluginCollector'
 
     # Twig extensions with specific dependencies
     JBSNewMedia\VisBundle\Twig\DynamicFilterExtension:
