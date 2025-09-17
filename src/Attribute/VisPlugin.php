@@ -8,7 +8,7 @@ namespace JBSNewMedia\VisBundle\Attribute;
 class VisPlugin
 {
     public function __construct(
-        public readonly string $name = 'VisPlugin',
+        public readonly ?string $plugin = null,
     ) {
     }
 }

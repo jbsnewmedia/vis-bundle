@@ -10,10 +10,10 @@ use Symfony\Component\DependencyInjection\Attribute\TaggedIterator;
 class VisPluginCollector
 {
     /**
-     * @param iterable<PluginInterface> $taggedServices
+     * @param iterable<string, PluginInterface> $taggedServices keyed by plugin id if provided
      */
     public function __construct(
-        #[TaggedIterator('VisPlugin')]
+        #[TaggedIterator('VisPlugin', indexAttribute: 'plugin')]
         private readonly iterable $taggedServices,
     ) {
     }
@@ -30,7 +30,7 @@ class VisPluginCollector
     }
 
     /**
-     * @return array<int, PluginInterface>
+     * @return array<string|int, PluginInterface>
      */
     public function getServices(): array
     {
@@ -40,5 +40,11 @@ class VisPluginCollector
     public function getServiceCount(): int
     {
         return count($this->getServices());
+    }
+
+    public function getByPlugin(string $plugin): ?PluginInterface
+    {
+        $services = $this->getServices();
+        return $services[$plugin] ?? null;
     }
 }
