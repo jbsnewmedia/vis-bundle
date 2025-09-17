@@ -128,7 +128,20 @@ class Vis
         $item = new TopbarDropdownProfile($tool->getId(), 'profile_end');
         $item->setLabel($this->translator->trans('main.profile', domain: 'vis'));
         $item->setClass('btn btn-link justify-content-center align-items-center');
-        $item->setContent('<img src="'.$this->router->generate('vis_profile_image', ['userIdentifier' => $this->security->getUser()->getId()]).'" class="h-100 rounded-circle" alt="profile-image">');
+        $user = $this->security->getUser();
+        $userIdentifier = '';
+        if (null !== $user) {
+            if (method_exists($user, 'getId')) {
+                /** @var mixed $id */
+                $id = $user->getId();
+                $userIdentifier = is_scalar($id) ? (string) $id : '';
+            } elseif (method_exists($user, 'getUserIdentifier')) {
+                /** @var mixed $identifier */
+                $identifier = $user->getUserIdentifier();
+                $userIdentifier = is_scalar($identifier) ? (string) $identifier : '';
+            }
+        }
+        $item->setContent('<img src="'.$this->router->generate('vis_profile_image', ['userIdentifier' => $userIdentifier]).'" class="h-100 rounded-circle" alt="profile-image">');
         $item->setOrder(100);
         $item->setData([
             /*

@@ -4,35 +4,34 @@ declare(strict_types=1);
 
 namespace JBSNewMedia\VisBundle\Service;
 
+use JBSNewMedia\VisBundle\Plugin\PluginInterface;
 use Symfony\Component\DependencyInjection\Attribute\TaggedIterator;
 
 class VisPluginCollector
 {
+    /**
+     * @param iterable<PluginInterface> $taggedServices
+     */
     public function __construct(
         #[TaggedIterator('VisPlugin')]
         private readonly iterable $taggedServices,
     ) {
     }
 
-    public function processAll(): array
+    public function processAll(): void
     {
-        $results = [];
-
         foreach ($this->taggedServices as $service) {
-            if (method_exists($service, 'init')) {
-                $results[] = $service->init();
-            }
+            $service->init();
         }
 
         foreach ($this->taggedServices as $service) {
-            if (method_exists($service, 'setNavigation')) {
-                $results[] = $service->setNavigation();
-            }
+            $service->setNavigation();
         }
-
-        return $results;
     }
 
+    /**
+     * @return array<int, PluginInterface>
+     */
     public function getServices(): array
     {
         return iterator_to_array($this->taggedServices);
