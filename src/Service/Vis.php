@@ -132,13 +132,15 @@ class Vis
         $userIdentifier = '';
         if (null !== $user) {
             if (method_exists($user, 'getId')) {
-                /** @var mixed $id */
                 $id = $user->getId();
-                $userIdentifier = is_scalar($id) ? (string) $id : '';
+                if (is_scalar($id)) {
+                    $userIdentifier = (string) $id;
+                }
             } elseif (method_exists($user, 'getUserIdentifier')) {
-                /** @var mixed $identifier */
                 $identifier = $user->getUserIdentifier();
-                $userIdentifier = is_scalar($identifier) ? (string) $identifier : '';
+                if (is_scalar($identifier)) {
+                    $userIdentifier = (string) $identifier;
+                }
             }
         }
         $item->setContent('<img src="'.$this->router->generate('vis_profile_image', ['userIdentifier' => $userIdentifier]).'" class="h-100 rounded-circle" alt="profile-image">');
