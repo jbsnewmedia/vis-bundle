@@ -244,6 +244,16 @@ class Vis
             $item->addRole('ROLE_USER');
         }
 
+        // If both the item already has a parent and a parent argument is provided, ensure they match
+        if ('' !== $parent && '' !== $item->getParent() && $item->getParent() !== $parent) {
+            throw new \InvalidArgumentException('Vis: Conflicting sidebar parent provided. Item has parent "'.$item->getParent().'" but addSidebar() received "'.$parent.'". Use only one method and ensure IDs match.');
+        }
+
+        // If a parent path is provided explicitly, set it on the item so it can be nested
+        if ('' !== $parent) {
+            $item->setParent($parent);
+        }
+
         $commonRoles = array_intersect($item->getRoles(), $this->getRoles());
         if (empty($commonRoles)) {
             return false;
@@ -264,6 +274,8 @@ class Vis
                 $callback($this, $item);
             }
         }
+
+        dump($this->sidebar);
 
         uasort($this->sidebar[$item->getTool()], [$this, 'sortItems']);
 
