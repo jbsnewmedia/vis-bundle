@@ -107,69 +107,6 @@ class Vis
         $this->tools[$tool->getId()] = $tool;
         $this->incToolsCounter();
 
-        $item = new TopbarLiveSearchTools($tool->getId());
-        $item->setLabel($this->translator->trans('main.livesearch.tools', domain: 'vis'));
-        $item->setLabelSearch($this->translator->trans('main.livesearch.placeholder', domain: 'vis'));
-        $item->setVis($this);
-        $this->addTopbar($item);
-
-        $item = new TopbarButtonDarkmode($tool->getId());
-        $item->setLabel($this->translator->trans('main.toggle.darkmode', domain: 'vis'));
-        $this->addTopbar($item);
-
-        $item = new TopbarButtonSidebar($tool->getId());
-        $item->setLabel($this->translator->trans('main.toggle.sidebar', domain: 'vis'));
-        $this->addTopbar($item);
-
-        $item = new TopbarButtonSidebar($tool->getId(), 'toggle_sidebar_end', 'end', ['display' => 'large']);
-        $item->setLabel($this->translator->trans('main.toggle.sidebar', domain: 'vis'));
-        $this->addTopbar($item);
-
-        $item = new TopbarDropdownProfile($tool->getId(), 'profile_end');
-        $item->setLabel($this->translator->trans('main.profile', domain: 'vis'));
-        $item->setClass('btn btn-link justify-content-center align-items-center');
-        $user = $this->security->getUser();
-        $userIdentifier = '';
-        if (null !== $user) {
-            if (method_exists($user, 'getId')) {
-                $id = $user->getId();
-                if (is_scalar($id)) {
-                    $userIdentifier = (string) $id;
-                }
-            } elseif (method_exists($user, 'getUserIdentifier')) {
-                $identifier = $user->getUserIdentifier();
-                if (is_scalar($identifier)) {
-                    $userIdentifier = (string) $identifier;
-                }
-            }
-        }
-        $item->setContent('<img src="'.$this->router->generate('vis_profile_image', ['userIdentifier' => $userIdentifier]).'" class="h-100 rounded-circle" alt="profile-image">');
-        $item->setOrder(100);
-        $item->setData([
-            /*
-            'vis_settings' => [
-                'route' => 'vis_settings',
-                'routeParameters' => [],
-                'icon' => '<i class="fa-solid fa-cog fa-fw"></i>',
-                'label' => $this->translator->trans('main.profile.settings', domain: 'vis'),
-            ],
-            'vis_line_1' => [
-                'route' => '',
-                'routeParameters' => [],
-                'icon' => '',
-                'label' => '---',
-            ],
-            */
-            'vis_logout' => [
-                'route' => 'vis_logout',
-                'routeParameters' => [],
-                'icon' => '<i class="fa-solid fa-right-from-bracket fa-fw"></i>',
-                'label' => $this->translator->trans('main.profile.logout', domain: 'vis'),
-            ],
-        ]);
-        $item->setDataKey('vis_logout');
-        $this->addTopbar($item);
-
         return true;
     }
 
@@ -246,12 +183,10 @@ class Vis
             $item->addRole('ROLE_USER');
         }
 
-        // If both the item already has a parent and a parent argument is provided, ensure they match
         if ('' !== $parent && '' !== $item->getParent() && $item->getParent() !== $parent) {
             throw new \InvalidArgumentException('Vis: Conflicting sidebar parent provided. Item has parent "'.$item->getParent().'" but addSidebar() received "'.$parent.'". Use only one method and ensure IDs match.');
         }
 
-        // If a parent path is provided explicitly, set it on the item so it can be nested
         if ('' !== $parent) {
             $item->setParent($parent);
         }
