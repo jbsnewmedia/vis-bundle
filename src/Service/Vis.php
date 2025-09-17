@@ -277,8 +277,6 @@ class Vis
             }
         }
 
-        dump($this->sidebar);
-
         uasort($this->sidebar[$item->getTool()], [$this, 'sortItems']);
 
         return true;
