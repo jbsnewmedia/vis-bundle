@@ -10,31 +10,33 @@ use Symfony\Component\DependencyInjection\Attribute\TaggedIterator;
 class VisPluginCollector
 {
     /**
-     * @param iterable<string, PluginInterface> $taggedServices keyed by plugin id if provided
+     * @param iterable<int, PluginInterface> $taggedServices ordered by priority DESC by Symfony, we'll reverse to ASC
      */
     public function __construct(
-        #[TaggedIterator('VisPlugin', indexAttribute: 'plugin')]
+        #[TaggedIterator('VisPlugin')]
         private readonly iterable $taggedServices,
     ) {
     }
 
     public function processAll(): void
     {
-        foreach ($this->taggedServices as $service) {
+        $services = array_reverse(iterator_to_array($this->taggedServices));
+
+        foreach ($services as $service) {
             $service->init();
         }
 
-        foreach ($this->taggedServices as $service) {
+        foreach ($services as $service) {
             $service->setNavigation();
         }
     }
 
     /**
-     * @return array<string|int, PluginInterface>
+     * @return array<int, PluginInterface>
      */
     public function getServices(): array
     {
-        return iterator_to_array($this->taggedServices);
+        return array_reverse(iterator_to_array($this->taggedServices));
     }
 
     public function getServiceCount(): int
@@ -44,7 +46,11 @@ class VisPluginCollector
 
     public function getByPlugin(string $plugin): ?PluginInterface
     {
-        $services = $this->getServices();
-        return $services[$plugin] ?? null;
+        foreach ($this->getServices() as $service) {
+            if ($service->getPluginId() === $plugin) {
+                return $service;
+            }
+        }
+        return null;
     }
 }

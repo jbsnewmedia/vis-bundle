@@ -30,6 +30,7 @@ class VisPluginPass implements CompilerPassInterface
                     if (!empty($instance->plugin)) {
                         $tagAttributes['plugin'] = $instance->plugin;
                     }
+                    $tagAttributes['priority'] = $instance->priority ?? 100;
 
                     $definition->addTag('VisPlugin', $tagAttributes);
                 }

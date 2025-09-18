@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace JBSNewMedia\VisBundle\Plugin;
 
 use JBSNewMedia\VisBundle\Attribute\VisPlugin;
+use JBSNewMedia\VisBundle\Model\Tool;
 
 abstract class AbstractPlugin implements PluginInterface
 {
@@ -12,10 +13,7 @@ abstract class AbstractPlugin implements PluginInterface
     {
     }
 
-    /**
-     * Returns the plugin identifier defined via #[VisPlugin(plugin: '...')]
-     */
-    protected function getPluginId(): ?string
+    public function getPluginId(): ?string
     {
         try {
             $reflection = new \ReflectionClass(static::class);
@@ -33,6 +31,29 @@ abstract class AbstractPlugin implements PluginInterface
 
         return null;
     }
+
+    public function getPriority(): int
+    {
+        try {
+            $reflection = new \ReflectionClass(static::class);
+            $attributes = $reflection->getAttributes(VisPlugin::class);
+            foreach ($attributes as $attribute) {
+                /** @var VisPlugin $instance */
+                $instance = $attribute->newInstance();
+                return $instance->priority;
+            }
+        } catch (\ReflectionException) {
+            // ignore
+        }
+
+        return 100;
+    }
+
+    public function createTool(): Tool
+    {
+        return new Tool((string) $this->getPluginId(), (int) $this->getPriority());
+    }
+
 
     public function init(): void
     {

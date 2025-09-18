@@ -9,9 +9,8 @@ class Tool
     use \JBSNewMedia\VisBundle\Trait\RolesTrait;
 
     protected string $title = '';
-    protected int $priority = 0;
 
-    public function __construct(protected string $id)
+    public function __construct(protected string $id, protected int $priority = 100)
     {
         $this->setId($id);
     }
@@ -28,18 +27,6 @@ class Tool
         return $this->id;
     }
 
-    public function setTitle(string $title): self
-    {
-        $this->title = $title;
-
-        return $this;
-    }
-
-    public function getTitle(): string
-    {
-        return $this->title;
-    }
-
     public function setPriority(int $priority): self
     {
         $this->priority = $priority;
@@ -50,5 +37,17 @@ class Tool
     public function getPriority(): int
     {
         return $this->priority;
+    }
+
+    public function setTitle(string $title): self
+    {
+        $this->title = $title;
+
+        return $this;
+    }
+
+    public function getTitle(): string
+    {
+        return $this->title;
     }
 }

@@ -29,6 +29,8 @@ class Vis
 
     protected string $toolId = '';
 
+    protected int $toolPriority = 0;
+
     protected int $toolsCounter = 0;
 
     /**
@@ -57,7 +59,7 @@ class Vis
         }
     }
 
-    public function setTool(string $tool): self
+    public function setTool(string $tool, int $priority = 100): self
     {
         if (!$this->isTool($tool)) {
             throw new \InvalidArgumentException('Vis: Tool "'.$tool.'" does not exist');
@@ -79,9 +81,11 @@ class Vis
         return isset($this->tools[$tool]);
     }
 
-    public function setToolId(string $toolId): void
+    public function setToolId(string $toolId): self
     {
         $this->toolId = $toolId;
+
+        return $this;
     }
 
     public function getToolId(): string
@@ -89,7 +93,7 @@ class Vis
         return $this->toolId;
     }
 
-    public function addTool(Tool $tool, bool $merge=true): bool
+    public function addTool(Tool $tool, bool $merge = false): bool
     {
         if ([] === $tool->getRoles()) {
             $tool->addRole('ROLE_USER');
@@ -99,13 +103,7 @@ class Vis
             return false;
         }
 
-        $commonRoles = array_intersect($tool->getRoles(), $this->getRoles());
-        if (empty($commonRoles)) {
-            return false;
-        }
-
         if ($merge && isset($this->tools[$tool->getId()])) {
-            dd($tool);
             if ($tool->getPriority() > $this->tools[$tool->getId()]->getPriority()) {
                 $this->tools[$tool->getId()]->setPriority($tool->getPriority());
             }
