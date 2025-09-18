@@ -89,7 +89,7 @@ class Vis
         return $this->toolId;
     }
 
-    public function addTool(Tool $tool): bool
+    public function addTool(Tool $tool, bool $merge=true): bool
     {
         if ([] === $tool->getRoles()) {
             $tool->addRole('ROLE_USER');
@@ -102,6 +102,19 @@ class Vis
         $commonRoles = array_intersect($tool->getRoles(), $this->getRoles());
         if (empty($commonRoles)) {
             return false;
+        }
+
+        if ($merge && isset($this->tools[$tool->getId()])) {
+            dd($tool);
+            if ($tool->getPriority() > $this->tools[$tool->getId()]->getPriority()) {
+                $this->tools[$tool->getId()]->setPriority($tool->getPriority());
+            }
+            $existingTool = $this->tools[$tool->getId()];
+            foreach ($tool->getRoles() as $role) {
+                $existingTool->addRole($role);
+            }
+
+            return true;
         }
 
         $this->tools[$tool->getId()] = $tool;
