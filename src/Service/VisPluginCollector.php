@@ -22,12 +22,10 @@ class VisPluginCollector
     {
         $services = array_reverse(iterator_to_array($this->taggedServices));
 
-        foreach ($services as $service) {
-            $service->init();
-        }
-
-        foreach ($services as $service) {
-            $service->setNavigation();
+        foreach (['init', 'setTopbar', 'setNavigation'] as $method) {
+            foreach ($services as $service) {
+                $service->$method();
+            }
         }
     }
 

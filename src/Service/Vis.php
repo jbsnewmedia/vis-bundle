@@ -145,11 +145,6 @@ class Vis
             $item->addRole('ROLE_USER');
         }
 
-        $commonRoles = array_intersect($item->getRoles(), $this->getRoles());
-        if (empty($commonRoles)) {
-            return false;
-        }
-
         if ('' !== $item->getRoute()) {
             $this->routes[$item->getTool()][$item->getRoute()] = [
                 'route' => $item->getRoute(),

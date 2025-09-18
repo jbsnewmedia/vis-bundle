@@ -59,11 +59,11 @@ abstract class AbstractPlugin implements PluginInterface
     {
     }
 
-    public function setNavigation(): void
+    public function setTopBar(): void
     {
     }
 
-    public function setTopBar(): void
+    public function setNavigation(): void
     {
     }
 }
