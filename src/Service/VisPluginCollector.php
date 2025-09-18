@@ -51,6 +51,7 @@ class VisPluginCollector
                 return $service;
             }
         }
+
         return null;
     }
 }

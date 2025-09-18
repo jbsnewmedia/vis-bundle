@@ -8,10 +8,6 @@ use JBSNewMedia\VisBundle\Model\Item;
 use JBSNewMedia\VisBundle\Model\Sidebar\Sidebar;
 use JBSNewMedia\VisBundle\Model\Tool;
 use JBSNewMedia\VisBundle\Model\Topbar\Topbar;
-use JBSNewMedia\VisBundle\Model\Topbar\TopbarButtonDarkmode;
-use JBSNewMedia\VisBundle\Model\Topbar\TopbarButtonSidebar;
-use JBSNewMedia\VisBundle\Model\Topbar\TopbarDropdownProfile;
-use JBSNewMedia\VisBundle\Model\Topbar\TopbarLiveSearchTools;
 use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
@@ -28,8 +24,6 @@ class Vis
     protected array $tools = [];
 
     protected string $toolId = '';
-
-    protected int $toolPriority = 0;
 
     protected int $toolsCounter = 0;
 
@@ -93,7 +87,7 @@ class Vis
         return $this->toolId;
     }
 
-    public function addTool(Tool $tool, bool $merge = false): bool
+    public function addTool(Tool $tool): bool
     {
         if ([] === $tool->getRoles()) {
             $tool->addRole('ROLE_USER');
@@ -103,13 +97,14 @@ class Vis
             return false;
         }
 
-        if ($merge && isset($this->tools[$tool->getId()])) {
+        if ($tool->isMerge() && isset($this->tools[$tool->getId()])) {
             if ($tool->getPriority() > $this->tools[$tool->getId()]->getPriority()) {
                 $this->tools[$tool->getId()]->setPriority($tool->getPriority());
-            }
-            $existingTool = $this->tools[$tool->getId()];
-            foreach ($tool->getRoles() as $role) {
-                $existingTool->addRole($role);
+                $this->tools[$tool->getId()]->setTitle($tool->getTitle());
+                foreach ($tool->getRoles() as $role) {
+                    $this->tools[$tool->getId()]->addRole($role);
+                }
+                dd($this->tools);
             }
 
             return true;

@@ -40,6 +40,7 @@ abstract class AbstractPlugin implements PluginInterface
             foreach ($attributes as $attribute) {
                 /** @var VisPlugin $instance */
                 $instance = $attribute->newInstance();
+
                 return $instance->priority;
             }
         } catch (\ReflectionException) {
@@ -53,7 +54,6 @@ abstract class AbstractPlugin implements PluginInterface
     {
         return new Tool((string) $this->getPluginId(), (int) $this->getPriority());
     }
-
 
     public function init(): void
     {
