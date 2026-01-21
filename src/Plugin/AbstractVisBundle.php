@@ -75,7 +75,10 @@ abstract class AbstractVisBundle extends AbstractBundle
         if (!$this->isActive()) {
             return;
         }
-        $routes->import($this->getPath().'/src/Controller', 'attribute');
+        $controllerPath = $this->getPath().'/src/Controller';
+        if (is_dir($controllerPath)) {
+            $routes->import($controllerPath, 'attribute');
+        }
     }
 
     public function getBasePath(): string
