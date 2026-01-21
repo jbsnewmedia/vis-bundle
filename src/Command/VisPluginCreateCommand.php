@@ -6,221 +6,147 @@ namespace JBSNewMedia\VisBundle\Command;
 
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
-use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Component\Filesystem\Filesystem;
-use Symfony\Component\HttpKernel\KernelInterface;
 
-#[AsCommand(name: 'vis:plugin:create', description: 'Create a VIS bundle plugin skeleton in plugins/COMPANY/vis-NAME-plugin')]
+#[AsCommand(
+    name: 'vis:plugin:create',
+    description: 'Create a new vis plugin',
+)]
 class VisPluginCreateCommand extends Command
 {
-    public function __construct(private readonly KernelInterface $kernel)
-    {
+    public function __construct(
+        private readonly string $projectDir,
+        private readonly Filesystem $filesystem = new Filesystem(),
+    ) {
         parent::__construct();
-    }
-
-    protected function configure(): void
-    {
-        $this
-            ->addArgument('company', InputArgument::REQUIRED, 'Company/vendor name (e.g. jbsnewmedia)')
-            ->addArgument('name', InputArgument::REQUIRED, 'Plugin short name (e.g. basic)')
-            ->addOption('label', null, InputOption::VALUE_REQUIRED, 'Human readable label', '')
-            ->addOption('description', 'd', InputOption::VALUE_REQUIRED, 'Description', '')
-        ;
     }
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
-        $company = strtolower((string) $input->getArgument('company'));
-        $name = strtolower((string) $input->getArgument('name'));
-        $label = (string) $input->getOption('label'); // currently unused but kept for compatibility
-        $description = (string) $input->getOption('description'); // currently unused but kept for compatibility
+        $io = new SymfonyStyle($input, $output);
 
-        if (!preg_match('/^[a-z0-9\\-]+$/', $company)) {
-            $output->writeln('<error>Invalid company. Use lowercase letters, numbers and dashes only.</error>');
-            return Command::INVALID;
-        }
-        if (!preg_match('/^[a-z0-9\\-]+$/', $name)) {
-            $output->writeln('<error>Invalid name. Use lowercase letters, numbers and dashes only.</error>');
-            return Command::INVALID;
-        }
+        $name = $io->ask('Plugin name (e.g. Demo)', null, function ($answer) {
+            if (empty($answer)) {
+                throw new \RuntimeException('Plugin name cannot be empty');
+            }
+            return ucfirst($answer);
+        });
 
-        $projectDir = $this->kernel->getProjectDir();
-        $pluginDirName = sprintf('vis-%s-plugin', $name);
-        $relativePath = sprintf('plugins/%s/%s', $company, $pluginDirName);
-        $targetPath = $projectDir . '/' . $relativePath;
+        $company = $io->ask('Company name', 'JBSNewMedia', function ($answer) {
+            if (empty($answer)) {
+                throw new \RuntimeException('Company name cannot be empty');
+            }
+            return $answer;
+        });
 
-        $filesystem = new Filesystem();
-        if ($filesystem->exists($targetPath)) {
-            $output->writeln(sprintf('<error>Target directory already exists: %s</error>', $relativePath));
+        $addBundle = $io->confirm('Add bundle to config/bundles.php?', true);
+        $updateComposer = $io->confirm('Update root composer.json autoload?', true);
+
+        $lcCompany = strtolower($company);
+        $lcName = strtolower($name);
+        $pluginDirName = sprintf('plugins/%s/vis-%s-plugin', $lcCompany, $lcName);
+        $pluginPath = $this->projectDir . '/' . $pluginDirName;
+
+        if ($this->filesystem->exists($pluginPath)) {
+            $io->error(sprintf('Directory %s already exists', $pluginDirName));
             return Command::FAILURE;
         }
 
-        // Derive Namespace and Class names from input
-        $studlyName = self::toStudlyCaps($name);
-        $studlyCompany = self::toStudlyCaps($company, keepDashes: false);
-        $rootNamespace = sprintf('%s\\Vis%sPluginBundle', $studlyCompany, $studlyName);
-        $extensionClass = sprintf('Vis%sPluginExtension', $studlyName);
-        $bundleClass = sprintf('Vis%sPluginBundle', $studlyName);
+        $io->section(sprintf('Creating plugin %s in %s', $name, $pluginDirName));
 
-        // Create directories
-        $filesystem->mkdir([
-            $targetPath,
-            $targetPath . '/config',
-            $targetPath . '/src/DependencyInjection',
-        ], 0775);
+        $this->createPluginStructure($pluginPath, $name, $company);
 
-        // .editorconfig
-        $filesystem->dumpFile($targetPath . '/.editorconfig', <<<TXT
-# This is the top-most .editorconfig file; do not search in parent directories.
-root = true
+        if ($addBundle) {
+            $this->addBundleToConfig($name, $company);
+            $io->success('Added bundle to config/bundles.php');
+        }
 
-# All files.
-[*]
-end_of_line = lf
-indent_style = space
-indent_size = 4
-charset = utf-8
-trim_trailing_whitespace = true
-insert_final_newline = true
+        if ($updateComposer) {
+            $this->updateRootComposer($name, $pluginDirName, $company);
+            $io->success('Updated root composer.json');
+        }
 
-[*.md]
-trim_trailing_whitespace = false
+        $io->success(sprintf('Plugin %s created successfully', $name));
 
-[*.json]
-indent_size = 2
+        return Command::SUCCESS;
+    }
 
-[composer.json]
-indent_size = 4
-
-[config-schema.json]
-indent_size = 4
-TXT);
-
-        // .gitattributes
-        $filesystem->dumpFile($targetPath . '/.gitattributes', <<<TXT
-*.css text eol=lf
-*.htaccess text eol=lf
-*.htm text eol=lf
-*.html text eol=lf
-*.js text eol=lf
-*.json text eol=lf
-*.map text eol=lf
-*.md text eol=lf
-*.php text eol=lf
-*.profile text eol=lf
-*.script text eol=lf
-*.sh text eol=lf
-*.svg text eol=lf
-*.txt text eol=lf
-*.xml text eol=lf
-*.yml text eol=lf
-/vendor-bin/**/composer.lock binary
-TXT);
-
-        // .gitignore
-        $filesystem->dumpFile($targetPath . '/.gitignore', <<<TXT
-/.idea/
-/vendor/
-/vendor-bin/**/vendor/
-/.php-cs-fixer.cache
-/phpstan.neon
-/ai.txt
-TXT);
-
-        // composer.json (derived from input)
-        $packageName = $company . '/' . $pluginDirName;
-        $filesystem->dumpFile($targetPath . '/composer.json', <<<JSON
-{
-  "name": "$packageName",
-  "type": "symfony-vis-plugin",
-  "license": "MIT",
-  "description": "VIS Plugin",
-  "authors": [
+    private function createPluginStructure(string $path, string $name, string $company): void
     {
-      "name": "First Last",
-      "email": "Email"
-    }
-  ],
-  "config": {
-    "allow-plugins": {
-      "bamarni/composer-bin-plugin": false
-    }
-  }
-}
-JSON);
+        $bundleName = sprintf('Vis%sPluginBundle', $name);
+        $namespace = sprintf('%s\\%s', $company, $bundleName);
+        $extensionName = sprintf('Vis%sPluginExtension', $name);
+        $lcName = strtolower($name);
+        $lcCompany = strtolower($company);
 
-        // config/services.yaml
-        $filesystem->dumpFile($targetPath . '/config/services.yaml', <<<YAML
-services:
-    _defaults:
-        autowire: true
-        autoconfigure: true
+        // Directories
+        $directories = [
+            '/src/Command',
+            '/src/Controller',
+            '/src/DependencyInjection',
+            '/src/Entity',
+            '/src/Entity/Enum',
+            '/src/Factory',
+            '/src/Plugin',
+            '/src/Repository',
+            '/src/Repository/Trait',
+            '/src/Service',
+            '/src/Story',
+            '/config',
+            '/translations',
+            '/tests',
+        ];
 
-#    {$rootNamespace}\Service\:
-#        resource: '../src/Service/'
+        foreach ($directories as $dir) {
+            $this->filesystem->mkdir($path . $dir);
+        }
 
-#    {$rootNamespace}\:
-#        resource: '../src/'
-#        exclude:
-#            - '../../DependencyInjection/'
-#            - '../../Entity/'
-#            - '../../Kernel.php'
-#        tags: [ 'controller.service_arguments' ]
-YAML);
+        // composer.json
+        $composerJson = [
+            'name' => sprintf('%s/vis-%s-plugin', $lcCompany, $lcName),
+            'type' => 'symfony-vis-plugin',
+            'license' => 'MIT',
+            'description' => sprintf('VIS %s Plugin', $name),
+            'authors' => [
+                [
+                    'name' => 'Juergen Schwind',
+                    'email' => 'info@juergen.schwind.de',
+                ],
+            ],
+            'autoload' => [
+                'psr-4' => [
+                    $namespace . '\\' => 'src/',
+                ],
+            ],
+            'autoload-dev' => [
+                'psr-4' => [
+                    $namespace . '\\Tests\\' => 'tests/',
+                ],
+            ],
+        ];
+        $this->filesystem->dumpFile($path . '/composer.json', json_encode($composerJson, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES) . "\n");
 
-        // src/DependencyInjection/{ExtensionClass}.php
-        $extensionTemplate = <<<'PHP'
+        // Bundle class
+        $bundleContent = <<<'PHP'
 <?php
 
 declare(strict_types=1);
 
-namespace %s\DependencyInjection;
-
-use Symfony\Component\Config\FileLocator;
-use Symfony\Component\DependencyInjection\ContainerBuilder;
-use Symfony\Component\DependencyInjection\Extension\Extension;
-use Symfony\Component\DependencyInjection\Extension\PrependExtensionInterface;
-use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
-
-class %s extends Extension implements PrependExtensionInterface
-{
-    public function prepend(ContainerBuilder $container): void
-    {
-    }
-
-    public function load(array $configs, ContainerBuilder $container): void
-    {
-        $loader = new YamlFileLoader($container, new FileLocator(__DIR__.'/../../config'));
-        $loader->load('services.yaml');
-    }
-}
-PHP;
-        $filesystem->dumpFile(
-            $targetPath . '/src/DependencyInjection/' . $extensionClass . '.php',
-            sprintf($extensionTemplate, $rootNamespace, $extensionClass)
-        );
-
-        // src/{BundleClass}.php
-        $bundleTemplate = <<<'PHP'
-<?php
-
-declare(strict_types=1);
-
-namespace %s;
+namespace {$namespace};
 
 use JBSNewMedia\VisBundle\Plugin\AbstractVisBundle;
-use %s\DependencyInjection\%s;
+use {$namespace}\DependencyInjection\{$extensionName};
 use Symfony\Component\DependencyInjection\Extension\ExtensionInterface;
 
-class %s extends AbstractVisBundle
+class {$bundleName} extends AbstractVisBundle
 {
     public function getContainerExtension(): ?ExtensionInterface
     {
         if (null === $this->extension) {
-            $this->extension = new %s();
+            $this->extension = new {$extensionName}();
         }
 
         if (false === $this->extension) {
@@ -236,23 +162,238 @@ class %s extends AbstractVisBundle
     }
 }
 PHP;
-        $filesystem->dumpFile(
-            $targetPath . '/src/' . $bundleClass . '.php',
-            sprintf($bundleTemplate, $rootNamespace, $rootNamespace, $extensionClass, $bundleClass, $extensionClass)
+        $bundleContent = str_replace(
+            ['{$namespace}', '{$extensionName}', '{$bundleName}'],
+            [$namespace, $extensionName, $bundleName],
+            $bundleContent
         );
+        $this->filesystem->dumpFile($path . '/src/' . $bundleName . '.php', $bundleContent);
 
-        $output->writeln('<info>Plugin (bundle skeleton) created successfully.</info>');
-        $output->writeln(' Location: ' . $relativePath);
-        $output->writeln(' Files created: .editorconfig, .gitattributes, .gitignore, composer.json, config/services.yaml, src/DependencyInjection/' . $extensionClass . '.php, src/' . $bundleClass . '.php');
+        // Extension class
+        $extensionContent = <<<'PHP'
+<?php
+
+declare(strict_types=1);
+
+namespace {$namespace}\DependencyInjection;
+
+use Symfony\Component\Config\FileLocator;
+use Symfony\Component\DependencyInjection\ContainerBuilder;
+use Symfony\Component\DependencyInjection\Extension\Extension;
+use Symfony\Component\DependencyInjection\Extension\PrependExtensionInterface;
+use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
+
+class {$extensionName} extends Extension implements PrependExtensionInterface
+{
+    public function prepend(ContainerBuilder $container): void
+    {
+    }
+
+    public function load(array $configs, ContainerBuilder $container): void
+    {
+        $loader = new YamlFileLoader($container, new FileLocator(__DIR__.'/../../config'));
+        $loader->load('services.yaml');
+    }
+}
+PHP;
+        $extensionContent = str_replace(
+            ['{$namespace}', '{$extensionName}'],
+            [$namespace, $extensionName],
+            $extensionContent
+        );
+        $this->filesystem->dumpFile($path . '/src/DependencyInjection/' . $extensionName . '.php', $extensionContent);
+
+        // Controller
+        $controllerContent = <<<'PHP'
+<?php
+
+declare(strict_types=1);
+
+namespace {$namespace}\Controller;
+
+use JBSNewMedia\VisBundle\Controller\VisAbstractController;
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Routing\Attribute\Route;
+
+#[Route('/{$lcName}', name: 'vis_{$lcName}_')]
+class {$name}Controller extends VisAbstractController
+{
+    #[Route('', name: 'index')]
+    public function index(): Response
+    {
+        return $this->render('@{$bundleName}/index.html.twig', [
+            'controller_name' => '{$name}Controller',
+        ]);
+    }
+}
+PHP;
+        $controllerContent = str_replace(
+            ['{$namespace}', '{$name}', '{$lcName}', '{$bundleName}'],
+            [$namespace, $name, $lcName, $bundleName],
+            $controllerContent
+        );
+        $this->filesystem->dumpFile($path . '/src/Controller/' . $name . 'Controller.php', $controllerContent);
+
+        // API Controller
+        $apiControllerContent = <<<'PHP'
+<?php
+
+declare(strict_types=1);
+
+namespace {$namespace}\Controller;
+
+use JBSNewMedia\VisBundle\Controller\VisAbstractController;
+use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\Routing\Attribute\Route;
+
+#[Route('/api/{$lcName}', name: 'vis_api_{$lcName}_')]
+class {$name}ApiController extends VisAbstractController
+{
+    #[Route('', name: 'index')]
+    public function index(): JsonResponse
+    {
+        return $this->json([
+            'message' => 'Welcome to your new {$name} API controller!',
+            'path' => 'src/Controller/{$name}ApiController.php',
+        ]);
+    }
+}
+PHP;
+        $apiControllerContent = str_replace(
+            ['{$namespace}', '{$name}', '{$lcName}'],
+            [$namespace, $name, $lcName],
+            $apiControllerContent
+        );
+        $this->filesystem->dumpFile($path . '/src/Controller/' . $name . 'ApiController.php', $apiControllerContent);
+
+        // Service
+        $serviceContent = <<<'PHP'
+<?php
+
+declare(strict_types=1);
+
+namespace {$namespace}\Service;
+
+class TestService
+{
+    public function getTestMessage(): string
+    {
+        return 'This is a test message from the TestService of {$name} plugin.';
+    }
+}
+PHP;
+        $serviceContent = str_replace(
+            ['{$namespace}', '{$name}'],
+            [$namespace, $name],
+            $serviceContent
+        );
+        $this->filesystem->dumpFile($path . '/src/Service/TestService.php', $serviceContent);
+
+        // Command
+        $commandContent = <<<'PHP'
+<?php
+
+declare(strict_types=1);
+
+namespace {$namespace}\Command;
+
+use Symfony\Component\Console\Attribute\AsCommand;
+use Symfony\Component\Console\Command\Command;
+use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Console\Style\SymfonyStyle;
+
+#[AsCommand(
+    name: 'vis:{$lcName}:test',
+    description: 'Test command for {$name} plugin',
+)]
+class TestCommand extends Command
+{
+    protected function execute(InputInterface $input, OutputInterface $output): int
+    {
+        $io = new SymfonyStyle($input, $output);
+        $io->success('Test command for {$name} plugin executed successfully.');
 
         return Command::SUCCESS;
     }
+}
+PHP;
+        $commandContent = str_replace(
+            ['{$namespace}', '{$name}', '{$lcName}'],
+            [$namespace, $name, $lcName],
+            $commandContent
+        );
+        $this->filesystem->dumpFile($path . '/src/Command/TestCommand.php', $commandContent);
 
-    private static function toStudlyCaps(string $value, bool $keepDashes = true): string
+        // Translations
+        $translationsDe = <<<YAML
+main.title: "{$name}"
+navigation:
+  header_main: "Hauptbereich"
+  dashboard: "Übersicht"
+YAML;
+        $this->filesystem->dumpFile($path . '/translations/vis_' . $lcName . '.de.yaml', $translationsDe);
+        $this->filesystem->dumpFile($path . '/translations/vis_' . $lcName . '.en.yaml', str_replace('Übersicht', 'Overview', $translationsDe));
+
+        // services.yaml
+        $servicesYaml = <<<'YAML'
+services:
+    _defaults:
+        autowire: true
+        autoconfigure: true
+
+    {$namespace}\Service\:
+        resource: '../src/Service/'
+
+    {$namespace}\:
+        resource: '../src/'
+        exclude:
+            - '../../DependencyInjection/'
+            - '../../Entity/'
+            - '../../Kernel.php'
+        tags: [ 'controller.service_arguments' ]
+
+    {$namespace}\Controller\{$name}Controller:
+        arguments:
+            $vis: '@JBSNewMedia\VisBundle\Service\Vis'
+        tags: ['controller.service_arguments']
+YAML;
+        $servicesYaml = str_replace(['{$namespace}', '{$name}'], [$namespace, $name], $servicesYaml);
+        $this->filesystem->dumpFile($path . '/config/services.yaml', $servicesYaml);
+    }
+
+    private function addBundleToConfig(string $name, string $company): void
     {
-        $value = $keepDashes ? $value : str_replace('-', ' ', $value);
-        $value = str_replace(['-', '_'], ' ', $value);
-        $value = ucwords($value);
-        return str_replace(' ', '', $value);
+        $bundlesFile = $this->projectDir . '/config/bundles.php';
+        if (!$this->filesystem->exists($bundlesFile)) {
+            return;
+        }
+
+        $bundleClass = sprintf('%s\\Vis%sPluginBundle\\Vis%sPluginBundle', $company, $name, $name);
+        $content = file_get_contents($bundlesFile);
+
+        if (str_contains($content, $bundleClass)) {
+            return;
+        }
+
+        $newItem = sprintf("    %s::class => ['all' => true],\n];", $bundleClass);
+        $content = str_replace('];', $newItem, $content);
+        file_put_contents($bundlesFile, $content);
+    }
+
+    private function updateRootComposer(string $name, string $pluginDirName, string $company): void
+    {
+        $composerFile = $this->projectDir . '/composer.json';
+        if (!$this->filesystem->exists($composerFile)) {
+            return;
+        }
+
+        $data = json_decode(file_get_contents($composerFile), true);
+        $namespace = sprintf('%s\\Vis%sPluginBundle\\', $company, $name);
+        $path = $pluginDirName . '/src/';
+
+        $data['autoload']['psr-4'][$namespace] = $path;
+
+        file_put_contents($composerFile, json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES) . "\n");
     }
 }
