@@ -125,14 +125,7 @@ class VisPluginCreateCommand extends Command
         $composerJson = [
             'name' => sprintf('%s/vis-%s-plugin', $lcCompany, $lcName),
             'type' => 'symfony-vis-plugin',
-            'license' => 'MIT',
             'description' => sprintf('VIS %s Plugin', $name),
-            'authors' => [
-                [
-                    'name' => 'Juergen Schwind',
-                    'email' => 'info@juergen.schwind.de',
-                ],
-            ],
             'autoload' => [
                 'psr-4' => [
                     $namespace . '\\' => 'src/',
@@ -194,6 +187,13 @@ class {$extensionName} extends Extension implements PrependExtensionInterface
 {
     public function prepend(ContainerBuilder $container): void
     {
+        if (isset($container->getExtensions()['twig'])) {
+            $container->prependExtensionConfig('twig', [
+                'paths' => [
+                    \dirname(__DIR__, 2).'/templates' => 'Vis{$name}Plugin',
+                ],
+            ]);
+        }
     }
 
     public function load(array $configs, ContainerBuilder $container): void
@@ -204,8 +204,8 @@ class {$extensionName} extends Extension implements PrependExtensionInterface
 }
 PHP;
         $extensionContent = str_replace(
-            ['{$namespace}', '{$extensionName}'],
-            [$namespace, $extensionName],
+            ['{$namespace}', '{$extensionName}', '{$name}'],
+            [$namespace, $extensionName, $name],
             $extensionContent
         );
         $this->filesystem->dumpFile($path . '/src/DependencyInjection/' . $extensionName . '.php', $extensionContent);
