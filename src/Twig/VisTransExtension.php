@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace JBSNewMedia\VisBundle\Twig;
 
 use JBSNewMedia\VisBundle\Service\Vis;
+use Symfony\Component\Translation\TranslatorBagInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
 use Twig\Extension\AbstractExtension;
 use Twig\TwigFilter;
@@ -33,15 +34,27 @@ class VisTransExtension extends AbstractExtension
             return $this->cache[$var];
         }
 
-        if ('' !== $this->vis->getToolId()) {
-            $trans = $this->translator->trans($var, [], 'vis_'.$this->vis->getToolId());
-            if ($trans === $var) {
-                $trans = $this->translator->trans($var, [], 'vis');
+        $toolId = $this->vis->getToolId();
+        if ('' !== $toolId) {
+            $domain = 'vis_'.$toolId;
+            if ($this->translator instanceof TranslatorBagInterface) {
+                if ($this->translator->getCatalogue()->has($var, $domain)) {
+                    $trans = $this->translator->trans($var, [], $domain);
+                    $this->cache[$var] = $trans;
+
+                    return $trans;
+                }
+            } else {
+                $trans = $this->translator->trans($var, [], $domain);
+                if ($trans !== $var) {
+                    $this->cache[$var] = $trans;
+
+                    return $trans;
+                }
             }
-        } else {
-            $trans = $this->translator->trans($var, [], 'vis');
         }
 
+        $trans = $this->translator->trans($var, [], 'vis');
         $this->cache[$var] = $trans;
 
         return $trans;
