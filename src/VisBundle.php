@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace JBSNewMedia\VisBundle;
 
+use JBSNewMedia\VisBundle\DependencyInjection\Compiler\VisPluginPass;
 use JBSNewMedia\VisBundle\DependencyInjection\VisExtension;
+use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Extension\ExtensionInterface;
 use Symfony\Component\HttpKernel\Bundle\AbstractBundle;
 
@@ -21,6 +23,12 @@ class VisBundle extends AbstractBundle
         }
 
         return $this->extension;
+    }
+
+    public function build(ContainerBuilder $container): void
+    {
+        parent::build($container);
+        $container->addCompilerPass(new VisPluginPass());
     }
 
     public function getPath(): string

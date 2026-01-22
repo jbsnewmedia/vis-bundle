@@ -6,6 +6,8 @@ namespace JBSNewMedia\VisBundle\Plugin;
 
 interface PluginInterface
 {
+    public function getPluginId(): ?string;
+
     public function init(): void;
 
     public function setNavigation(): void;

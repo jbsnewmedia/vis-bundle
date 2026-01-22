@@ -8,10 +8,6 @@ use JBSNewMedia\VisBundle\Model\Item;
 use JBSNewMedia\VisBundle\Model\Sidebar\Sidebar;
 use JBSNewMedia\VisBundle\Model\Tool;
 use JBSNewMedia\VisBundle\Model\Topbar\Topbar;
-use JBSNewMedia\VisBundle\Model\Topbar\TopbarButtonDarkmode;
-use JBSNewMedia\VisBundle\Model\Topbar\TopbarButtonSidebar;
-use JBSNewMedia\VisBundle\Model\Topbar\TopbarDropdownProfile;
-use JBSNewMedia\VisBundle\Model\Topbar\TopbarLiveSearchTools;
 use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
@@ -57,7 +53,7 @@ class Vis
         }
     }
 
-    public function setTool(string $tool): self
+    public function setTool(string $tool, int $priority = 100): self
     {
         if (!$this->isTool($tool)) {
             throw new \InvalidArgumentException('Vis: Tool "'.$tool.'" does not exist');
@@ -79,9 +75,11 @@ class Vis
         return isset($this->tools[$tool]);
     }
 
-    public function setToolId(string $toolId): void
+    public function setToolId(string $toolId): self
     {
         $this->toolId = $toolId;
+
+        return $this;
     }
 
     public function getToolId(): string
@@ -99,61 +97,21 @@ class Vis
             return false;
         }
 
-        $commonRoles = array_intersect($tool->getRoles(), $this->getRoles());
-        if (empty($commonRoles)) {
-            return false;
+        if ($tool->isMerge() && isset($this->tools[$tool->getId()])) {
+            if ($tool->getPriority() > $this->tools[$tool->getId()]->getPriority()) {
+                $this->tools[$tool->getId()]->setPriority($tool->getPriority());
+                $this->tools[$tool->getId()]->setTitle($tool->getTitle());
+                foreach ($tool->getRoles() as $role) {
+                    $this->tools[$tool->getId()]->addRole($role);
+                }
+                dd($this->tools);
+            }
+
+            return true;
         }
 
         $this->tools[$tool->getId()] = $tool;
         $this->incToolsCounter();
-
-        $item = new TopbarLiveSearchTools($tool->getId());
-        $item->setLabel($this->translator->trans('main.livesearch.tools', domain: 'vis'));
-        $item->setLabelSearch($this->translator->trans('main.livesearch.placeholder', domain: 'vis'));
-        $item->setVis($this);
-        $this->addTopbar($item);
-
-        $item = new TopbarButtonDarkmode($tool->getId());
-        $item->setLabel($this->translator->trans('main.toggle.darkmode', domain: 'vis'));
-        $this->addTopbar($item);
-
-        $item = new TopbarButtonSidebar($tool->getId());
-        $item->setLabel($this->translator->trans('main.toggle.sidebar', domain: 'vis'));
-        $this->addTopbar($item);
-
-        $item = new TopbarButtonSidebar($tool->getId(), 'toggle_sidebar_end', 'end', ['display' => 'large']);
-        $item->setLabel($this->translator->trans('main.toggle.sidebar', domain: 'vis'));
-        $this->addTopbar($item);
-
-        $item = new TopbarDropdownProfile($tool->getId(), 'profile_end');
-        $item->setLabel($this->translator->trans('main.profile', domain: 'vis'));
-        $item->setClass('btn btn-link justify-content-center align-items-center');
-        $item->setContent('<img src="'.$this->router->generate('vis_profile_image', ['userIdentifier' => $this->security->getUser()->getId()]).'" class="h-100 rounded-circle" alt="profile-image">');
-        $item->setOrder(100);
-        $item->setData([
-            /*
-            'vis_settings' => [
-                'route' => 'vis_settings',
-                'routeParameters' => [],
-                'icon' => '<i class="fa-solid fa-cog fa-fw"></i>',
-                'label' => $this->translator->trans('main.profile.settings', domain: 'vis'),
-            ],
-            'vis_line_1' => [
-                'route' => '',
-                'routeParameters' => [],
-                'icon' => '',
-                'label' => '---',
-            ],
-            */
-            'vis_logout' => [
-                'route' => 'vis_logout',
-                'routeParameters' => [],
-                'icon' => '<i class="fa-solid fa-right-from-bracket fa-fw"></i>',
-                'label' => $this->translator->trans('main.profile.logout', domain: 'vis'),
-            ],
-        ]);
-        $item->setDataKey('vis_logout');
-        $this->addTopbar($item);
 
         return true;
     }
@@ -185,11 +143,6 @@ class Vis
     {
         if ([] === $item->getRoles()) {
             $item->addRole('ROLE_USER');
-        }
-
-        $commonRoles = array_intersect($item->getRoles(), $this->getRoles());
-        if (empty($commonRoles)) {
-            return false;
         }
 
         if ('' !== $item->getRoute()) {
@@ -229,6 +182,14 @@ class Vis
     {
         if ([] === $item->getRoles()) {
             $item->addRole('ROLE_USER');
+        }
+
+        if ('' !== $parent && '' !== $item->getParent() && $item->getParent() !== $parent) {
+            throw new \InvalidArgumentException('Vis: Conflicting sidebar parent provided. Item has parent "'.$item->getParent().'" but addSidebar() received "'.$parent.'". Use only one method and ensure IDs match.');
+        }
+
+        if ('' !== $parent) {
+            $item->setParent($parent);
         }
 
         $commonRoles = array_intersect($item->getRoles(), $this->getRoles());

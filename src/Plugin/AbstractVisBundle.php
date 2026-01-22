@@ -15,8 +15,11 @@ use Symfony\Component\Routing\Loader\Configurator\RoutingConfigurator;
 
 abstract class AbstractVisBundle extends AbstractBundle
 {
-    final public function __construct(private readonly bool $active, private string $basePath, ?string $projectDir = null)
+    public function __construct(private readonly bool $active = true, private string $basePath = '', ?string $projectDir = null)
     {
+        if ($this->basePath === '') {
+            $this->basePath = $this->getPath();
+        }
         if ($projectDir && 0 !== mb_strpos($this->basePath, '/')) {
             $this->basePath = $projectDir.'/'.$this->basePath;
         }
@@ -75,7 +78,10 @@ abstract class AbstractVisBundle extends AbstractBundle
         if (!$this->isActive()) {
             return;
         }
-        $routes->import($this->getPath().'/src/Controller', 'attribute');
+        $controllerPath = $this->getPath().'/src/Controller';
+        if (is_dir($controllerPath)) {
+            $routes->import($controllerPath, 'attribute');
+        }
     }
 
     public function getBasePath(): string

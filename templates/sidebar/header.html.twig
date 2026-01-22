@@ -1,1 +1,9 @@
 <li class="avalynx-simpleadmin-sidenav-heading">{{ item.label }}</li>
+
+{% if item.children is not empty %}
+    {% for child in item.children %}
+        {% if child.template is not null %}
+            {{ include(child.template, { item: child }) }}
+        {% endif %}
+    {% endfor %}
+{% endif %}
