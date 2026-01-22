@@ -7,14 +7,14 @@
 
     {{ parent() }}
 
-<div class="card shadow">
-    <div class="card-header">
-        DataTable example
+    <div class="card shadow">
+        <div class="card-header">
+            DataTable example
+        </div>
+        <div class="card-body">
+            <div class="" id="avalynx-datatable"></div>
+        </div>
     </div>
-    <div class="card-body">
-        <div class="" id="avalynx-datatable"></div>
-    </div>
-</div>
 
     <script>
 
@@ -27,7 +27,15 @@
                 "name": "asc",
                 "age": "desc"
             }
-        }, {});
+        }, {
+            showLabel: "{{ 'datatable.showLabel'|trans({}, 'vis') }}",
+            entriesLabel: "{{ 'datatable.entriesLabel'|trans({}, 'vis') }}",
+            searchLabel: "{{ 'datatable.searchLabel'|trans({}, 'vis') }}",
+            previousLabel: "{{ 'datatable.previousLabel'|trans({}, 'vis') }}",
+            nextLabel: "{{ 'datatable.nextLabel'|trans({}, 'vis') }}",
+            showingEntries: (start, end, total) => "{{ 'datatable.showingEntries'|trans({}, 'vis') }}".replace('{start}', start).replace('{end}', end).replace('{total}', total),
+            showingFilteredEntries: (start, end, filtered, total) => "{{ 'datatable.showingFilteredEntries'|trans({}, 'vis') }}".replace('{start}', start).replace('{end}', end).replace('{filtered}', filtered).replace('{total}', total)
+        });
 
     </script>
 
