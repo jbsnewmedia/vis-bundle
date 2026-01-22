@@ -17,7 +17,7 @@ abstract class AbstractVisBundle extends AbstractBundle
 {
     public function __construct(private readonly bool $active = true, private string $basePath = '', ?string $projectDir = null)
     {
-        if ($this->basePath === '') {
+        if ('' === $this->basePath) {
             $this->basePath = $this->getPath();
         }
         if ($projectDir && 0 !== mb_strpos($this->basePath, '/')) {
