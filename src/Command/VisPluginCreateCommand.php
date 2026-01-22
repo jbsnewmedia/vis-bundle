@@ -28,6 +28,7 @@ class VisPluginCreateCommand extends Command
     {
         $io = new SymfonyStyle($input, $output);
 
+        /** @var string $name */
         $name = $io->ask('Plugin name (e.g. Demo)', null, function ($answer) {
             if (empty($answer)) {
                 throw new \RuntimeException('Plugin name cannot be empty');
@@ -35,9 +36,11 @@ class VisPluginCreateCommand extends Command
             if (!preg_match('/^[a-zA-Z0-9]+$/', $answer)) {
                 throw new \RuntimeException('Plugin name can only contain a-zA-Z0-9');
             }
-            return ucfirst($answer);
+
+            return ucfirst((string) $answer);
         });
 
+        /** @var string $company */
         $company = $io->ask('Company name', 'Company', function ($answer) {
             if (empty($answer)) {
                 throw new \RuntimeException('Company name cannot be empty');
@@ -45,17 +48,19 @@ class VisPluginCreateCommand extends Command
             if (!preg_match('/^[a-zA-Z0-9]+$/', $answer)) {
                 throw new \RuntimeException('Company name can only contain a-zA-Z0-9');
             }
-            return $answer;
+
+            return (string) $answer;
         });
 
         $lcCompany = strtolower($company);
         $lcName = strtolower($name);
         $pluginDirName = sprintf('plugins/%s/vis-%s-plugin', $lcCompany, $lcName);
-        $pluginPath = $this->projectDir . '/' . $pluginDirName;
+        $pluginPath = $this->projectDir.'/'.$pluginDirName;
 
         if ($this->filesystem->exists($pluginPath)) {
             if (!$io->confirm(sprintf('Directory %s already exists. Do you want to delete it?', $pluginDirName), false)) {
                 $io->info('Creation cancelled.');
+
                 return Command::SUCCESS;
             }
             $this->filesystem->remove($pluginPath);
@@ -118,7 +123,7 @@ class VisPluginCreateCommand extends Command
         ];
 
         foreach ($directories as $dir) {
-            $this->filesystem->mkdir($path . $dir);
+            $this->filesystem->mkdir($path.$dir);
         }
 
         // composer.json
@@ -135,11 +140,11 @@ class VisPluginCreateCommand extends Command
             ],
             'autoload' => [
                 'psr-4' => [
-                    $namespace . '\\' => 'src/',
+                    $namespace.'\\' => 'src/',
                 ],
             ],
         ];
-        $this->filesystem->dumpFile($path . '/composer.json', json_encode($composerJson, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES) . "\n");
+        $this->filesystem->dumpFile($path.'/composer.json', json_encode($composerJson, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES)."\n");
 
         // Bundle class
         $bundleContent = <<<'PHP'
@@ -174,7 +179,7 @@ PHP;
             [$namespace, $extensionName, $bundleName],
             $bundleContent
         );
-        $this->filesystem->dumpFile($path . '/src/' . $bundleName . '.php', $bundleContent);
+        $this->filesystem->dumpFile($path.'/src/'.$bundleName.'.php', $bundleContent);
 
         // Extension class
         $extensionContent = <<<'PHP'
@@ -208,7 +213,7 @@ PHP;
             [$namespace, $extensionName],
             $extensionContent
         );
-        $this->filesystem->dumpFile($path . '/src/DependencyInjection/' . $extensionName . '.php', $extensionContent);
+        $this->filesystem->dumpFile($path.'/src/DependencyInjection/'.$extensionName.'.php', $extensionContent);
 
         // Plugin class
         $pluginContent = <<<'PHP'
@@ -308,7 +313,7 @@ PHP;
             [$namespace, $name, $lcName, $ucName],
             $pluginContent
         );
-        $this->filesystem->dumpFile($path . '/src/Plugin/' . $name . 'Plugin.php', $pluginContent);
+        $this->filesystem->dumpFile($path.'/src/Plugin/'.$name.'Plugin.php', $pluginContent);
 
         // Controller
         $controllerContent = <<<'PHP'
@@ -384,7 +389,7 @@ PHP;
             [$namespace, $name, $lcName],
             $controllerContent
         );
-        $this->filesystem->dumpFile($path . '/src/Controller/' . $name . 'Controller.php', $controllerContent);
+        $this->filesystem->dumpFile($path.'/src/Controller/'.$name.'Controller.php', $controllerContent);
 
         // API Controller
         $apiControllerContent = <<<'PHP'
@@ -593,7 +598,7 @@ PHP;
             [$namespace, $name, $lcName],
             $apiControllerContent
         );
-        $this->filesystem->dumpFile($path . '/src/Controller/' . $name . 'ApiController.php', $apiControllerContent);
+        $this->filesystem->dumpFile($path.'/src/Controller/'.$name.'ApiController.php', $apiControllerContent);
 
         // Service
         $serviceContent = <<<'PHP'
@@ -620,7 +625,7 @@ PHP;
             [$namespace, $name],
             $serviceContent
         );
-        $this->filesystem->dumpFile($path . '/src/Service/' . $name . 'Service.php', $serviceContent);
+        $this->filesystem->dumpFile($path.'/src/Service/'.$name.'Service.php', $serviceContent);
 
         // Command
         $commandContent = <<<'PHP'
@@ -656,7 +661,7 @@ PHP;
             [$namespace, $name, $lcName],
             $commandContent
         );
-        $this->filesystem->dumpFile($path . '/src/Command/' . $name . 'Command.php', $commandContent);
+        $this->filesystem->dumpFile($path.'/src/Command/'.$name.'Command.php', $commandContent);
 
         // Twig Templates
         $dashboardTwig = <<<'TWIG'
@@ -677,7 +682,7 @@ PHP;
 {% endblock %}
 TWIG;
         $dashboardTwig = str_replace(['{$lcName}'], [$lcName], $dashboardTwig);
-        $this->filesystem->dumpFile($path . '/templates/tool/dashboard.html.twig', $dashboardTwig);
+        $this->filesystem->dumpFile($path.'/templates/tool/dashboard.html.twig', $dashboardTwig);
 
         $userTwig = <<<'TWIG'
 {% extends '@Vis/tool/base.html.twig' %}
@@ -694,7 +699,7 @@ TWIG;
 {% endblock %}
 TWIG;
         $userTwig = str_replace(['{$lcName}'], [$lcName], $userTwig);
-        $this->filesystem->dumpFile($path . '/templates/content/user.html.twig', $userTwig);
+        $this->filesystem->dumpFile($path.'/templates/content/user.html.twig', $userTwig);
 
         // Translations
         $translationsDe = <<<YAML
@@ -728,14 +733,14 @@ user:
     title: "{$name} Benutzer"
     description: "Dies ist eine Demoseite für Benutzerinformationen."
 YAML;
-        $this->filesystem->dumpFile($path . '/translations/vis_' . $lcName . '.de.yaml', $translationsDe);
+        $this->filesystem->dumpFile($path.'/translations/vis_'.$lcName.'.de.yaml', $translationsDe);
 
         $translationsEn = str_replace(
             ['Hauptbereich', 'Übersicht', 'Tabelle', 'Datentabelle', 'Administration', 'Benutzer', 'Willkommen im Dashboard des VIS', 'Dies ist eine Testnachricht vom', 'Übersicht der', 'Einträge', 'Suche in', 'Name', 'ID', 'Alter', 'Stadt', 'Optionen', 'Bearbeiten', 'Hinzufügen', 'Löschen', 'Dies ist eine Demoseite für Benutzerinformationen.'],
             ['Main Area', 'Dashboard', 'Table', 'Datatable', 'Administration', 'User', 'Welcome to the dashboard of the VIS', 'This is a test message from the', 'Overview of', 'Entries', 'Search in', 'Name', 'ID', 'Age', 'City', 'Options', 'Edit', 'Add', 'Delete', 'This is a demo page for user information.'],
             $translationsDe
         );
-        $this->filesystem->dumpFile($path . '/translations/vis_' . $lcName . '.en.yaml', $translationsEn);
+        $this->filesystem->dumpFile($path.'/translations/vis_'.$lcName.'.en.yaml', $translationsEn);
 
         // services.yaml
         $servicesYaml = <<<'YAML'
@@ -756,18 +761,21 @@ services:
         tags: ['controller.service_arguments']
 YAML;
         $servicesYaml = str_replace(['{$namespace}', '{$name}'], [$namespace, $name], $servicesYaml);
-        $this->filesystem->dumpFile($path . '/config/services.yaml', $servicesYaml);
+        $this->filesystem->dumpFile($path.'/config/services.yaml', $servicesYaml);
     }
 
     private function addBundleToConfig(string $name, string $company): void
     {
-        $bundlesFile = $this->projectDir . '/config/bundles.php';
+        $bundlesFile = $this->projectDir.'/config/bundles.php';
         if (!$this->filesystem->exists($bundlesFile)) {
             return;
         }
 
         $bundleClass = sprintf('%s\\Vis%sPluginBundle\\Vis%sPluginBundle', $company, $name, $name);
         $content = file_get_contents($bundlesFile);
+        if (false === $content) {
+            return;
+        }
 
         if (str_contains($content, $bundleClass)) {
             return;
@@ -780,23 +788,37 @@ YAML;
 
     private function updateRootComposer(string $name, string $pluginDirName, string $company): void
     {
-        $composerFile = $this->projectDir . '/composer.json';
+        $composerFile = $this->projectDir.'/composer.json';
         if (!$this->filesystem->exists($composerFile)) {
             return;
         }
 
-        $data = json_decode(file_get_contents($composerFile), true);
-        $namespace = sprintf('%s\\Vis%sPluginBundle\\', $company, $name);
-        $path = $pluginDirName . '/src/';
+        $content = file_get_contents($composerFile);
+        if (false === $content) {
+            return;
+        }
+        $data = json_decode($content, true);
+        if (!is_array($data)) {
+            return;
+        }
 
+        $namespace = sprintf('%s\\Vis%sPluginBundle\\', $company, $name);
+        $path = $pluginDirName.'/src/';
+
+        if (!isset($data['autoload'])) {
+            $data['autoload'] = [];
+        }
+        if (!isset($data['autoload']['psr-4'])) {
+            $data['autoload']['psr-4'] = [];
+        }
         $data['autoload']['psr-4'][$namespace] = $path;
 
-        file_put_contents($composerFile, json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES) . "\n");
+        file_put_contents($composerFile, json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES)."\n");
     }
 
     private function addRoutesToConfig(string $name, string $pluginDirName): void
     {
-        $routesFile = $this->projectDir . '/config/routes.yaml';
+        $routesFile = $this->projectDir.'/config/routes.yaml';
         if (!$this->filesystem->exists($routesFile)) {
             return;
         }
@@ -804,8 +826,11 @@ YAML;
         $lcName = strtolower($name);
         $routeName = sprintf('vis_%s_plugin', $lcName);
         $content = file_get_contents($routesFile);
+        if (false === $content) {
+            return;
+        }
 
-        if (str_contains($content, $routeName . ':')) {
+        if (str_contains($content, $routeName.':')) {
             return;
         }
 
@@ -815,6 +840,6 @@ YAML;
             $pluginDirName
         );
 
-        file_put_contents($routesFile, $content . $newRoute);
+        file_put_contents($routesFile, $content.$newRoute);
     }
 }
