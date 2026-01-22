@@ -7,36 +7,50 @@
 
     {{ parent() }}
 
+    {% set datatable_title = datatable_title|default('datatable.title'|vistrans) %}
+    {% set datatable_options = {
+        apiUrl: '',
+        perPage: 10,
+        search: "",
+        sorting: {}
+    }|merge(datatable_options|default({})) %}
+
+    {% set datatable_language = {
+        showLabel: 'datatable.showLabel'|vistrans,
+        entriesLabel: 'datatable.entriesLabel'|vistrans,
+        searchLabel: 'datatable.searchLabel'|vistrans,
+        previousLabel: 'datatable.previousLabel'|vistrans,
+        nextLabel: 'datatable.nextLabel'|vistrans,
+        showingEntries: 'datatable.showingEntries'|vistrans,
+        showingFilteredEntries: 'datatable.showingFilteredEntries'|vistrans
+    }|merge(datatable_language|default({})) %}
+
     <div class="card shadow">
         <div class="card-header">
-            DataTable example
+            {{ datatable_title }}
         </div>
         <div class="card-body">
-            <div class="" id="avalynx-datatable"></div>
+            <div id="avalynx-datatable"
+                 data-options="{{ datatable_options|json_encode|e('html_attr') }}"
+                 data-language="{{ datatable_language|json_encode|e('html_attr') }}"
+            ></div>
         </div>
     </div>
 
     <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            const datatableElement = document.getElementById("avalynx-datatable");
+            const options = JSON.parse(datatableElement.dataset.options);
+            const languageSource = JSON.parse(datatableElement.dataset.language);
 
-        new AvalynxDataTable("avalynx-datatable", {
-            apiUrl: "{{ path('vis_demo_table_datatable_api') }}",
+            const language = {
+                ...languageSource,
+                showingEntries: (start, end, total) => languageSource.showingEntries.replace('{start}', start).replace('{end}', end).replace('{total}', total),
+                showingFilteredEntries: (start, end, filtered, total) => languageSource.showingFilteredEntries.replace('{start}', start).replace('{end}', end).replace('{filtered}', filtered).replace('{total}', total)
+            };
 
-            perPage: 10,
-            search: "",
-            sorting: {
-                "name": "asc",
-                "age": "desc"
-            }
-        }, {
-            showLabel: "{{ 'datatable.showLabel'|trans({}, 'vis') }}",
-            entriesLabel: "{{ 'datatable.entriesLabel'|trans({}, 'vis') }}",
-            searchLabel: "{{ 'datatable.searchLabel'|trans({}, 'vis') }}",
-            previousLabel: "{{ 'datatable.previousLabel'|trans({}, 'vis') }}",
-            nextLabel: "{{ 'datatable.nextLabel'|trans({}, 'vis') }}",
-            showingEntries: (start, end, total) => "{{ 'datatable.showingEntries'|trans({}, 'vis') }}".replace('{start}', start).replace('{end}', end).replace('{total}', total),
-            showingFilteredEntries: (start, end, filtered, total) => "{{ 'datatable.showingFilteredEntries'|trans({}, 'vis') }}".replace('{start}', start).replace('{end}', end).replace('{filtered}', filtered).replace('{total}', total)
+            new AvalynxDataTable("avalynx-datatable", options, language);
         });
-
     </script>
 
 {% endblock %}
