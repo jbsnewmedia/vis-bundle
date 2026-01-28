@@ -15,6 +15,7 @@ main:
     default: "Profil"
     logout: "Abmelden"
   loading: "Laden..."
+  locale: "Sprache"
 navigation:
   title:
     default: "VIS"

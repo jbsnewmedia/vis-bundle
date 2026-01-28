@@ -139,6 +139,11 @@ class Vis
         return $this->toolsCounter;
     }
 
+    public function getTranslator(): TranslatorInterface
+    {
+        return $this->translator;
+    }
+
     public function addTopbar(Topbar $item): bool
     {
         if ([] === $item->getRoles()) {
