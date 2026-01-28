@@ -10,39 +10,32 @@
         {% if data_details.label == '---' %}
             <div class="dropdown-divider"></div>
         {% else %}
-            <a class="dropdown-item vis-locale-item{% if item.dataKey == data_id %} active{% endif %}" href="{{ path(data_details.route, data_details.routeparameters|default({})) }}" data-locale="{{ data_id }}">
+            <div class="dropdown-item vis-locale-item{% if item.dataKey == data_id %} active{% endif %}" style="cursor: pointer;" onclick="changeLocale('{{ path(data_details.route, data_details.routeparameters|default({})) }}')">
                 {% if data_details.icon is defined and data_details.icon != '' %}
                     {{ data_details.icon|raw }} {{ data_details.label }}
                 {% else %}
                     {{ data_details.label }}
                 {% endif %}
-            </a>
+            </div>
         {% endif %}
     {% endfor %}
 </div>
 
 <script>
-    document.querySelectorAll('.vis-locale-item').forEach(item => {
-        item.addEventListener('click', function(e) {
-            e.preventDefault();
-            const url = this.getAttribute('href');
-            fetch(url, {
-                method: 'GET',
-                headers: {
-                    'X-Requested-With': 'XMLHttpRequest'
-                }
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    location.reload();
-                } else {
-                    console.error('Failed to change locale');
-                }
-            })
-            .catch(error => {
-                console.error('Error:', error);
-            });
+    function changeLocale(url) {
+        fetch(url, {
+            method: 'GET',
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest'
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                location.reload();
+            }
+        })
+        .catch(error => {
         });
-    });
+    }
 </script>

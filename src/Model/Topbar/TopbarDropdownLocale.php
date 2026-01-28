@@ -13,7 +13,7 @@ class TopbarDropdownLocale extends TopbarDropdown
     ) {
         parent::__construct($tool, $id);
         $this->setPosition($position);
-        $this->setType('dropdown_locale');
+        $this->setTemplate('@Vis/topbar/dropdown_locale.html.twig');
         $this->setClass('btn btn-link justify-content-center align-items-center dropdown-toggle avalynx-simpleadmin-header-button');
         $this->setOrder(90);
         $this->generateTemplate();
