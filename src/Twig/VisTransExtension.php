@@ -28,34 +28,37 @@ class VisTransExtension extends AbstractExtension
         ];
     }
 
-    public function translateKey(string $var): string
+    public function translateKey(string $var, array $parameters = [], ?string $domain = null): string
     {
-        if (isset($this->cache[$var])) {
-            return $this->cache[$var];
+        if (isset($this->cache[$var.'_'.($domain ?? 'null')])) {
+            return $this->cache[$var.'_'.($domain ?? 'null')];
         }
 
-        $toolId = $this->vis->getToolId();
-        if ('' !== $toolId) {
-            $domain = 'vis_'.$toolId;
-            if ($this->translator instanceof TranslatorBagInterface) {
-                if ($this->translator->getCatalogue()->has($var, $domain)) {
-                    $trans = $this->translator->trans($var, [], $domain);
-                    $this->cache[$var] = $trans;
+        if (null === $domain) {
+            $toolId = $this->vis->getToolId();
+            if ('' !== $toolId) {
+                $domain = 'vis_'.$toolId;
+                if ($this->translator instanceof TranslatorBagInterface) {
+                    if ($this->translator->getCatalogue()->has($var, $domain)) {
+                        $trans = $this->translator->trans($var, $parameters, $domain);
+                        $this->cache[$var.'_'.($domain ?? 'null')] = $trans;
 
-                    return $trans;
-                }
-            } else {
-                $trans = $this->translator->trans($var, [], $domain);
-                if ($trans !== $var) {
-                    $this->cache[$var] = $trans;
+                        return $trans;
+                    }
+                } else {
+                    $trans = $this->translator->trans($var, $parameters, $domain);
+                    if ($trans !== $var) {
+                        $this->cache[$var.'_'.($domain ?? 'null')] = $trans;
 
-                    return $trans;
+                        return $trans;
+                    }
                 }
             }
+            $domain = 'vis';
         }
 
-        $trans = $this->translator->trans($var, [], 'vis');
-        $this->cache[$var] = $trans;
+        $trans = $this->translator->trans($var, $parameters, $domain);
+        $this->cache[$var.'_'.($domain ?? 'null')] = $trans;
 
         return $trans;
     }
