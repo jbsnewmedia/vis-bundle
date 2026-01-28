@@ -45,12 +45,3 @@ change:
   rememberme: "Remember my choice"
   error:
     tool: "Tool not found."
-datatable:
-  showLabel: "Show"
-  entriesLabel: "entries"
-  searchLabel: "Search"
-  previousLabel: "Previous"
-  nextLabel: "Next"
-  showingEntries: "Showing {start} to {end} of {total} entries"
-  showingFilteredEntries: "Showing {start} to {end} of {filtered} entries (filtered from {total} entries)"
-  title: "Table"

@@ -358,7 +358,7 @@ class {$name}Controller extends VisAbstractController
 
         return $this->render('@Vis/content/datatable.html.twig', [
             'vis' => $this->vis,
-            'datatable_title' => $this->translator->trans('datatable.{$lcName}.title', [], 'vis_{$lcName}'),
+            'datatable_title' => $this->translator->trans('ddm.{$lcName}.title', [], 'vis_{$lcName}'),
             'datatable_options' => [
                 'apiUrl' => $this->generateUrl('vis_{$lcName}_table_datatable_api'),
                 'perPage' => 5,
@@ -367,7 +367,7 @@ class {$name}Controller extends VisAbstractController
                 ],
             ],
             'datatable_language' => [
-                'searchLabel' => $this->translator->trans('datatable.{$lcName}.search', [], 'vis_{$lcName}'),
+                'searchLabel' => $this->translator->trans('ddm.{$lcName}.search', [], 'vis_{$lcName}'),
             ],
         ]);
     }
@@ -494,11 +494,11 @@ class {$name}ApiController extends VisAbstractController
         $result = [];
         $result['head'] = [];
         $result['head']['columns'] = [
-            ['name' => $this->translator->trans('datatable.{$lcName}.columns.name', [], 'vis_{$lcName}'), 'sortable' => true, 'id' => 'name'],
-            ['name' => $this->translator->trans('datatable.{$lcName}.columns.id', [], 'vis_{$lcName}'), 'sortable' => true, 'id' => 'id', 'hidden' => true],
-            ['name' => $this->translator->trans('datatable.{$lcName}.columns.age', [], 'vis_{$lcName}'), 'id' => 'age'],
-            ['name' => $this->translator->trans('datatable.{$lcName}.columns.city', [], 'vis_{$lcName}'), 'sortable' => true, 'id' => 'city'],
-            ['name' => $this->translator->trans('datatable.{$lcName}.columns.options', [], 'vis_{$lcName}'), 'raw' => true, 'id' => 'options', 'class' => 'avalynx-datatable-options'],
+            ['name' => $this->translator->trans('ddm.{$lcName}.columns.name', [], 'vis_{$lcName}'), 'sortable' => true, 'id' => 'name'],
+            ['name' => $this->translator->trans('ddm.{$lcName}.columns.id', [], 'vis_{$lcName}'), 'sortable' => true, 'id' => 'id', 'hidden' => true],
+            ['name' => $this->translator->trans('ddm.{$lcName}.columns.age', [], 'vis_{$lcName}'), 'id' => 'age'],
+            ['name' => $this->translator->trans('ddm.{$lcName}.columns.city', [], 'vis_{$lcName}'), 'sortable' => true, 'id' => 'city'],
+            ['name' => $this->translator->trans('ddm.{$lcName}.columns.options', [], 'vis_{$lcName}'), 'raw' => true, 'id' => 'options', 'class' => 'avalynx-datatable-options'],
         ];
         if (isset($_POST['sorting'])) {
             $result['sorting'] = json_decode((string) $_POST['sorting'], true);
@@ -569,12 +569,12 @@ class {$name}ApiController extends VisAbstractController
                 $row['city'] = $this->translator->trans($row['city'], [], 'vis_{$lcName}');
                 $row['options'] = sprintf(
                     '<a class="btn btn-sm btn-primary" title="%s">%s</a> <a class="btn btn-sm btn-primary" title="%s">%s</a> <a class="btn btn-sm btn-primary" title="%s">%s</a>',
-                    $this->translator->trans('datatable.{$lcName}.actions.edit', [], 'vis_{$lcName}'),
-                    $this->translator->trans('datatable.{$lcName}.actions.edit', [], 'vis_{$lcName}'),
-                    $this->translator->trans('datatable.{$lcName}.actions.add', [], 'vis_{$lcName}'),
-                    $this->translator->trans('datatable.{$lcName}.actions.add', [], 'vis_{$lcName}'),
-                    $this->translator->trans('datatable.{$lcName}.actions.delete', [], 'vis_{$lcName}'),
-                    $this->translator->trans('datatable.{$lcName}.actions.delete', [], 'vis_{$lcName}')
+                    $this->translator->trans('ddm.{$lcName}.actions.edit', [], 'vis_{$lcName}'),
+                    $this->translator->trans('ddm.{$lcName}.actions.edit', [], 'vis_{$lcName}'),
+                    $this->translator->trans('ddm.{$lcName}.actions.add', [], 'vis_{$lcName}'),
+                    $this->translator->trans('ddm.{$lcName}.actions.add', [], 'vis_{$lcName}'),
+                    $this->translator->trans('ddm.{$lcName}.actions.delete', [], 'vis_{$lcName}'),
+                    $this->translator->trans('ddm.{$lcName}.actions.delete', [], 'vis_{$lcName}')
                 );
                 $result['data'][] = ['data' => $row, 'config' => ['test' => 'test_text'], 'class' => '', 'data_class' => ['options' => 'table-danger']];
             }
