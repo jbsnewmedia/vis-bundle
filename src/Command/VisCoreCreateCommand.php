@@ -47,11 +47,24 @@ class VisCoreCreateCommand extends Command
             'yes'
         );
 
+        $vis_locales = $io->ask(
+            'Which languages should be supported? (e.g. <fg=yellow>de,en</>)',
+            'de,en'
+        );
+
+        $vis_default_locale = $io->ask(
+            'Which language should be the default language? (e.g. <fg=yellow>en</>)',
+            'de'
+        );
+
         $controllerFile = $this->kernel->getProjectDir().'/src/Controller/Vis/MainController.php';
         $this->dumpMainController($controllerFile);
 
         $controllerFile = $this->kernel->getProjectDir().'/src/Controller/SecurityController.php';
         $this->dumpSecurityController($controllerFile);
+
+        $controllerFile = $this->kernel->getProjectDir().'/src/Controller/LocaleController.php';
+        $this->dumpLocaleController($controllerFile);
 
         if ('yes' === $vis_registration) {
             $controllerFile = $this->kernel->getProjectDir().'/src/Controller/Vis/RegistrationController.php';
@@ -61,6 +74,8 @@ class VisCoreCreateCommand extends Command
         if ('yes' === $vis_security) {
             $this->updateSecurityYaml();
         }
+
+        $this->updateVisYaml($vis_locales, $vis_default_locale);
 
         if ($this->error) {
             $this->errorMessage = implode("\n", $this->errorMessages);
@@ -266,6 +281,70 @@ class RegistrationController extends AbstractController
 
         if (!$filesystem->exists($controllerFile)) {
             $this->errorMessages[] = 'Controller cannot be created: '.$controllerFile;
+
+            return false;
+        }
+
+        return true;
+    }
+
+    private function dumpLocaleController(string $controllerFile): bool
+    {
+        $controllerContent = '<?php
+
+declare(strict_types=1);
+
+namespace App\Controller;
+
+use JBSNewMedia\VisBundle\Controller\VisAbstractController;
+use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\Routing\Annotation\Route;
+
+class LocaleController extends VisAbstractController
+{
+    #[Route(\'/vis/api/locale/{_locale}\', name: \'vis_api_locale\')]
+    public function setLocale(Request $request, string $_locale): JsonResponse
+    {
+        $request->getSession()->set(\'_locale\', $_locale);
+
+        return new JsonResponse([
+            \'locale\' => $_locale,
+            \'success\' => true,
+        ]);
+    }
+}
+';
+        $filesystem = new Filesystem();
+        $filesystem->dumpFile($controllerFile, $controllerContent);
+
+        if (!$filesystem->exists($controllerFile)) {
+            $this->errorMessages[] = 'Controller cannot be created: '.$controllerFile;
+
+            return false;
+        }
+
+        return true;
+    }
+
+    private function updateVisYaml(string $locales, string $defaultLocale): bool
+    {
+        $yamlFile = $this->kernel->getProjectDir().'/config/packages/vis.yaml';
+        $filesystem = new Filesystem();
+
+        $localesArray = array_map('trim', explode(',', $locales));
+
+        $data = [
+            'vis' => [
+                'locales' => $localesArray,
+                'default_locale' => $defaultLocale,
+            ],
+        ];
+
+        try {
+            $filesystem->dumpFile($yamlFile, Yaml::dump($data, 4));
+        } catch (\Exception $e) {
+            $this->errorMessages[] = 'Error writing YAML file: '.$e->getMessage();
 
             return false;
         }

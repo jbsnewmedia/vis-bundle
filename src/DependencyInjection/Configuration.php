@@ -14,12 +14,14 @@ class Configuration implements ConfigurationInterface
         $treeBuilder = new TreeBuilder('vis');
         $rootNode = $treeBuilder->getRootNode();
 
-        // Define the configuration structure here
-        // $rootNode
-        //     ->children()
-        //         ->scalarNode('some_option')->defaultValue('default_value')->end()
-        //     ->end()
-        // ;
+        $rootNode
+            ->children()
+                ->arrayNode('locales')
+                    ->scalarPrototype()->end()
+                ->end()
+                ->scalarNode('default_locale')->defaultValue('en')->end()
+            ->end()
+        ;
 
         return $treeBuilder;
     }
