@@ -52,6 +52,9 @@ class VisCoreCreateCommand extends Command
             'de,en'
         );
 
+        $localesArray = array_filter(array_map('trim', explode(',', $vis_locales)));
+        $useLocales = count($localesArray) > 1;
+
         $vis_default_locale = $io->ask(
             'Which language should be the default language? (e.g. <fg=yellow>en</>)',
             'de'
@@ -63,8 +66,12 @@ class VisCoreCreateCommand extends Command
         $controllerFile = $this->kernel->getProjectDir().'/src/Controller/SecurityController.php';
         $this->dumpSecurityController($controllerFile);
 
-        $controllerFile = $this->kernel->getProjectDir().'/src/Controller/LocaleController.php';
-        $this->dumpLocaleController($controllerFile);
+        if ($useLocales) {
+            $controllerFile = $this->kernel->getProjectDir().'/src/Controller/LocaleController.php';
+            if ($this->dumpLocaleController($controllerFile)) {
+                $io->info('Created LocaleController: '.$controllerFile);
+            }
+        }
 
         if ('yes' === $vis_registration) {
             $controllerFile = $this->kernel->getProjectDir().'/src/Controller/Vis/RegistrationController.php';
@@ -72,7 +79,7 @@ class VisCoreCreateCommand extends Command
         }
 
         if ('yes' === $vis_security) {
-            $this->updateSecurityYaml();
+            $this->updateSecurityYaml($useLocales);
         }
 
         $this->updateVisYaml($vis_locales, $vis_default_locale);
@@ -352,7 +359,7 @@ class LocaleController extends VisAbstractController
         return true;
     }
 
-    private function updateSecurityYaml(): bool
+    private function updateSecurityYaml(bool $useLocales = true): bool
     {
         $yamlFile = $this->kernel->getProjectDir().'/config/packages/security.yaml';
         $filesystem = new Filesystem();
@@ -442,6 +449,13 @@ class LocaleController extends VisAbstractController
                 'roles' => 'ROLE_USER',
             ],
         ];
+
+        if ($useLocales) {
+            $accessControls['^/vis/api'] = [
+                'path' => '^/vis/api',
+                'roles' => null,
+            ];
+        }
         if (!array_key_exists('security', $data) || !array_key_exists('access_control', $data['security']) || [] === $data['security']['access_control']) {
             $data['security']['access_control'] = [];
             foreach ($accessControls as $accessControl) {
