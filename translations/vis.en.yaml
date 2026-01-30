@@ -16,6 +16,9 @@ main:
     logout: "Logout"
   loading: "Loading..."
   locale: "Language"
+locale:
+  de: "Deutsch"
+  en: "English"
 navigation:
   title:
     default: "VIS"

@@ -8,6 +8,7 @@ use JBSNewMedia\VisBundle\Model\Item;
 use JBSNewMedia\VisBundle\Model\Sidebar\Sidebar;
 use JBSNewMedia\VisBundle\Model\Tool;
 use JBSNewMedia\VisBundle\Model\Topbar\Topbar;
+use JBSNewMedia\VisBundle\Model\Topbar\TopbarDropdownLocale;
 use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
@@ -170,6 +171,10 @@ class Vis
 
     public function addTopbar(Topbar $item): bool
     {
+        if ($item instanceof TopbarDropdownLocale && count($this->locales) <= 1) {
+            return false;
+        }
+
         if ([] === $item->getRoles()) {
             $item->addRole('ROLE_USER');
         }
