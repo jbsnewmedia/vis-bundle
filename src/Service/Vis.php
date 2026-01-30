@@ -42,11 +42,22 @@ class Vis
      */
     protected array $routes = [];
 
+    /**
+     * @var string[]
+     */
+    protected array $locales = [];
+
+    protected string $defaultLocale = 'en';
+
     public function __construct(
         protected TranslatorInterface $translator,
         protected UrlGeneratorInterface $router,
-        protected Security $security)
-    {
+        protected Security $security,
+        array $locales = ['en'],
+        string $defaultLocale = 'en',
+    ) {
+        $this->locales = $locales;
+        $this->defaultLocale = $defaultLocale;
         $user = $this->security->getUser();
         if (null !== $user) {
             $this->setRoles($user->getRoles());
@@ -142,6 +153,19 @@ class Vis
     public function getTranslator(): TranslatorInterface
     {
         return $this->translator;
+    }
+
+    /**
+     * @return string[]
+     */
+    public function getLocales(): array
+    {
+        return $this->locales;
+    }
+
+    public function getDefaultLocale(): string
+    {
+        return $this->defaultLocale;
     }
 
     public function addTopbar(Topbar $item): bool

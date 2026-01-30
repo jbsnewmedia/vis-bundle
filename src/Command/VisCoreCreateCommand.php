@@ -57,7 +57,7 @@ class VisCoreCreateCommand extends Command
 
         $vis_default_locale = $io->ask(
             'Which language should be the default language? (e.g. <fg=yellow>en</>)',
-            'de'
+            'en'
         );
 
         $controllerFile = $this->kernel->getProjectDir().'/src/Controller/Vis/MainController.php';
@@ -126,6 +126,10 @@ class MainController extends AbstractController
     #[IsGranted(\'ROLE_USER\')]
     public function index(Request $request, TranslatorInterface $translator, UrlGeneratorInterface $urlGenerator): Response
     {
+        if (!$request->getSession()->has(\'_locale\')) {
+            $request->getSession()->set(\'_locale\', $this->vis->getDefaultLocale());
+        }
+
         $tools = $this->vis->getTools();
         if ($request->isMethod(\'POST\')) {
             $selectTool = $request->request->get(\'_tool\');
@@ -313,6 +317,10 @@ class LocaleController extends VisAbstractController
     #[Route(\'/vis/api/locale/{_locale}\', name: \'vis_api_locale\')]
     public function setLocale(Request $request, string $_locale): JsonResponse
     {
+        if (!in_array($_locale, $this->vis->getLocales(), true)) {
+            $_locale = $this->vis->getDefaultLocale();
+        }
+
         $request->getSession()->set(\'_locale\', $_locale);
 
         return new JsonResponse([
