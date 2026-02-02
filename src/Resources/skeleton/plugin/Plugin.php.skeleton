@@ -1,0 +1,90 @@
+<?php
+
+declare(strict_types=1);
+
+namespace {$namespace}\Plugin;
+
+use JBSNewMedia\VisBundle\Attribute\VisPlugin;
+use JBSNewMedia\VisBundle\Model\Sidebar\SidebarHeader;
+use JBSNewMedia\VisBundle\Model\Sidebar\SidebarItem;
+use JBSNewMedia\VisBundle\Model\Topbar\TopbarButtonDarkmode;
+use JBSNewMedia\VisBundle\Model\Topbar\TopbarButtonSidebar;
+use JBSNewMedia\VisBundle\Model\Topbar\TopbarLiveSearchTools;
+use JBSNewMedia\VisBundle\Plugin\AbstractPlugin;
+use JBSNewMedia\VisBundle\Service\Vis;
+use Symfony\Contracts\Translation\TranslatorInterface;
+
+#[VisPlugin(plugin: '{$lcName}')]
+class {$name}Plugin extends AbstractPlugin
+{
+    public function __construct(
+        protected Vis $vis,
+        protected TranslatorInterface $translator,
+    ) {
+        parent::__construct();
+    }
+
+    public function init(): void
+    {
+        $tool = $this->createTool();
+        $tool->setTitle($this->translator->trans('main.title', domain: 'vis_{$lcName}'));
+        $tool->addRole('ROLE_VIS_{$ucName}');
+        $this->vis->addTool($tool);
+    }
+
+    public function setNavigation(): void
+    {
+        $item = new TopbarLiveSearchTools((string) $this->getPluginId());
+        $item->setLabel($this->translator->trans('main.livesearch.tools', domain: 'vis'));
+        $item->setLabelSearch($this->translator->trans('main.livesearch.placeholder', domain: 'vis'));
+        $item->setVis($this->vis);
+        $this->vis->addTopbar($item);
+
+        $item = new TopbarButtonDarkmode((string) $this->getPluginId());
+        $item->setLabel($this->translator->trans('main.toggle.darkmode', domain: 'vis'));
+        $this->vis->addTopbar($item);
+
+        $item = new TopbarButtonSidebar((string) $this->getPluginId());
+        $item->setLabel($this->translator->trans('main.toggle.sidebar', domain: 'vis'));
+        $this->vis->addTopbar($item);
+
+        $item = new TopbarButtonSidebar((string) $this->getPluginId(), 'toggle_sidebar_end', 'end', ['display' => 'large']);
+        $item->setLabel($this->translator->trans('main.toggle.sidebar', domain: 'vis'));
+        $this->vis->addTopbar($item);
+
+        $item = new SidebarHeader('{$lcName}', 'header_main', $this->translator->trans('navigation.header_main', domain: 'vis_{$lcName}'));
+        $item->addRole('ROLE_VIS_{$ucName}');
+        $item->addRole('ROLE_USER');
+        $this->vis->addSidebar($item);
+
+        $item = new SidebarItem('{$lcName}', 'vis_{$lcName}_dashboard', $this->translator->trans('navigation.dashboard', domain: 'vis_{$lcName}'), 'vis_{$lcName}_dashboard');
+        $item->generateIcon('fa-fw fa-solid fa-house');
+        $item->addRole('ROLE_VIS_{$ucName}');
+        $item->addRole('ROLE_USER');
+        $this->vis->addSidebar($item);
+
+        $item = new SidebarItem('{$lcName}', 'vis_{$lcName}_table', $this->translator->trans('navigation.table', domain: 'vis_{$lcName}'));
+        $item->generateIcon('fa-fw fa-solid fa-database');
+        $item->addRole('ROLE_VIS_{$ucName}');
+        $item->addRole('ROLE_USER');
+        $this->vis->addSidebar($item);
+
+        $item = new SidebarItem('{$lcName}', 'vis_{$lcName}_table_datatable', $this->translator->trans('navigation.datatable', domain: 'vis_{$lcName}'), 'vis_{$lcName}_table_datatable');
+        $item->generateCounter('5', 'secondary');
+        $item->setParent('vis_{$lcName}_table');
+        $item->addRole('ROLE_VIS_{$ucName}');
+        $item->addRole('ROLE_USER');
+        $this->vis->addSidebar($item);
+
+        $item = new SidebarHeader('{$lcName}', 'header_admin', $this->translator->trans('navigation.header_admin', domain: 'vis_{$lcName}'));
+        $item->addRole('ROLE_VIS_{$ucName}');
+        $item->addRole('ROLE_USER');
+        $this->vis->addSidebar($item);
+
+        $item = new SidebarItem('{$lcName}', 'vis_{$lcName}_user', $this->translator->trans('navigation.user', domain: 'vis_{$lcName}'), 'vis_{$lcName}_user');
+        $item->generateIcon('fa-fw fa-solid fa-house');
+        $item->addRole('ROLE_VIS_{$ucName}');
+        $item->addRole('ROLE_USER');
+        $this->vis->addSidebar($item, 'header_admin');
+    }
+}

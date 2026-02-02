@@ -98,92 +98,11 @@ class VisCoreCreateCommand extends Command
 
     private function dumpMainController(string $controllerFile): bool
     {
-        $controllerContent = '
-<?php
-
-declare(strict_types=1);
-
-namespace App\Controller\Vis;
-
-use JBSNewMedia\VisBundle\Service\Vis;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\HttpFoundation\Cookie;
-use Symfony\Component\HttpFoundation\JsonResponse;
-use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Routing\Attribute\Route;
-use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
-use Symfony\Component\Security\Http\Attribute\IsGranted;
-use Symfony\Contracts\Translation\TranslatorInterface;
-
-class MainController extends AbstractController
-{
-    public function __construct(public Vis $vis)
-    {
-    }
-
-    #[Route(path: \'/vis\', name: \'vis\', methods: [\'GET\', \'POST\'])]
-    #[IsGranted(\'ROLE_USER\')]
-    public function index(Request $request, TranslatorInterface $translator, UrlGeneratorInterface $urlGenerator): Response
-    {
-        if (!$request->getSession()->has(\'_locale\')) {
-            $request->getSession()->set(\'_locale\', $this->vis->getDefaultLocale());
-        }
-
-        $tools = $this->vis->getTools();
-        if ($request->isMethod(\'POST\')) {
-            $selectTool = $request->request->get(\'_tool\');
-            $rememberMe = $request->request->get(\'_remember_me\');
-            if (\'1\' === $rememberMe) {
-                $rememberMe = true;
-            } else {
-                $rememberMe = false;
-            }
-
-            if (!isset($tools[$selectTool])) {
-                return new JsonResponse([
-                    \'success\' => false,
-                    \'message\' => \'\',
-                    \'invalid\' => [
-                        \'_tool\' => $translator->trans(\'change.error.tool\', domain: \'vis\'),
-                    ],
-                ]);
-            }
-
-            $tool = $tools[$selectTool];
-            $target = $urlGenerator->generate(\'vis_\'.$tool->getId().\'_dashboard\');
-
-            $response = new JsonResponse([
-                \'success\' => true,
-                \'message\' => \'\',
-                \'redirect\' => $target,
-            ]);
-
-            if ($rememberMe) {
-                $cookie = new Cookie(\'vis_tool\', $tool->getId(), time() + 60 * 60 * 24 * 365);
-                $response->headers->setCookie($cookie);
-            }
-
-            return $response;
-        }
-
-        if (1 === count($tools)) {
-            $tool = $tools[array_key_first($tools)];
-
-            return $this->redirectToRoute(\'vis_\'.$tool->getId().\'_dashboard\');
-        }
-
-        $cookieTool = $request->cookies->get(\'vis_tool\');
-
-        return $this->render(\'@Vis/simple/change.html.twig\', [
-            \'tools\' => $tools,
-            \'cookieTool\' => $cookieTool,
-        ]);
-    }
-}';
+        $skeletonFile = __DIR__.'/../Resources/skeleton/core/MainController.php.skeleton';
+        $controllerContent = file_get_contents($skeletonFile);
 
         $filesystem = new Filesystem();
-        $filesystem->dumpFile($controllerFile, trim($controllerContent)."\n");
+        $filesystem->dumpFile($controllerFile, $controllerContent);
 
         if (!$filesystem->exists($controllerFile)) {
             $this->errorMessages[] = 'Controller cannot be created: '.$controllerFile;
@@ -196,35 +115,11 @@ class MainController extends AbstractController
 
     private function dumpSecurityController(string $controllerFile): bool
     {
-        $controllerContent = '
-<?php
-
-declare(strict_types=1);
-
-namespace App\Controller;
-
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Routing\Attribute\Route;
-use Symfony\Component\Security\Http\Authentication\AuthenticationUtils;
-
-class SecurityController extends AbstractController
-{
-    #[Route(path: \'/vis/login\', name: \'vis_login\')]
-    public function login(AuthenticationUtils $authenticationUtils): Response
-    {
-        return $this->render(\'@Vis/simple/login.html.twig\');
-    }
-
-    #[Route(path: \'/vis/logout\', name: \'vis_logout\')]
-    public function logout(): void
-    {
-        throw new \LogicException(\'This method can be blank - it will be intercepted by the logout key on your firewall.\');
-    }
-}';
+        $skeletonFile = __DIR__.'/../Resources/skeleton/core/SecurityController.php.skeleton';
+        $controllerContent = file_get_contents($skeletonFile);
 
         $filesystem = new Filesystem();
-        $filesystem->dumpFile($controllerFile, trim($controllerContent)."\n");
+        $filesystem->dumpFile($controllerFile, $controllerContent);
 
         if (!$filesystem->exists($controllerFile)) {
             $this->errorMessages[] = 'Controller cannot be created: '.$controllerFile;
@@ -237,58 +132,11 @@ class SecurityController extends AbstractController
 
     private function dumpRegistrationController(string $controllerFile): bool
     {
-        $controllerContent = '
-<?php
-
-declare(strict_types=1);
-
-namespace App\Controller\Vis;
-
-use Doctrine\ORM\EntityManagerInterface;
-use JBSNewMedia\VisBundle\Entity\User;
-use JBSNewMedia\VisBundle\Form\RegistrationFormType;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
-use Symfony\Component\Routing\Attribute\Route;
-
-class RegistrationController extends AbstractController
-{
-    #[Route(path: \'/vis/register\', name: \'vis_register\', priority: 10)]
-    public function register(
-        Request $request,
-        UserPasswordHasherInterface $userPasswordHasher,
-        EntityManagerInterface $entityManager
-    ): Response {
-        $user = new User();
-        $form = $this->createForm(RegistrationFormType::class, $user);
-        $form->handleRequest($request);
-
-        if ($form->isSubmitted() && $form->isValid()) {
-            // encode the plain password
-            $user->setPassword(
-                $userPasswordHasher->hashPassword(
-                    $user,
-                    $form->get(\'plainPassword\')->getData()
-                )
-            );
-
-            $entityManager->persist($user);
-            $entityManager->flush();
-
-            return $this->redirectToRoute(\'vis_login\');
-        }
-
-        return $this->render(\'@Vis/simple/register.html.twig\', [
-            \'registrationForm\' => $form,
-        ]);
-    }
-}
-';
+        $skeletonFile = __DIR__.'/../Resources/skeleton/core/RegistrationController.php.skeleton';
+        $controllerContent = file_get_contents($skeletonFile);
 
         $filesystem = new Filesystem();
-        $filesystem->dumpFile($controllerFile, trim($controllerContent)."\n");
+        $filesystem->dumpFile($controllerFile, $controllerContent);
 
         if (!$filesystem->exists($controllerFile)) {
             $this->errorMessages[] = 'Controller cannot be created: '.$controllerFile;
@@ -301,35 +149,9 @@ class RegistrationController extends AbstractController
 
     private function dumpLocaleController(string $controllerFile): bool
     {
-        $controllerContent = '<?php
+        $skeletonFile = __DIR__.'/../Resources/skeleton/core/LocaleController.php.skeleton';
+        $controllerContent = file_get_contents($skeletonFile);
 
-declare(strict_types=1);
-
-namespace App\Controller;
-
-use JBSNewMedia\VisBundle\Controller\VisAbstractController;
-use Symfony\Component\HttpFoundation\JsonResponse;
-use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\Routing\Annotation\Route;
-
-class LocaleController extends VisAbstractController
-{
-    #[Route(\'/vis/api/locale/{_locale}\', name: \'vis_api_locale\')]
-    public function setLocale(Request $request, string $_locale): JsonResponse
-    {
-        if (!in_array($_locale, $this->vis->getLocales(), true)) {
-            $_locale = $this->vis->getDefaultLocale();
-        }
-
-        $request->getSession()->set(\'_locale\', $_locale);
-
-        return new JsonResponse([
-            \'locale\' => $_locale,
-            \'success\' => true,
-        ]);
-    }
-}
-';
         $filesystem = new Filesystem();
         $filesystem->dumpFile($controllerFile, $controllerContent);
 
@@ -348,16 +170,18 @@ class LocaleController extends VisAbstractController
         $filesystem = new Filesystem();
 
         $localesArray = array_map('trim', explode(',', $locales));
+        $skeletonFile = __DIR__.'/../Resources/skeleton/core/vis.yaml.skeleton';
+        $content = file_get_contents($skeletonFile);
 
-        $data = [
-            'vis' => [
-                'locales' => $localesArray,
-                'default_locale' => $defaultLocale,
-            ],
+        $replacements = [
+            '{$locales}' => json_encode($localesArray),
+            '{$default_locale}' => $defaultLocale,
         ];
 
+        $content = str_replace(array_keys($replacements), array_values($replacements), $content);
+
         try {
-            $filesystem->dumpFile($yamlFile, Yaml::dump($data, 4));
+            $filesystem->dumpFile($yamlFile, $content);
         } catch (\Exception $e) {
             $this->errorMessages[] = 'Error writing YAML file: '.$e->getMessage();
 
@@ -378,6 +202,9 @@ class LocaleController extends VisAbstractController
             return false;
         }
 
+        $skeletonFile = __DIR__.'/../Resources/skeleton/core/security.yaml.skeleton';
+        $patchData = Yaml::parseFile($skeletonFile);
+
         try {
             $data = Yaml::parseFile($yamlFile);
         } catch (\Exception $e) {
@@ -396,107 +223,57 @@ class LocaleController extends VisAbstractController
             $data['security'] = [];
         }
 
-        $data['security']['providers']['vis_user_provider'] = [
-            'entity' => [
-                'class' => \JBSNewMedia\VisBundle\Entity\User::class,
-                'property' => 'email',
-            ],
-        ];
+        $data['security']['providers']['vis_user_provider'] = $patchData['security']['providers']['vis_user_provider'];
 
         if (!isset($data['security']['firewalls'])) {
             $data['security']['firewalls'] = [];
         }
 
         if (!isset($data['security']['firewalls']['vis'])) {
-            foreach ($data['security']['firewalls'] as $key => $provider) {
-                $array = $data['security']['firewalls'];
-                $newArray = [];
-                $inserted = false;
-
-                foreach ($array as $key => $value) {
-                    $newArray[$key] = $value;
-                    if ('dev' === $key && !$inserted) {
-                        $newArray['vis'] = [];
-                        $inserted = true;
-                    }
+            $newFirewalls = [];
+            $inserted = false;
+            foreach ($data['security']['firewalls'] as $key => $value) {
+                $newFirewalls[$key] = $value;
+                if ('dev' === $key && !$inserted) {
+                    $newFirewalls['vis'] = [];
+                    $inserted = true;
                 }
-
-                $data['security']['firewalls'] = $newArray;
             }
+            if (!$inserted) {
+                $newFirewalls['vis'] = [];
+            }
+            $data['security']['firewalls'] = $newFirewalls;
         }
 
-        $data['security']['firewalls']['vis'] = [
-            'lazy' => true,
-            'provider' => 'vis_user_provider',
-            'custom_authenticator' => \JBSNewMedia\VisBundle\Security\VisAuthenticator::class,
-            'logout' => [
-                'path' => 'vis_logout',
-                'target' => 'vis',
-            ],
-            'remember_me' => [
-                'secret' => '%kernel.secret%',
-                'lifetime' => 604800,
-            ],
-        ];
+        $data['security']['firewalls']['vis'] = $patchData['security']['firewalls']['vis'];
 
-        $accessControls = [
-            '^/vis/login' => [
-                'path' => '^/vis/login',
-                'roles' => null,
-            ],
-            '^/vis/logout' => [
-                'path' => '^/vis/logout',
-                'roles' => null,
-            ],
-            '^/vis/register' => [
-                'path' => '^/vis/register',
-                'roles' => null,
-            ],
-            '^/vis' => [
-                'path' => '^/vis',
-                'roles' => 'ROLE_USER',
-            ],
-        ];
-
+        $accessControls = $patchData['security']['access_control'];
         if ($useLocales) {
-            $accessControls['^/vis/api'] = [
-                'path' => '^/vis/api',
-                'roles' => null,
-            ];
+            $accessControls[] = ['path' => '^/vis/api', 'roles' => null];
         }
-        if (!array_key_exists('security', $data) || !array_key_exists('access_control', $data['security']) || [] === $data['security']['access_control']) {
+
+        if (!isset($data['security']['access_control']) || !is_array($data['security']['access_control'])) {
             $data['security']['access_control'] = [];
-            foreach ($accessControls as $accessControl) {
-                $data['security']['access_control'][] = [
-                    'path' => $accessControl['path'],
-                    'roles' => $accessControl['roles'],
-                ];
-            }
-        } else {
-            if ((isset($data['security']['access_control'])) && is_array($data['security']['access_control'])) {
-                foreach ($data['security']['access_control'] as $accessControl) {
-                    if (isset($accessControls[$accessControl['path']])) {
-                        unset($accessControls[$accessControl['path']]);
-                    }
-                }
-            }
-
-            $accessControlsNew = [];
-            foreach ($accessControls as $accessControl) {
-                $accessControlsNew[] = $accessControl;
-            }
-
-            if ((isset($data['security']['access_control'])) && is_array($data['security']['access_control'])) {
-                foreach ($data['security']['access_control'] as $accessControl) {
-                    $accessControlsNew[] = $accessControl;
-                }
-            }
-
-            $data['security']['access_control'] = $accessControlsNew;
         }
 
-        $yamlContent = Yaml::dump($data, 6, 4);
-        $filesystem->dumpFile($yamlFile, $yamlContent);
+        $existingPaths = array_column($data['security']['access_control'], 'path');
+        $newAccessControls = [];
+
+        foreach ($accessControls as $control) {
+            if (!in_array($control['path'], $existingPaths)) {
+                $newAccessControls[] = $control;
+            }
+        }
+
+        $data['security']['access_control'] = array_merge($newAccessControls, $data['security']['access_control']);
+
+        try {
+            $filesystem->dumpFile($yamlFile, Yaml::dump($data, 6, 4));
+        } catch (\Exception $e) {
+            $this->errorMessages[] = 'Error writing YAML file: '.$e->getMessage();
+
+            return false;
+        }
 
         return true;
     }

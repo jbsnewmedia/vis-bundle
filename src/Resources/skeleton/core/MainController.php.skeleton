@@ -1,0 +1,82 @@
+<?php
+
+declare(strict_types=1);
+
+namespace App\Controller\Vis;
+
+use JBSNewMedia\VisBundle\Service\Vis;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\Cookie;
+use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
+use Symfony\Contracts\Translation\TranslatorInterface;
+
+class MainController extends AbstractController
+{
+    public function __construct(public Vis $vis)
+    {
+    }
+
+    #[Route(path: '/vis', name: 'vis', methods: ['GET', 'POST'])]
+    #[IsGranted('ROLE_USER')]
+    public function index(Request $request, TranslatorInterface $translator, UrlGeneratorInterface $urlGenerator): Response
+    {
+        if (!$request->getSession()->has('_locale')) {
+            $request->getSession()->set('_locale', $this->vis->getDefaultLocale());
+        }
+
+        $tools = $this->vis->getTools();
+        if ($request->isMethod('POST')) {
+            $selectTool = $request->request->get('_tool');
+            $rememberMe = $request->request->get('_remember_me');
+            if ('1' === $rememberMe) {
+                $rememberMe = true;
+            } else {
+                $rememberMe = false;
+            }
+
+            if (!isset($tools[$selectTool])) {
+                return new JsonResponse([
+                    'success' => false,
+                    'message' => '',
+                    'invalid' => [
+                        '_tool' => $translator->trans('change.error.tool', domain: 'vis'),
+                    ],
+                ]);
+            }
+
+            $tool = $tools[$selectTool];
+            $target = $urlGenerator->generate('vis_'.$tool->getId().'_dashboard');
+
+            $response = new JsonResponse([
+                'success' => true,
+                'message' => '',
+                'redirect' => $target,
+            ]);
+
+            if ($rememberMe) {
+                $cookie = new Cookie('vis_tool', $tool->getId(), time() + 60 * 60 * 24 * 365);
+                $response->headers->setCookie($cookie);
+            }
+
+            return $response;
+        }
+
+        if (1 === count($tools)) {
+            $tool = $tools[array_key_first($tools)];
+
+            return $this->redirectToRoute('vis_'.$tool->getId().'_dashboard');
+        }
+
+        $cookieTool = $request->cookies->get('vis_tool');
+
+        return $this->render('@Vis/simple/change.html.twig', [
+            'tools' => $tools,
+            'cookieTool' => $cookieTool,
+        ]);
+    }
+}

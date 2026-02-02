@@ -1,0 +1,25 @@
+<?php
+
+declare(strict_types=1);
+
+namespace {$namespace};
+
+use JBSNewMedia\VisBundle\Plugin\AbstractVisBundle;
+use {$namespace}\DependencyInjection\{$extensionName};
+use Symfony\Component\DependencyInjection\Extension\ExtensionInterface;
+
+class {$bundleName} extends AbstractVisBundle
+{
+    public function getContainerExtension(): ?ExtensionInterface
+    {
+        if (null === $this->extension) {
+            $this->extension = new {$extensionName}();
+        }
+
+        if (false === $this->extension) {
+            return null;
+        }
+
+        return $this->extension;
+    }
+}

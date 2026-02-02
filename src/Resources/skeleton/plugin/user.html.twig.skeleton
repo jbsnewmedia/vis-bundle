@@ -1,0 +1,12 @@
+{% extends '@Vis/tool/base.html.twig' %}
+{% block vis_container %}
+    {{ parent() }}
+    <div class="card shadow">
+        <div class="card-header">
+            {{ 'user.title'|trans({}, 'vis_{$lcName}') }}
+        </div>
+        <div class="card-body">
+            {{ 'user.description'|trans({}, 'vis_{$lcName}') }}
+        </div>
+    </div>
+{% endblock %}
