@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace JBSNewMedia\VisBundle\DependencyInjection;
 
 use Symfony\Component\Config\Definition\Builder\ArrayNodeDefinition;
+use Symfony\Component\Config\Definition\Builder\NodeBuilder;
+use Symfony\Component\Config\Definition\Builder\ScalarNodeDefinition;
 use Symfony\Component\Config\Definition\Builder\TreeBuilder;
 use Symfony\Component\Config\Definition\ConfigurationInterface;
 
@@ -16,14 +18,16 @@ class Configuration implements ConfigurationInterface
         /** @var ArrayNodeDefinition $rootNode */
         $rootNode = $treeBuilder->getRootNode();
 
-        $rootNode
-            ->children()
-                ->arrayNode('locales')
-                    ->scalarPrototype()->end()
-                ->end()
-                ->scalarNode('default_locale')->defaultValue('en')->end()
-            ->end()
-        ;
+        /** @var NodeBuilder $children */
+        $children = $rootNode->children();
+
+        /** @var ArrayNodeDefinition $localesNode */
+        $localesNode = $children->arrayNode('locales');
+        $localesNode->scalarPrototype();
+
+        /** @var ScalarNodeDefinition $defaultLocaleNode */
+        $defaultLocaleNode = $children->scalarNode('default_locale');
+        $defaultLocaleNode->defaultValue('en');
 
         return $treeBuilder;
     }

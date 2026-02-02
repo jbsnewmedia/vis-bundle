@@ -35,7 +35,6 @@ class VisPluginPass implements CompilerPassInterface
                     $definition->addTag('VisPlugin', $tagAttributes);
                 }
             } catch (\ReflectionException) {
-                // Class not found or not accessible
                 continue;
             }
         }

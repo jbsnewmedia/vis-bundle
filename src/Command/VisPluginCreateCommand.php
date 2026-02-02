@@ -30,7 +30,7 @@ class VisPluginCreateCommand extends Command
 
         /** @var string $name */
         $name = $io->ask('Plugin name (e.g. Demo)', null, function (mixed $answer) {
-            if (!is_string($answer) || $answer === '') {
+            if (!is_string($answer) || '' === $answer) {
                 throw new \RuntimeException('Plugin name cannot be empty');
             }
             if (!preg_match('/^[a-zA-Z0-9]+$/', $answer)) {
@@ -42,7 +42,7 @@ class VisPluginCreateCommand extends Command
 
         /** @var string $company */
         $company = $io->ask('Company name', 'Company', function (mixed $answer) {
-            if (!is_string($answer) || $answer === '') {
+            if (!is_string($answer) || '' === $answer) {
                 throw new \RuntimeException('Company name cannot be empty');
             }
             if (!preg_match('/^[a-zA-Z0-9]+$/', $answer)) {

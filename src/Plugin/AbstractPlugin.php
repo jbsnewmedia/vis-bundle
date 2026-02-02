@@ -26,7 +26,6 @@ abstract class AbstractPlugin implements PluginInterface
                 }
             }
         } catch (\ReflectionException) {
-            // ignore
         }
 
         return null;
@@ -44,7 +43,6 @@ abstract class AbstractPlugin implements PluginInterface
                 return $instance->priority;
             }
         } catch (\ReflectionException) {
-            // ignore
         }
 
         return 100;

@@ -275,8 +275,6 @@ class VisCoreCreateCommand extends Command
 
         /** @var array<string, mixed> $security */
         $security = $data['security'];
-
-        // ensure providers structure exists
         if (!isset($security['providers']) || !is_array($security['providers'])) {
             $security['providers'] = [];
         }

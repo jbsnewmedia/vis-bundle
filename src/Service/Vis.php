@@ -44,24 +44,15 @@ class Vis
     protected array $routes = [];
 
     /**
-     * @var string[]
-     */
-    protected array $locales = [];
-
-    protected string $defaultLocale = 'en';
-
-    /**
      * @param string[] $locales
      */
     public function __construct(
         protected TranslatorInterface $translator,
         protected UrlGeneratorInterface $router,
         protected Security $security,
-        array $locales = ['en'],
-        string $defaultLocale = 'en',
+        protected array $locales = ['en'],
+        protected string $defaultLocale = 'en',
     ) {
-        $this->locales = $locales;
-        $this->defaultLocale = $defaultLocale;
         $user = $this->security->getUser();
         if (null !== $user) {
             $this->setRoles($user->getRoles());

@@ -250,7 +250,6 @@ abstract class KernelPluginLoader extends Bundle
                 continue;
             }
 
-            // 'active' kann bool oder int oder string oder gar nicht gesetzt sein.
             $isActive = !empty($pluginData['active']);
             $pluginPath = is_string($pluginData['path'] ?? null) ? $pluginData['path'] : '';
 

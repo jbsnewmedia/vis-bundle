@@ -18,7 +18,7 @@ use Symfony\Component\HttpKernel\KernelInterface;
 )]
 class VisProjectCreateCommand extends Command
 {
-    private string $skeletonDir;
+    private readonly string $skeletonDir;
 
     public function __construct(
         private readonly KernelInterface $kernel,
@@ -65,7 +65,6 @@ class VisProjectCreateCommand extends Command
     {
         $io->section('Copying skeleton files');
 
-        // Copy root files
         $rootFiles = [
             'phpstan-global.neon' => 'phpstan-global.neon',
             'rector.php.skeleton' => 'rector.php',
@@ -81,7 +80,6 @@ class VisProjectCreateCommand extends Command
             }
         }
 
-        // Ensure plugins directory exists
         if (!$this->filesystem->exists($projectDir.'/plugins')) {
             $this->filesystem->mkdir($projectDir.'/plugins');
             $this->filesystem->dumpFile($projectDir.'/plugins/plugins.json', '[]');
@@ -116,12 +114,10 @@ class VisProjectCreateCommand extends Command
             return;
         }
 
-        // Merge require-dev
         if (isset($skeletonComposer['require-dev'])) {
             $projectComposer['require-dev'] = array_merge($projectComposer['require-dev'] ?? [], $skeletonComposer['require-dev']);
         }
 
-        // Merge config
         if (isset($skeletonComposer['config'])) {
             $projectComposer['config'] = array_merge($projectComposer['config'] ?? [], $skeletonComposer['config']);
             if (isset($skeletonComposer['config']['allow-plugins'])) {
@@ -132,12 +128,10 @@ class VisProjectCreateCommand extends Command
             }
         }
 
-        // Merge extra
         if (isset($skeletonComposer['extra'])) {
             $projectComposer['extra'] = array_merge($projectComposer['extra'] ?? [], $skeletonComposer['extra']);
         }
 
-        // Merge scripts
         if (isset($skeletonComposer['scripts'])) {
             $projectComposer['scripts'] = array_merge($projectComposer['scripts'] ?? [], $skeletonComposer['scripts']);
         }
@@ -168,7 +162,6 @@ class VisProjectCreateCommand extends Command
             $content = str_replace('<?php', "<?php\n\ndeclare(strict_types=1);", $content);
         }
 
-        // Add use statements if not present
         $useStatements = [
             'use Composer\Autoload\ClassLoader;',
             'use JBSNewMedia\VisBundle\Core\JsonKernelPluginLoader;',
@@ -189,12 +182,10 @@ class VisProjectCreateCommand extends Command
         $content = str_replace("\n\nuse", "\nuse", $content);
         $content = $this->safePregReplace('/(namespace [^;]+;)\nuse/', "$1\n\nuse", $content);
 
-        // Add property
         if (!str_contains($content, 'private readonly JsonKernelPluginLoader $pluginLoader;')) {
             $content = $this->safePregReplace('/class Kernel extends BaseKernel\s*{/', "$0\n    private readonly JsonKernelPluginLoader \$pluginLoader;", $content);
         }
 
-        // Patch Constructor
         if (str_contains($content, 'public function __construct')) {
             $io->warning('Kernel already has a constructor. Please manualy add ClassLoader and initialize JsonKernelPluginLoader.');
         } else {
@@ -202,7 +193,6 @@ class VisProjectCreateCommand extends Command
             $content = $this->safePregReplace('/use MicroKernelTrait;/', "$0\n$constructor", $content);
         }
 
-        // Patch registerBundles
         if (str_contains($content, 'public function registerBundles()')) {
             $io->warning('registerBundles already exists. Please manually integrate plugin loading logic.');
         } else {
@@ -210,7 +200,6 @@ class VisProjectCreateCommand extends Command
             $content = str_replace('use MicroKernelTrait;', "use MicroKernelTrait;\n$registerBundles", $content);
         }
 
-        // Patch build
         if (str_contains($content, 'function build(')) {
             $io->warning('build() already exists. Please manually add $this->pluginLoader->build($container).');
         } else {
@@ -218,7 +207,6 @@ class VisProjectCreateCommand extends Command
             $content = $this->safePregReplace('/use MicroKernelTrait;/', "$0\n$build", $content);
         }
 
-        // Patch configureContainer
         if (str_contains($content, 'function configureContainer(')) {
             $io->warning('configureContainer() already exists. Please manually check the configuration logic.');
         } else {
@@ -226,7 +214,6 @@ class VisProjectCreateCommand extends Command
             $content = $this->safePregReplace('/use MicroKernelTrait;/', "$0\n$configureContainer", $content);
         }
 
-        // Patch configureRoutes and addBundleRoutes
         if (str_contains($content, 'function configureRoutes(')) {
             $io->warning('configureRoutes() already exists. Please manually check the routing logic.');
         } else {
