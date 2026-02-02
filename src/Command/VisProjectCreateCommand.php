@@ -172,16 +172,19 @@ class VisProjectCreateCommand extends Command
             }
         }
 
+        $content = str_replace("\n\nuse", "\nuse", $content);
+        $content = preg_replace('/(namespace [^;]+;)\nuse/', "$1\n\nuse", $content);
+
         // Add property
         if (!str_contains($content, 'private readonly JsonKernelPluginLoader $pluginLoader;')) {
-            $content = preg_replace('/class Kernel extends BaseKernel\s*{/', "$0\n    private readonly JsonKernelPluginLoader \$pluginLoader;\n", $content);
+            $content = preg_replace('/class Kernel extends BaseKernel\s*{/', "$0\n    private readonly JsonKernelPluginLoader \$pluginLoader;", $content);
         }
 
         // Patch Constructor
         if (str_contains($content, 'public function __construct')) {
             $io->warning('Kernel already has a constructor. Please manualy add ClassLoader and initialize JsonKernelPluginLoader.');
         } else {
-            $constructor = "\n    public function __construct(string \$environment, bool \$debug, private readonly ClassLoader \$classLoader)\n    {\n        parent::__construct(\$environment, \$debug);\n        \$this->pluginLoader = new JsonKernelPluginLoader(\$this->classLoader, \$this);\n        \$this->pluginLoader->initializePlugins(\$this->getProjectDir());\n    }\n";
+            $constructor = "\n    public function __construct(string \$environment, bool \$debug, private readonly ClassLoader \$classLoader)\n    {\n        parent::__construct(\$environment, \$debug);\n        \$this->pluginLoader = new JsonKernelPluginLoader(\$this->classLoader, \$this);\n        \$this->pluginLoader->initializePlugins(\$this->getProjectDir());\n    }";
             $content = preg_replace('/use MicroKernelTrait;/', "$0\n$constructor", $content);
         }
 
@@ -189,7 +192,7 @@ class VisProjectCreateCommand extends Command
         if (str_contains($content, 'public function registerBundles()')) {
             $io->warning('registerBundles already exists. Please manually integrate plugin loading logic.');
         } else {
-            $registerBundles = "\n    public function registerBundles(): iterable\n    {\n        \$bundles = require \$this->getProjectDir().'/config/bundles.php';\n        \$instanciatedBundleNames = [];\n        foreach (\$bundles as \$class => \$envs) {\n            if (isset(\$envs['all']) || isset(\$envs[\$this->environment])) {\n                if (is_subclass_of(\$class, AbstractVisBundle::class)) {\n                    continue;\n                }\n                /**\n                 * @var Bundle \$bundle\n                 */\n                \$bundle = new \$class();\n                \$instanciatedBundleNames[] = \$bundle->getName();\n\n                yield \$bundle;\n            }\n        }\n        yield from \$this->pluginLoader->getBundles(\$this->getKernelParameters(), \$instanciatedBundleNames);\n    }\n";
+            $registerBundles = "\n    public function registerBundles(): iterable\n    {\n        \$bundles = require \$this->getProjectDir().'/config/bundles.php';\n        \$instanciatedBundleNames = [];\n        foreach (\$bundles as \$class => \$envs) {\n            if (isset(\$envs['all']) || isset(\$envs[\$this->environment])) {\n                if (is_subclass_of(\$class, AbstractVisBundle::class)) {\n                    continue;\n                }\n                /**\n                 * @var Bundle \$bundle\n                 */\n                \$bundle = new \$class();\n                \$instanciatedBundleNames[] = \$bundle->getName();\n\n                yield \$bundle;\n            }\n        }\n        yield from \$this->pluginLoader->getBundles(\$this->getKernelParameters(), \$instanciatedBundleNames);\n    }";
             $content = str_replace('use MicroKernelTrait;', "use MicroKernelTrait;\n$registerBundles", $content);
         }
 
@@ -197,7 +200,7 @@ class VisProjectCreateCommand extends Command
         if (str_contains($content, 'function build(')) {
             $io->warning('build() already exists. Please manually add $this->pluginLoader->build($container).');
         } else {
-            $build = "\n    protected function build(ContainerBuilder \$container): void\n    {\n        parent::build(\$container);\n        \$this->pluginLoader->build(\$container);\n    }\n";
+            $build = "\n    protected function build(ContainerBuilder \$container): void\n    {\n        parent::build(\$container);\n        \$this->pluginLoader->build(\$container);\n    }";
             $content = preg_replace('/use MicroKernelTrait;/', "$0\n$build", $content);
         }
 
@@ -205,7 +208,7 @@ class VisProjectCreateCommand extends Command
         if (str_contains($content, 'function configureContainer(')) {
             $io->warning('configureContainer() already exists. Please manually check the configuration logic.');
         } else {
-            $configureContainer = "\n    protected function configureContainer(ContainerConfigurator \$container): void\n    {\n        \$container->import('../config/{packages}/*.yaml');\n        \$container->import('../config/{packages}/'.\$this->environment.'/*.yaml');\n\n        if (is_file(\\dirname(__DIR__).'/config/services.yaml')) {\n            \$container->import('../config/{services}.yaml');\n            \$container->import('../config/{services}_'.\$this->environment.'.yaml');\n        } elseif (is_file(\$path = \\dirname(__DIR__).'/config/services.php')) {\n            (require \$path)(\$container->withPath(\$path), \$this);\n        }\n    }\n";
+            $configureContainer = "\n    protected function configureContainer(ContainerConfigurator \$container): void\n    {\n        \$container->import('../config/{packages}/*.yaml');\n        \$container->import('../config/{packages}/'.\$this->environment.'/*.yaml');\n\n        if (is_file(\\dirname(__DIR__).'/config/services.yaml')) {\n            \$container->import('../config/{services}.yaml');\n            \$container->import('../config/{services}_'.\$this->environment.'.yaml');\n        } elseif (is_file(\$path = \\dirname(__DIR__).'/config/services.php')) {\n            (require \$path)(\$container->withPath(\$path), \$this);\n        }\n    }";
             $content = preg_replace('/use MicroKernelTrait;/', "$0\n$configureContainer", $content);
         }
 
@@ -213,7 +216,7 @@ class VisProjectCreateCommand extends Command
         if (str_contains($content, 'function configureRoutes(')) {
             $io->warning('configureRoutes() already exists. Please manually check the routing logic.');
         } else {
-            $configureRoutes = "\n    protected function configureRoutes(RoutingConfigurator \$routes): void\n    {\n        \$routes->import('../config/{routes}/'.\$this->environment.'/*.yaml');\n        \$routes->import('../config/{routes}/*.yaml');\n\n        if (is_file(\\dirname(__DIR__).'/config/routes.yaml')) {\n            \$routes->import('../config/{routes}.yaml');\n        } elseif (is_file(\$path = \\dirname(__DIR__).'/config/routes.php')) {\n            (require \$path)(\$routes->withPath(\$path), \$this);\n        }\n\n        \$this->addBundleRoutes(\$routes);\n    }\n\n    private function addBundleRoutes(RoutingConfigurator \$routes): void\n    {\n        foreach (\$this->getBundles() as \$bundle) {\n            if (\$bundle instanceof AbstractBundle) {\n                if (is_file(\$bundle->getPath().'/config/routes.yaml')) {\n                    \$routes->import(\$bundle->getPath().'/config/{routes}.yaml');\n                } elseif (is_file(\$path = \$bundle->getPath().'/config/routes.php')) {\n                    (require \$path)(\$routes->withPath(\$path), \$this);\n                }\n            }\n            if (\$bundle instanceof AbstractVisBundle) {\n                \$bundle->configureRoutes(\$routes, (string) \$this->environment);\n            }\n        }\n    }\n";
+            $configureRoutes = "\n    protected function configureRoutes(RoutingConfigurator \$routes): void\n    {\n        \$routes->import('../config/{routes}/'.\$this->environment.'/*.yaml');\n        \$routes->import('../config/{routes}/*.yaml');\n\n        if (is_file(\\dirname(__DIR__).'/config/routes.yaml')) {\n            \$routes->import('../config/{routes}.yaml');\n        } elseif (is_file(\$path = \\dirname(__DIR__).'/config/routes.php')) {\n            (require \$path)(\$routes->withPath(\$path), \$this);\n        }\n\n        \$this->addBundleRoutes(\$routes);\n    }\n\n    private function addBundleRoutes(RoutingConfigurator \$routes): void\n    {\n        foreach (\$this->getBundles() as \$bundle) {\n            if (\$bundle instanceof AbstractBundle) {\n                if (is_file(\$bundle->getPath().'/config/routes.yaml')) {\n                    \$routes->import(\$bundle->getPath().'/config/{routes}.yaml');\n                } elseif (is_file(\$path = \$bundle->getPath().'/config/routes.php')) {\n                    (require \$path)(\$routes->withPath(\$path), \$this);\n                }\n            }\n            if (\$bundle instanceof AbstractVisBundle) {\n                \$bundle->configureRoutes(\$routes, (string) \$this->environment);\n            }\n        }\n    }";
             $content = preg_replace('/use MicroKernelTrait;/', "$0\n$configureRoutes", $content);
         }
 
