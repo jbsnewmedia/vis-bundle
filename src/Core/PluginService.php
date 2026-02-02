@@ -122,23 +122,21 @@ class PluginService
      */
     public function pluginActivationLifecycle(array $pluginData): void
     {
-        $className = $pluginData['baseClass'] ?? null;
-        if (!is_string($className) || !class_exists($className)) {
-            return;
-        }
-        if (empty($pluginData['active'])) {
-            return;
-        }
-        $plugin = new $className(true, $pluginData['path'] ?? '', $this->projectDir);
-        if (method_exists($plugin, 'activate')) {
-            $plugin->activate(new PluginInstallContext($this->appKernel->getContainer(), $pluginData));
-        }
+        $this->runPluginLifecycle($pluginData);
     }
 
     /**
      * @param array<string|mixed> $pluginData
      */
     public function pluginUpdateLifecycle(array $pluginData): void
+    {
+        $this->runPluginLifecycle($pluginData);
+    }
+
+    /**
+     * @param array<string|mixed> $pluginData
+     */
+    private function runPluginLifecycle(array $pluginData): void
     {
         $className = $pluginData['baseClass'] ?? null;
         if (!is_string($className) || !class_exists($className)) {
@@ -161,8 +159,8 @@ class PluginService
         if (!empty($pluginData['public']) && is_string($pluginData['public'])) {
             $src = $pluginData['public'];
             $dest = $this->projectDir.'/public/bundles/'.$pluginData['name'];
-            @mkdir($dest, 0777, true);
             $filesystem = new Filesystem();
+            $filesystem->mkdir($dest, 0777);
             $filesystem->mirror($src, $dest, null, ['override' => true, 'delete' => true]);
         }
     }

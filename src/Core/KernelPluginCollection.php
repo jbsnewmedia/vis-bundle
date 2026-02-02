@@ -57,7 +57,7 @@ class KernelPluginCollection
      */
     public function getActives(): array
     {
-        return array_filter($this->plugins, static fn (AbstractVisBundle $plugin): bool => method_exists($plugin, 'isActive') ? $plugin->isActive() : false);
+        return array_filter($this->plugins, static fn (AbstractVisBundle $plugin): bool => $plugin->isActive());
     }
 
     public function filter(\Closure $closure): KernelPluginCollection

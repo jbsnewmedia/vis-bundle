@@ -118,7 +118,7 @@ abstract class KernelPluginLoader extends Bundle
     final public function getPluginInstance(string $class): ?AbstractVisBundle
     {
         $plugin = $this->pluginInstances->get($class);
-        if (!$plugin || !(method_exists($plugin, 'isActive') && $plugin->isActive())) {
+        if (!$plugin || !$plugin->isActive()) {
             return null;
         }
 
@@ -236,19 +236,23 @@ abstract class KernelPluginLoader extends Bundle
     private function instantiatePlugins(string $projectDir): void
     {
         foreach ($this->pluginInfos as $pluginData) {
-            if (!is_array($pluginData) || !isset($pluginData['baseClass']) || !is_string($pluginData['baseClass'])) {
+            if (!is_array($pluginData)) {
                 continue;
             }
-            $className = $pluginData['baseClass'];
+
+            $className = $pluginData['baseClass'] ?? null;
+            if (!is_string($className) || !class_exists($className)) {
+                continue;
+            }
 
             $pluginClassFilePath = $this->classLoader->findFile($className);
-            if (!class_exists($className) || !$pluginClassFilePath || !file_exists($pluginClassFilePath)) {
+            if (!$pluginClassFilePath || !file_exists($pluginClassFilePath)) {
                 continue;
             }
 
             // 'active' kann bool oder int oder string oder gar nicht gesetzt sein.
             $isActive = !empty($pluginData['active']);
-            $pluginPath = isset($pluginData['path']) && is_string($pluginData['path']) ? $pluginData['path'] : '';
+            $pluginPath = (string) ($pluginData['path'] ?? '');
 
             $plugin = new $className($isActive, $pluginPath, $projectDir);
 
@@ -258,9 +262,7 @@ abstract class KernelPluginLoader extends Bundle
                     $plugin::class,
                     AbstractVisBundle::class
                 );
-                $pluginName = isset($pluginData['name']) && is_string($pluginData['name'])
-                    ? $pluginData['name']
-                    : $className;
+                $pluginName = (string) ($pluginData['name'] ?? $className);
                 throw new KernelPluginLoaderException($pluginName, $reason);
             }
 
