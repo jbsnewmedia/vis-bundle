@@ -22,7 +22,8 @@
     "jbsnewmedia/symfony-web-pack": "^1.0",
     "symfony/framework-bundle": "^6.4|^7.0",
     "symfony/finder": "^6.4|^7.2",
-    "symfony/yaml": "^7.2"
+    "symfony/yaml": "^7.2",
+    "composer/class-map-generator": "*"
   },
   "require-dev": {
     "bamarni/composer-bin-plugin": "^1.8"

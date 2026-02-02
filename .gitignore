@@ -4,3 +4,7 @@
 /.php-cs-fixer.cache
 /phpstan.neon
 /ai.txt
+/vendor-bin/ecs/composer.lock
+/vendor-bin/phpstan/composer.lock
+/vendor-bin/rector/composer.lock
+/composer.lock
