@@ -16,7 +16,8 @@ class LocaleListener
             return;
         }
 
-        if ($locale = $request->getSession()->get('_locale')) {
+        $locale = $request->getSession()->get('_locale');
+        if (is_string($locale) && '' !== $locale) {
             $request->setLocale($locale);
         }
     }

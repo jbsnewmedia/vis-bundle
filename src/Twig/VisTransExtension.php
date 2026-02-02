@@ -28,10 +28,14 @@ class VisTransExtension extends AbstractExtension
         ];
     }
 
+    /**
+     * @param array<string, string|int|float|bool> $parameters
+     */
     public function translateKey(string $var, array $parameters = [], ?string $domain = null): string
     {
-        if (isset($this->cache[$var.'_'.($domain ?? 'null')])) {
-            return $this->cache[$var.'_'.($domain ?? 'null')];
+        $cacheKey = $var.'_'.($domain ?? 'null');
+        if (isset($this->cache[$cacheKey])) {
+            return $this->cache[$cacheKey];
         }
 
         if (null === $domain) {
@@ -41,14 +45,14 @@ class VisTransExtension extends AbstractExtension
                 if ($this->translator instanceof TranslatorBagInterface) {
                     if ($this->translator->getCatalogue()->has($var, $domain)) {
                         $trans = $this->translator->trans($var, $parameters, $domain);
-                        $this->cache[$var.'_'.($domain ?? 'null')] = $trans;
+                        $this->cache[$var.'_'.$domain] = $trans;
 
                         return $trans;
                     }
                 } else {
                     $trans = $this->translator->trans($var, $parameters, $domain);
                     if ($trans !== $var) {
-                        $this->cache[$var.'_'.($domain ?? 'null')] = $trans;
+                        $this->cache[$var.'_'.$domain] = $trans;
 
                         return $trans;
                     }
@@ -58,7 +62,7 @@ class VisTransExtension extends AbstractExtension
         }
 
         $trans = $this->translator->trans($var, $parameters, $domain);
-        $this->cache[$var.'_'.($domain ?? 'null')] = $trans;
+        $this->cache[$var.'_'.$domain] = $trans;
 
         return $trans;
     }

@@ -22,10 +22,10 @@ class VisProjectCreateCommand extends Command
 
     public function __construct(
         private readonly KernelInterface $kernel,
-        private readonly Filesystem $filesystem = new Filesystem()
+        private readonly Filesystem $filesystem = new Filesystem(),
     ) {
         parent::__construct();
-        $this->skeletonDir = __DIR__ . '/../Resources/skeleton/project';
+        $this->skeletonDir = __DIR__.'/../Resources/skeleton/project';
     }
 
     protected function execute(InputInterface $input, OutputInterface $output): int
@@ -37,6 +37,7 @@ class VisProjectCreateCommand extends Command
 
         if (!$io->confirm('This will copy skeleton files and patch your src/Kernel.php. Do you want to continue?', true)) {
             $io->warning('Operation cancelled.');
+
             return Command::SUCCESS;
         }
 
@@ -73,25 +74,25 @@ class VisProjectCreateCommand extends Command
             '.gitattributes' => '.gitattributes',
         ];
         foreach ($rootFiles as $skeletonFile => $targetFile) {
-            $fullSkeletonPath = $this->skeletonDir . '/' . $skeletonFile;
+            $fullSkeletonPath = $this->skeletonDir.'/'.$skeletonFile;
             if ($this->filesystem->exists($fullSkeletonPath)) {
-                $this->filesystem->copy($fullSkeletonPath, $projectDir . '/' . $targetFile, true);
-                $io->writeln('Copied ' . $targetFile);
+                $this->filesystem->copy($fullSkeletonPath, $projectDir.'/'.$targetFile, true);
+                $io->writeln('Copied '.$targetFile);
             }
         }
 
         // Ensure plugins directory exists
-        if (!$this->filesystem->exists($projectDir . '/plugins')) {
-            $this->filesystem->mkdir($projectDir . '/plugins');
-            $this->filesystem->dumpFile($projectDir . '/plugins/plugins.json', '[]');
+        if (!$this->filesystem->exists($projectDir.'/plugins')) {
+            $this->filesystem->mkdir($projectDir.'/plugins');
+            $this->filesystem->dumpFile($projectDir.'/plugins/plugins.json', '[]');
             $io->writeln('Created plugins/ directory');
         }
     }
 
     private function updateComposerJson(string $projectDir, SymfonyStyle $io): void
     {
-        $composerFile = $projectDir . '/composer.json';
-        $skeletonComposerFile = $this->skeletonDir . '/composer.json';
+        $composerFile = $projectDir.'/composer.json';
+        $skeletonComposerFile = $this->skeletonDir.'/composer.json';
 
         if (!$this->filesystem->exists($composerFile) || !$this->filesystem->exists($skeletonComposerFile)) {
             return;
@@ -99,11 +100,19 @@ class VisProjectCreateCommand extends Command
 
         $io->section('Updating composer.json');
 
-        $projectComposer = json_decode(file_get_contents($composerFile), true);
-        $skeletonComposer = json_decode(file_get_contents($skeletonComposerFile), true);
+        $projectComposerRaw = file_get_contents($composerFile);
+        $skeletonComposerRaw = file_get_contents($skeletonComposerFile);
+        if (false === $projectComposerRaw || false === $skeletonComposerRaw) {
+            $io->error('Failed to read composer.json');
+
+            return;
+        }
+        $projectComposer = json_decode($projectComposerRaw, true);
+        $skeletonComposer = json_decode($skeletonComposerRaw, true);
 
         if (!is_array($projectComposer) || !is_array($skeletonComposer)) {
             $io->error('Failed to parse composer.json');
+
             return;
         }
 
@@ -133,21 +142,26 @@ class VisProjectCreateCommand extends Command
             $projectComposer['scripts'] = array_merge($projectComposer['scripts'] ?? [], $skeletonComposer['scripts']);
         }
 
-        $this->filesystem->dumpFile($composerFile, json_encode($projectComposer, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES) . "\n");
+        $this->filesystem->dumpFile($composerFile, json_encode($projectComposer, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES)."\n");
         $io->writeln('Updated composer.json with scripts and dependencies');
     }
 
-
     private function patchKernel(string $projectDir, SymfonyStyle $io): void
     {
-        $kernelFile = $projectDir . '/src/Kernel.php';
+        $kernelFile = $projectDir.'/src/Kernel.php';
         if (!$this->filesystem->exists($kernelFile)) {
             $io->error('src/Kernel.php not found. Cannot patch.');
+
             return;
         }
 
         $io->section('Patching src/Kernel.php');
         $content = file_get_contents($kernelFile);
+        if (false === $content) {
+            $io->error('Failed to read src/Kernel.php.');
+
+            return;
+        }
 
         // Add declare(strict_types=1); if not present
         if (!str_contains($content, 'declare(strict_types=1);')) {
@@ -168,16 +182,16 @@ class VisProjectCreateCommand extends Command
 
         foreach ($useStatements as $use) {
             if (!str_contains($content, $use)) {
-                $content = preg_replace('/namespace [^;]+;/', "$0\n\n$use", $content, 1);
+                $content = $this->safePregReplace('/namespace [^;]+;/', "$0\n\n$use", $content, 1);
             }
         }
 
         $content = str_replace("\n\nuse", "\nuse", $content);
-        $content = preg_replace('/(namespace [^;]+;)\nuse/', "$1\n\nuse", $content);
+        $content = $this->safePregReplace('/(namespace [^;]+;)\nuse/', "$1\n\nuse", $content);
 
         // Add property
         if (!str_contains($content, 'private readonly JsonKernelPluginLoader $pluginLoader;')) {
-            $content = preg_replace('/class Kernel extends BaseKernel\s*{/', "$0\n    private readonly JsonKernelPluginLoader \$pluginLoader;", $content);
+            $content = $this->safePregReplace('/class Kernel extends BaseKernel\s*{/', "$0\n    private readonly JsonKernelPluginLoader \$pluginLoader;", $content);
         }
 
         // Patch Constructor
@@ -185,7 +199,7 @@ class VisProjectCreateCommand extends Command
             $io->warning('Kernel already has a constructor. Please manualy add ClassLoader and initialize JsonKernelPluginLoader.');
         } else {
             $constructor = "\n    public function __construct(string \$environment, bool \$debug, private readonly ClassLoader \$classLoader)\n    {\n        parent::__construct(\$environment, \$debug);\n        \$this->pluginLoader = new JsonKernelPluginLoader(\$this->classLoader, \$this);\n        \$this->pluginLoader->initializePlugins(\$this->getProjectDir());\n    }";
-            $content = preg_replace('/use MicroKernelTrait;/', "$0\n$constructor", $content);
+            $content = $this->safePregReplace('/use MicroKernelTrait;/', "$0\n$constructor", $content);
         }
 
         // Patch registerBundles
@@ -201,7 +215,7 @@ class VisProjectCreateCommand extends Command
             $io->warning('build() already exists. Please manually add $this->pluginLoader->build($container).');
         } else {
             $build = "\n    protected function build(ContainerBuilder \$container): void\n    {\n        parent::build(\$container);\n        \$this->pluginLoader->build(\$container);\n    }";
-            $content = preg_replace('/use MicroKernelTrait;/', "$0\n$build", $content);
+            $content = $this->safePregReplace('/use MicroKernelTrait;/', "$0\n$build", $content);
         }
 
         // Patch configureContainer
@@ -209,7 +223,7 @@ class VisProjectCreateCommand extends Command
             $io->warning('configureContainer() already exists. Please manually check the configuration logic.');
         } else {
             $configureContainer = "\n    protected function configureContainer(ContainerConfigurator \$container): void\n    {\n        \$container->import('../config/{packages}/*.yaml');\n        \$container->import('../config/{packages}/'.\$this->environment.'/*.yaml');\n\n        if (is_file(\\dirname(__DIR__).'/config/services.yaml')) {\n            \$container->import('../config/{services}.yaml');\n            \$container->import('../config/{services}_'.\$this->environment.'.yaml');\n        } elseif (is_file(\$path = \\dirname(__DIR__).'/config/services.php')) {\n            (require \$path)(\$container->withPath(\$path), \$this);\n        }\n    }";
-            $content = preg_replace('/use MicroKernelTrait;/', "$0\n$configureContainer", $content);
+            $content = $this->safePregReplace('/use MicroKernelTrait;/', "$0\n$configureContainer", $content);
         }
 
         // Patch configureRoutes and addBundleRoutes
@@ -217,7 +231,7 @@ class VisProjectCreateCommand extends Command
             $io->warning('configureRoutes() already exists. Please manually check the routing logic.');
         } else {
             $configureRoutes = "\n    protected function configureRoutes(RoutingConfigurator \$routes): void\n    {\n        \$routes->import('../config/{routes}/'.\$this->environment.'/*.yaml');\n        \$routes->import('../config/{routes}/*.yaml');\n\n        if (is_file(\\dirname(__DIR__).'/config/routes.yaml')) {\n            \$routes->import('../config/{routes}.yaml');\n        } elseif (is_file(\$path = \\dirname(__DIR__).'/config/routes.php')) {\n            (require \$path)(\$routes->withPath(\$path), \$this);\n        }\n\n        \$this->addBundleRoutes(\$routes);\n    }\n\n    private function addBundleRoutes(RoutingConfigurator \$routes): void\n    {\n        foreach (\$this->getBundles() as \$bundle) {\n            if (\$bundle instanceof AbstractBundle) {\n                if (is_file(\$bundle->getPath().'/config/routes.yaml')) {\n                    \$routes->import(\$bundle->getPath().'/config/{routes}.yaml');\n                } elseif (is_file(\$path = \$bundle->getPath().'/config/routes.php')) {\n                    (require \$path)(\$routes->withPath(\$path), \$this);\n                }\n            }\n            if (\$bundle instanceof AbstractVisBundle) {\n                \$bundle->configureRoutes(\$routes, (string) \$this->environment);\n            }\n        }\n    }";
-            $content = preg_replace('/use MicroKernelTrait;/', "$0\n$configureRoutes", $content);
+            $content = $this->safePregReplace('/use MicroKernelTrait;/', "$0\n$configureRoutes", $content);
         }
 
         file_put_contents($kernelFile, $content);
@@ -226,17 +240,24 @@ class VisProjectCreateCommand extends Command
 
     private function patchIndexPhp(string $projectDir, SymfonyStyle $io): void
     {
-        $indexFile = $projectDir . '/public/index.php';
+        $indexFile = $projectDir.'/public/index.php';
         if (!$this->filesystem->exists($indexFile)) {
             $io->warning('public/index.php not found. Skipping patch.');
+
             return;
         }
 
         $io->section('Patching public/index.php');
         $content = file_get_contents($indexFile);
+        if (false === $content) {
+            $io->error('Failed to read public/index.php');
+
+            return;
+        }
 
         if (str_contains($content, '$classLoader = require')) {
             $io->warning('public/index.php already seems to load ClassLoader.');
+
             return;
         }
 
@@ -255,17 +276,24 @@ class VisProjectCreateCommand extends Command
 
     private function patchConsolePhp(string $projectDir, SymfonyStyle $io): void
     {
-        $consoleFile = $projectDir . '/bin/console';
+        $consoleFile = $projectDir.'/bin/console';
         if (!$this->filesystem->exists($consoleFile)) {
             $io->warning('bin/console not found. Skipping patch.');
+
             return;
         }
 
         $io->section('Patching bin/console');
         $content = file_get_contents($consoleFile);
+        if (false === $content) {
+            $io->error('Failed to read bin/console');
+
+            return;
+        }
 
         if (str_contains($content, '$classLoader = require')) {
             $io->warning('bin/console already seems to load ClassLoader.');
+
             return;
         }
 
@@ -280,5 +308,12 @@ class VisProjectCreateCommand extends Command
         } else {
             $io->warning('Could not find return function in bin/console. Please patch manually.');
         }
+    }
+
+    private function safePregReplace(string $pattern, string $replacement, string $subject, int $limit = -1): string
+    {
+        $result = preg_replace($pattern, $replacement, $subject, $limit);
+
+        return $result ?? $subject;
     }
 }

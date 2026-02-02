@@ -50,6 +50,9 @@ class Vis
 
     protected string $defaultLocale = 'en';
 
+    /**
+     * @param string[] $locales
+     */
     public function __construct(
         protected TranslatorInterface $translator,
         protected UrlGeneratorInterface $router,
@@ -116,7 +119,6 @@ class Vis
                 foreach ($tool->getRoles() as $role) {
                     $this->tools[$tool->getId()]->addRole($role);
                 }
-                dd($this->tools);
             }
 
             return true;

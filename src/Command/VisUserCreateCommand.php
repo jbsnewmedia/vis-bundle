@@ -77,10 +77,9 @@ class VisUserCreateCommand extends Command
                         }
 
                         return Command::SUCCESS;
-                    } else {
-                        foreach ($passwordViolations as $violation) {
-                            $io->error((string) $violation->getMessage());
-                        }
+                    }
+                    foreach ($passwordViolations as $violation) {
+                        $io->error((string) $violation->getMessage());
                     }
                 }
             } else {

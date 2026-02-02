@@ -37,16 +37,19 @@ class VisCoreCreateCommand extends Command
     {
         $io = new SymfonyStyle($input, $output);
 
+        /** @var string $vis_registration */
         $vis_registration = $io->ask(
             'Do you want to register users in the vis controller? (e.g. <fg=yellow>yes</>)',
             'yes'
         );
 
+        /** @var string $vis_security */
         $vis_security = $io->ask(
             'Do you want update security.yaml? (e.g. <fg=yellow>yes</>)',
             'yes'
         );
 
+        /** @var string $vis_locales */
         $vis_locales = $io->ask(
             'Which languages should be supported? (e.g. <fg=yellow>de,en</>)',
             'de,en'
@@ -55,6 +58,7 @@ class VisCoreCreateCommand extends Command
         $localesArray = array_filter(array_map('trim', explode(',', $vis_locales)));
         $useLocales = count($localesArray) > 1;
 
+        /** @var string $vis_default_locale */
         $vis_default_locale = $io->ask(
             'Which language should be the default language? (e.g. <fg=yellow>en</>)',
             'en'
@@ -101,6 +105,12 @@ class VisCoreCreateCommand extends Command
         $skeletonFile = __DIR__.'/../Resources/skeleton/core/MainController.php.skeleton';
         $controllerContent = file_get_contents($skeletonFile);
 
+        if (false === $controllerContent) {
+            $this->errorMessages[] = 'Skeleton file not found: '.$skeletonFile;
+
+            return false;
+        }
+
         $filesystem = new Filesystem();
         $filesystem->dumpFile($controllerFile, $controllerContent);
 
@@ -117,6 +127,12 @@ class VisCoreCreateCommand extends Command
     {
         $skeletonFile = __DIR__.'/../Resources/skeleton/core/SecurityController.php.skeleton';
         $controllerContent = file_get_contents($skeletonFile);
+
+        if (false === $controllerContent) {
+            $this->errorMessages[] = 'Skeleton file not found: '.$skeletonFile;
+
+            return false;
+        }
 
         $filesystem = new Filesystem();
         $filesystem->dumpFile($controllerFile, $controllerContent);
@@ -135,6 +151,12 @@ class VisCoreCreateCommand extends Command
         $skeletonFile = __DIR__.'/../Resources/skeleton/core/RegistrationController.php.skeleton';
         $controllerContent = file_get_contents($skeletonFile);
 
+        if (false === $controllerContent) {
+            $this->errorMessages[] = 'Skeleton file not found: '.$skeletonFile;
+
+            return false;
+        }
+
         $filesystem = new Filesystem();
         $filesystem->dumpFile($controllerFile, $controllerContent);
 
@@ -151,6 +173,12 @@ class VisCoreCreateCommand extends Command
     {
         $skeletonFile = __DIR__.'/../Resources/skeleton/core/LocaleController.php.skeleton';
         $controllerContent = file_get_contents($skeletonFile);
+
+        if (false === $controllerContent) {
+            $this->errorMessages[] = 'Skeleton file not found: '.$skeletonFile;
+
+            return false;
+        }
 
         $filesystem = new Filesystem();
         $filesystem->dumpFile($controllerFile, $controllerContent);
@@ -173,8 +201,14 @@ class VisCoreCreateCommand extends Command
         $skeletonFile = __DIR__.'/../Resources/skeleton/core/vis.yaml.skeleton';
         $content = file_get_contents($skeletonFile);
 
+        if (false === $content) {
+            $this->errorMessages[] = 'Skeleton file not found: '.$skeletonFile;
+
+            return false;
+        }
+
         $replacements = [
-            '{$locales}' => json_encode($localesArray),
+            '{$locales}' => (string) json_encode($localesArray),
             '{$default_locale}' => $defaultLocale,
         ];
 
@@ -191,6 +225,21 @@ class VisCoreCreateCommand extends Command
         return true;
     }
 
+    /**
+     * @return array<string, mixed>
+     */
+    protected function getSecurityPatchData(string $skeletonFile): array
+    {
+        /** @var array<string, mixed> $patchData */
+        $patchData = Yaml::parseFile($skeletonFile);
+
+        if (!isset($patchData['security']) || !is_array($patchData['security'])) {
+            return [];
+        }
+
+        return $patchData['security'];
+    }
+
     private function updateSecurityYaml(bool $useLocales = true): bool
     {
         $yamlFile = $this->kernel->getProjectDir().'/config/packages/security.yaml';
@@ -203,9 +252,10 @@ class VisCoreCreateCommand extends Command
         }
 
         $skeletonFile = __DIR__.'/../Resources/skeleton/core/security.yaml.skeleton';
-        $patchData = Yaml::parseFile($skeletonFile);
+        $patchSecurity = $this->getSecurityPatchData($skeletonFile);
 
         try {
+            /** @var array<string, mixed> $data */
             $data = Yaml::parseFile($yamlFile);
         } catch (\Exception $e) {
             $this->errorMessages[] = 'Error parsing YAML file: '.$e->getMessage();
@@ -223,16 +273,25 @@ class VisCoreCreateCommand extends Command
             $data['security'] = [];
         }
 
-        $data['security']['providers']['vis_user_provider'] = $patchData['security']['providers']['vis_user_provider'];
+        /** @var array<string, mixed> $security */
+        $security = $data['security'];
 
-        if (!isset($data['security']['firewalls'])) {
-            $data['security']['firewalls'] = [];
+        // ensure providers structure exists
+        if (!isset($security['providers']) || !is_array($security['providers'])) {
+            $security['providers'] = [];
+        }
+        if (isset($patchSecurity['providers']) && is_array($patchSecurity['providers']) && isset($patchSecurity['providers']['vis_user_provider'])) {
+            $security['providers']['vis_user_provider'] = $patchSecurity['providers']['vis_user_provider'];
         }
 
-        if (!isset($data['security']['firewalls']['vis'])) {
+        if (!isset($security['firewalls']) || !is_array($security['firewalls'])) {
+            $security['firewalls'] = [];
+        }
+
+        if (!isset($security['firewalls']['vis'])) {
             $newFirewalls = [];
             $inserted = false;
-            foreach ($data['security']['firewalls'] as $key => $value) {
+            foreach ($security['firewalls'] as $key => $value) {
                 $newFirewalls[$key] = $value;
                 if ('dev' === $key && !$inserted) {
                     $newFirewalls['vis'] = [];
@@ -242,30 +301,43 @@ class VisCoreCreateCommand extends Command
             if (!$inserted) {
                 $newFirewalls['vis'] = [];
             }
-            $data['security']['firewalls'] = $newFirewalls;
+            $security['firewalls'] = $newFirewalls;
         }
 
-        $data['security']['firewalls']['vis'] = $patchData['security']['firewalls']['vis'];
+        if (isset($patchSecurity['firewalls']) && is_array($patchSecurity['firewalls']) && isset($patchSecurity['firewalls']['vis'])) {
+            $security['firewalls']['vis'] = $patchSecurity['firewalls']['vis'];
+        }
 
-        $accessControls = $patchData['security']['access_control'];
+        $accessControls = [];
+        if (isset($patchSecurity['access_control']) && is_array($patchSecurity['access_control'])) {
+            $accessControls = $patchSecurity['access_control'];
+        }
         if ($useLocales) {
             $accessControls[] = ['path' => '^/vis/api', 'roles' => null];
         }
 
-        if (!isset($data['security']['access_control']) || !is_array($data['security']['access_control'])) {
-            $data['security']['access_control'] = [];
+        if (!isset($security['access_control']) || !is_array($security['access_control'])) {
+            $security['access_control'] = [];
         }
 
-        $existingPaths = array_column($data['security']['access_control'], 'path');
+        $existingPaths = array_column($security['access_control'], 'path');
         $newAccessControls = [];
 
         foreach ($accessControls as $control) {
-            if (!in_array($control['path'], $existingPaths)) {
+            if (!is_array($control)) {
+                continue;
+            }
+            if (!isset($control['path'])) {
+                continue;
+            }
+            if (!in_array($control['path'], $existingPaths, true)) {
                 $newAccessControls[] = $control;
             }
         }
 
-        $data['security']['access_control'] = array_merge($newAccessControls, $data['security']['access_control']);
+        $security['access_control'] = array_merge($newAccessControls, $security['access_control']);
+
+        $data['security'] = $security;
 
         try {
             $filesystem->dumpFile($yamlFile, Yaml::dump($data, 6, 4));

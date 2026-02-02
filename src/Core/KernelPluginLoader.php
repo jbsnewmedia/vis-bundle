@@ -252,7 +252,7 @@ abstract class KernelPluginLoader extends Bundle
 
             // 'active' kann bool oder int oder string oder gar nicht gesetzt sein.
             $isActive = !empty($pluginData['active']);
-            $pluginPath = (string) ($pluginData['path'] ?? '');
+            $pluginPath = is_string($pluginData['path'] ?? null) ? $pluginData['path'] : '';
 
             $plugin = new $className($isActive, $pluginPath, $projectDir);
 
@@ -262,7 +262,7 @@ abstract class KernelPluginLoader extends Bundle
                     $plugin::class,
                     AbstractVisBundle::class
                 );
-                $pluginName = (string) ($pluginData['name'] ?? $className);
+                $pluginName = is_string($pluginData['name'] ?? null) ? $pluginData['name'] : $className;
                 throw new KernelPluginLoaderException($pluginName, $reason);
             }
 

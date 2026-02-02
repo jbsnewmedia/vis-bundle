@@ -29,27 +29,27 @@ class VisPluginCreateCommand extends Command
         $io = new SymfonyStyle($input, $output);
 
         /** @var string $name */
-        $name = $io->ask('Plugin name (e.g. Demo)', null, function ($answer) {
-            if (empty($answer)) {
+        $name = $io->ask('Plugin name (e.g. Demo)', null, function (mixed $answer) {
+            if (!is_string($answer) || $answer === '') {
                 throw new \RuntimeException('Plugin name cannot be empty');
             }
             if (!preg_match('/^[a-zA-Z0-9]+$/', $answer)) {
                 throw new \RuntimeException('Plugin name can only contain a-zA-Z0-9');
             }
 
-            return ucfirst((string) $answer);
+            return ucfirst($answer);
         });
 
         /** @var string $company */
-        $company = $io->ask('Company name', 'Company', function ($answer) {
-            if (empty($answer)) {
+        $company = $io->ask('Company name', 'Company', function (mixed $answer) {
+            if (!is_string($answer) || $answer === '') {
                 throw new \RuntimeException('Company name cannot be empty');
             }
             if (!preg_match('/^[a-zA-Z0-9]+$/', $answer)) {
                 throw new \RuntimeException('Company name can only contain a-zA-Z0-9');
             }
 
-            return (string) $answer;
+            return $answer;
         });
 
         $lcCompany = strtolower($company);
@@ -155,6 +155,9 @@ class VisPluginCreateCommand extends Command
 
         foreach ($files as $skeletonFile => $targetFile) {
             $content = file_get_contents($skeletonDir.'/'.$skeletonFile);
+            if (false === $content) {
+                continue;
+            }
             $content = str_replace(array_keys($replacements), array_values($replacements), $content);
             $this->filesystem->dumpFile($path.$targetFile, $content);
         }
