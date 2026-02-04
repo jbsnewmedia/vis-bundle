@@ -104,7 +104,7 @@ $this->vis->addSidebar($header);
 
 // Add navigation item
 $item = new SidebarItem('dashboard', 'users', 'Users', 'admin_users_list');
-$item->setIcon('<i class="fa-solid fa-users"></i>');
+$item->setIcon('<i class="fa-solid fa-users fa-fw"></i>');
 $item->setOrder(10);
 $item->addRole('ROLE_ADMIN');
 $this->vis->addSidebar($item);
@@ -119,7 +119,7 @@ use JBSNewMedia\VisBundle\Model\Topbar\TopbarDropdown;
 // Custom button
 $button = new TopbarButton('dashboard', 'custom_action');
 $button->setClass('btn btn-primary');
-$button->setContent('<i class="fa-solid fa-plus"></i> Add New');
+$button->setContent('<i class="fa-solid fa-plus fa-fw"></i> Add New');
 $button->setOnClick('showModal()');
 $this->vis->addTopbar($button);
 
@@ -130,7 +130,7 @@ $dropdown->setData([
     'monthly' => [
         'route' => 'reports_monthly',
         'routeParameters' => [],
-        'icon' => '<i class="fa-solid fa-chart-bar"></i>',
+        'icon' => '<i class="fa-solid fa-chart-bar fa-fw"></i>',
         'label' => 'Monthly Report'
     ]
 ]);
