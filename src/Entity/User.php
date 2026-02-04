@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace JBSNewMedia\VisBundle\Entity;
 
+use Symfony\Component\Uid\Uuid;
+use DateTimeImmutable;
 use Doctrine\ORM\Mapping as ORM;
 use JBSNewMedia\VisBundle\Repository\VisUserRepository;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
@@ -17,12 +19,23 @@ use Symfony\Component\Security\Core\User\UserInterface;
 class User implements UserInterface, PasswordAuthenticatedUserInterface
 {
     #[ORM\Id]
-    #[ORM\GeneratedValue]
-    #[ORM\Column]
-    private ?int $id = null;
+    #[ORM\Column(type: 'uuid')]
+    private ?Uuid $id = null;
 
     #[ORM\Column(length: 180)]
     private ?string $email = null;
+
+    #[ORM\Column(type: 'datetime_immutable', nullable: true)]
+    private ?DateTimeImmutable $createdAt = null;
+
+    #[ORM\Column(type: 'datetime_immutable', nullable: true)]
+    private ?DateTimeImmutable $updatedAt = null;
+
+    #[ORM\Column(type: 'uuid', nullable: true)]
+    private ?Uuid $createdBy = null;
+
+    #[ORM\Column(type: 'uuid', nullable: true)]
+    private ?Uuid $updatedBy = null;
 
     /**
      * @var list<string> The user roles
@@ -36,7 +49,12 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column]
     private ?string $password = null;
 
-    public function getId(): ?int
+    public function __construct()
+    {
+        $this->id = Uuid::v7();
+    }
+
+    public function getId(): ?Uuid
     {
         return $this->id;
     }

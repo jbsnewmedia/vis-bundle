@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace JBSNewMedia\VisBundle\Entity;
 
+use Symfony\Component\Uid\Uuid;
+use DateTimeImmutable;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
@@ -13,15 +15,26 @@ use Doctrine\ORM\Mapping as ORM;
 class Client
 {
     #[ORM\Id]
-    #[ORM\GeneratedValue]
-    #[ORM\Column]
-    private ?int $id = null;
+    #[ORM\Column(type: 'uuid')]
+    private ?Uuid $id = null;
 
     #[ORM\Column(length: 64)]
     private ?string $number = null;
 
     #[ORM\Column(length: 255)]
     private ?string $title = null;
+
+    #[ORM\Column(type: 'datetime_immutable', nullable: true)]
+    private ?DateTimeImmutable $createdAt = null;
+
+    #[ORM\Column(type: 'datetime_immutable', nullable: true)]
+    private ?DateTimeImmutable $updatedAt = null;
+
+    #[ORM\Column(type: 'uuid', nullable: true)]
+    private ?Uuid $createdBy = null;
+
+    #[ORM\Column(type: 'uuid', nullable: true)]
+    private ?Uuid $updatedBy = null;
 
     /**
      * @var Collection<int, ClientToTool>
@@ -31,10 +44,11 @@ class Client
 
     public function __construct()
     {
+        $this->id = Uuid::v7();
         $this->tools = new ArrayCollection();
     }
 
-    public function getId(): ?int
+    public function getId(): ?Uuid
     {
         return $this->id;
     }
