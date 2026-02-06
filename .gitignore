@@ -8,3 +8,6 @@
 /vendor-bin/phpstan/composer.lock
 /vendor-bin/rector/composer.lock
 /composer.lock
+/vendor-bin/phpunit/composer.lock
+/var/
+/.phpunit.result.cache
