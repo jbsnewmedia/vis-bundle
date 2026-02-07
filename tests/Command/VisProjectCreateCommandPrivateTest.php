@@ -29,7 +29,7 @@ class VisProjectCreateCommandPrivateTest extends TestCase
         $this->kernel = $this->createMock(KernelInterface::class);
         $this->kernel->method('getProjectDir')->willReturn($this->tempDir);
 
-        $this->command = new VisProjectCreateCommand($this->kernel, $this->filesystem);
+        $this->command = new VisProjectCreateCommand($this->kernel, $this->filesystem, $this->tempDir . '/skeleton');
     }
 
     protected function tearDown(): void
@@ -48,6 +48,13 @@ class VisProjectCreateCommandPrivateTest extends TestCase
     public function testUpdateComposerJson(): void
     {
         $io = $this->createMock(SymfonyStyle::class);
+
+        $this->filesystem->mkdir($this->tempDir . '/skeleton');
+        file_put_contents($this->tempDir . '/skeleton/composer.json', json_encode([
+            'require-dev' => ['test/pkg' => '^1.0'],
+            'config' => ['allow-plugins' => true],
+            'scripts' => ['bin-rector' => 'rector']
+        ]));
 
         file_put_contents($this->tempDir . '/composer.json', json_encode([
             'require' => [],
@@ -108,12 +115,9 @@ class VisProjectCreateCommandPrivateTest extends TestCase
         $file = $this->tempDir . '/composer.json';
         file_put_contents($file, json_encode(['require' => []]));
 
-        $skeletonFile = $this->tempDir . '/composer.json';
+        $this->filesystem->mkdir($this->tempDir . '/skeleton');
+        $skeletonFile = $this->tempDir . '/skeleton/composer.json';
         file_put_contents($skeletonFile, json_encode(['scripts' => ['test' => 'ls']]));
-
-        $ref = new \ReflectionProperty(VisProjectCreateCommand::class, 'skeletonDir');
-        $ref->setAccessible(true);
-        $ref->setValue($this->command, $this->tempDir);
 
         $this->callMethod('updateComposerJson', [$this->tempDir, $io]);
         $composer = json_decode(file_get_contents($file), true);
@@ -128,12 +132,9 @@ class VisProjectCreateCommandPrivateTest extends TestCase
         $file = $this->tempDir . '/composer.json';
         file_put_contents($file, json_encode([]));
 
-        $skeletonFile = $this->tempDir . '/composer.json';
+        $skeletonFile = $this->tempDir . '/skeleton/composer.json';
+        $this->filesystem->mkdir($this->tempDir . '/skeleton');
         file_put_contents($skeletonFile, json_encode([]));
-
-        $ref = new \ReflectionProperty(VisProjectCreateCommand::class, 'skeletonDir');
-        $ref->setAccessible(true);
-        $ref->setValue($this->command, $this->tempDir);
 
         chmod($file, 0000);
         try {
@@ -151,12 +152,9 @@ class VisProjectCreateCommandPrivateTest extends TestCase
         $file = $this->tempDir . '/composer.json';
         file_put_contents($file, '"this-is-not-an-array"');
 
-        $skeletonFile = $this->tempDir . '/composer.json.skeleton';
+        $this->filesystem->mkdir($this->tempDir . '/skeleton');
+        $skeletonFile = $this->tempDir . '/skeleton/composer.json';
         file_put_contents($skeletonFile, json_encode(['scripts' => []]));
-
-        $ref = new \ReflectionProperty(VisProjectCreateCommand::class, 'skeletonDir');
-        $ref->setAccessible(true);
-        $ref->setValue($this->command, $this->tempDir);
 
         $this->callMethod('updateComposerJson', [$this->tempDir, $io]);
     }
@@ -311,7 +309,9 @@ class VisProjectCreateCommandPrivateTest extends TestCase
     {
         $io = $this->createMock(SymfonyStyle::class);
         $io->expects($this->once())->method('warning')->with($this->stringContains('not found. Skipping patch.'));
-        unlink($this->tempDir . '/public/index.php');
+        if (file_exists($this->tempDir . '/public/index.php')) {
+            unlink($this->tempDir . '/public/index.php');
+        }
 
         $this->callMethod('patchIndexPhp', [$this->tempDir, $io]);
     }
@@ -320,7 +320,9 @@ class VisProjectCreateCommandPrivateTest extends TestCase
     {
         $io = $this->createMock(SymfonyStyle::class);
         $io->expects($this->once())->method('warning')->with($this->stringContains('not found. Skipping patch.'));
-        unlink($this->tempDir . '/bin/console');
+        if (file_exists($this->tempDir . '/bin/console')) {
+            unlink($this->tempDir . '/bin/console');
+        }
 
         $this->callMethod('patchConsolePhp', [$this->tempDir, $io]);
     }

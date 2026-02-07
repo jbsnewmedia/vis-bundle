@@ -37,7 +37,7 @@ class PluginService
                 if (is_array($pluginData)) {
                     foreach ($pluginData as $plugin) {
                         if (is_array($plugin) && (null === $pluginFilter || ($plugin['name'] ?? null) === $pluginFilter)) {
-                            /* @var array<string, mixed> $plugin */
+                            /** @var array<string, mixed> $plugin */
                             $plugins[] = $plugin;
                         }
                     }
@@ -235,7 +235,7 @@ class PluginService
             }
             $composerData = json_decode($json, true, 512, \JSON_THROW_ON_ERROR);
             if (is_array($composerData)) {
-                /* @var array<string, mixed> $composerData */
+                /** @var array<string, mixed> $composerData */
                 return $composerData;
             }
         }

@@ -82,4 +82,32 @@ class DynamicFilterExtensionTest extends TestCase
         $result = $extension->dynamicFilter('a', 'upper');
         $this->assertEquals('A', $result);
     }
+
+    public function testDynamicFilterReturnsScalarNonString(): void
+    {
+        $twig = $this->createMock(Environment::class);
+
+        // Filter that returns an integer (scalar but not string)
+        $filter = new TwigFilter('strlen', 'strlen');
+        $twig->method('getFilter')->with('strlen')->willReturn($filter);
+
+        $extension = new DynamicFilterExtension($twig);
+
+        $result = $extension->dynamicFilter('hello', 'strlen');
+        $this->assertEquals('5', $result);
+    }
+
+    public function testDynamicFilterReturnsNonScalar(): void
+    {
+        $twig = $this->createMock(Environment::class);
+
+        // Filter that returns an array (non-scalar)
+        $filter = new TwigFilter('array_return', fn (string $s): array => [$s]);
+        $twig->method('getFilter')->with('array_return')->willReturn($filter);
+
+        $extension = new DynamicFilterExtension($twig);
+
+        $result = $extension->dynamicFilter('test', 'array_return');
+        $this->assertEquals('', $result);
+    }
 }

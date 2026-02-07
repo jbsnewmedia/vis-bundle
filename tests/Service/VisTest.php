@@ -501,4 +501,46 @@ class VisTest extends TestCase
         $this->vis->addTool(new Tool('tool'));
         $this->assertFalse($this->vis->addSidebar($item));
     }
+
+    public function testSetSidebar(): void
+    {
+        $this->vis->addTool(new Tool('test_tool'));
+        $this->vis->addRole('ROLE_USER');
+
+        $sidebar1 = new Sidebar('test_tool', 'id1');
+        $sidebar2 = new Sidebar('test_tool', 'id2');
+
+        // Use setSidebar to directly set the sidebar array
+        $this->vis->setSidebar('test_tool', ['id1' => $sidebar1, 'id2' => $sidebar2]);
+
+        $result = $this->vis->getSidebar('test_tool');
+        $this->assertCount(2, $result);
+        $this->assertArrayHasKey('id1', $result);
+        $this->assertArrayHasKey('id2', $result);
+    }
+
+    public function testSetRouteWithNullChild(): void
+    {
+        $this->vis->addTool(new Tool('test_tool'));
+        $this->vis->addRole('ROLE_USER');
+
+        // Manually set routes with a non-standard format that results in null child
+        $reflection = new \ReflectionClass($this->vis);
+        $routesProp = $reflection->getProperty('routes');
+        $routesProp->setAccessible(true);
+
+        // Set a route entry that is NOT an array (edge case)
+        $routesProp->setValue($this->vis, ['test_tool' => ['route_id' => 'not_an_array']]);
+
+        // Also set up empty sidebar
+        $sidebarProp = $reflection->getProperty('sidebar');
+        $sidebarProp->setAccessible(true);
+        $sidebarProp->setValue($this->vis, ['test_tool' => []]);
+
+        // This should trigger the early return when child is null
+        $this->vis->setRoute('test_tool', 'route_id');
+
+        // If we reach here without exception, the early return worked
+        $this->assertTrue(true);
+    }
 }
