@@ -28,8 +28,10 @@ class VisCoreCreateCommand extends Command
 
     protected string $errorMessage = '';
 
-    public function __construct(private readonly KernelInterface $kernel)
-    {
+    public function __construct(
+        private readonly KernelInterface $kernel,
+        private readonly Filesystem $filesystem = new Filesystem(),
+    ) {
         parent::__construct();
     }
 
@@ -55,7 +57,7 @@ class VisCoreCreateCommand extends Command
             'de,en'
         );
 
-        $localesArray = array_filter(array_map('trim', explode(',', $vis_locales)));
+        $localesArray = array_filter(array_map(trim(...), explode(',', $vis_locales)));
         $useLocales = count($localesArray) > 1;
 
         /** @var string $vis_default_locale */
@@ -111,10 +113,15 @@ class VisCoreCreateCommand extends Command
             return false;
         }
 
-        $filesystem = new Filesystem();
-        $filesystem->dumpFile($controllerFile, $controllerContent);
+        try {
+            $this->filesystem->dumpFile($controllerFile, $controllerContent);
+        } catch (\Throwable $e) {
+            $this->errorMessages[] = 'Controller cannot be created: '.$controllerFile.' - '.$e->getMessage();
 
-        if (!$filesystem->exists($controllerFile)) {
+            return false;
+        }
+
+        if (!$this->filesystem->exists($controllerFile)) {
             $this->errorMessages[] = 'Controller cannot be created: '.$controllerFile;
 
             return false;
@@ -134,10 +141,15 @@ class VisCoreCreateCommand extends Command
             return false;
         }
 
-        $filesystem = new Filesystem();
-        $filesystem->dumpFile($controllerFile, $controllerContent);
+        try {
+            $this->filesystem->dumpFile($controllerFile, $controllerContent);
+        } catch (\Throwable $e) {
+            $this->errorMessages[] = 'Controller cannot be created: '.$controllerFile.' - '.$e->getMessage();
 
-        if (!$filesystem->exists($controllerFile)) {
+            return false;
+        }
+
+        if (!$this->filesystem->exists($controllerFile)) {
             $this->errorMessages[] = 'Controller cannot be created: '.$controllerFile;
 
             return false;
@@ -157,10 +169,15 @@ class VisCoreCreateCommand extends Command
             return false;
         }
 
-        $filesystem = new Filesystem();
-        $filesystem->dumpFile($controllerFile, $controllerContent);
+        try {
+            $this->filesystem->dumpFile($controllerFile, $controllerContent);
+        } catch (\Throwable $e) {
+            $this->errorMessages[] = 'Controller cannot be created: '.$controllerFile.' - '.$e->getMessage();
 
-        if (!$filesystem->exists($controllerFile)) {
+            return false;
+        }
+
+        if (!$this->filesystem->exists($controllerFile)) {
             $this->errorMessages[] = 'Controller cannot be created: '.$controllerFile;
 
             return false;
@@ -180,10 +197,15 @@ class VisCoreCreateCommand extends Command
             return false;
         }
 
-        $filesystem = new Filesystem();
-        $filesystem->dumpFile($controllerFile, $controllerContent);
+        try {
+            $this->filesystem->dumpFile($controllerFile, $controllerContent);
+        } catch (\Throwable $e) {
+            $this->errorMessages[] = 'Controller cannot be created: '.$controllerFile.' - '.$e->getMessage();
 
-        if (!$filesystem->exists($controllerFile)) {
+            return false;
+        }
+
+        if (!$this->filesystem->exists($controllerFile)) {
             $this->errorMessages[] = 'Controller cannot be created: '.$controllerFile;
 
             return false;
@@ -195,9 +217,8 @@ class VisCoreCreateCommand extends Command
     private function updateVisYaml(string $locales, string $defaultLocale): bool
     {
         $yamlFile = $this->kernel->getProjectDir().'/config/packages/vis.yaml';
-        $filesystem = new Filesystem();
 
-        $localesArray = array_map('trim', explode(',', $locales));
+        $localesArray = array_map(trim(...), explode(',', $locales));
         $skeletonFile = __DIR__.'/../Resources/skeleton/core/vis.yaml.skeleton';
         $content = file_get_contents($skeletonFile);
 
@@ -215,7 +236,7 @@ class VisCoreCreateCommand extends Command
         $content = str_replace(array_keys($replacements), array_values($replacements), $content);
 
         try {
-            $filesystem->dumpFile($yamlFile, $content);
+            $this->filesystem->dumpFile($yamlFile, $content);
         } catch (\Exception $e) {
             $this->errorMessages[] = 'Error writing YAML file: '.$e->getMessage();
 
@@ -226,7 +247,7 @@ class VisCoreCreateCommand extends Command
     }
 
     /**
-     * @return array<string, mixed>
+     * @return array<mixed>
      */
     protected function getSecurityPatchData(string $skeletonFile): array
     {
@@ -237,16 +258,16 @@ class VisCoreCreateCommand extends Command
             return [];
         }
 
-        return $patchData['security'];
+        return (array) $patchData['security'];
     }
 
     private function updateSecurityYaml(bool $useLocales = true): bool
     {
         $yamlFile = $this->kernel->getProjectDir().'/config/packages/security.yaml';
-        $filesystem = new Filesystem();
 
-        if (!$filesystem->exists($yamlFile)) {
+        if (!$this->filesystem->exists($yamlFile)) {
             $this->errorMessages[] = 'YAML file not found: '.$yamlFile;
+            $this->error = true;
 
             return false;
         }
@@ -255,16 +276,17 @@ class VisCoreCreateCommand extends Command
         $patchSecurity = $this->getSecurityPatchData($skeletonFile);
 
         try {
-            /** @var array<string, mixed> $data */
             $data = Yaml::parseFile($yamlFile);
         } catch (\Exception $e) {
             $this->errorMessages[] = 'Error parsing YAML file: '.$e->getMessage();
+            $this->error = true;
 
             return false;
         }
 
         if (!is_array($data)) {
             $this->errorMessages[] = 'Parsed YAML content is not an array.';
+            $this->error = true;
 
             return false;
         }
@@ -338,7 +360,7 @@ class VisCoreCreateCommand extends Command
         $data['security'] = $security;
 
         try {
-            $filesystem->dumpFile($yamlFile, Yaml::dump($data, 6, 4));
+            $this->filesystem->dumpFile($yamlFile, Yaml::dump($data, 6, 4));
         } catch (\Exception $e) {
             $this->errorMessages[] = 'Error writing YAML file: '.$e->getMessage();
 

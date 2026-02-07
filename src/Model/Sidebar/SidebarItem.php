@@ -6,8 +6,6 @@ namespace JBSNewMedia\VisBundle\Model\Sidebar;
 
 class SidebarItem extends Sidebar
 {
-    public \Closure $callbackFunction;
-
     protected string $icon = '';
 
     protected string $badge = '';

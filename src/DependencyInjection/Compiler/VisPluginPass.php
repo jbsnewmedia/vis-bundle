@@ -19,24 +19,38 @@ class VisPluginPass implements CompilerPassInterface
                 continue;
             }
 
-            try {
-                $reflection = new \ReflectionClass($class);
-                $attributes = $reflection->getAttributes(VisPlugin::class);
-
-                foreach ($attributes as $attribute) {
-                    $instance = $attribute->newInstance();
-
-                    $tagAttributes = [];
-                    if (!empty($instance->plugin)) {
-                        $tagAttributes['plugin'] = $instance->plugin;
-                    }
-                    $tagAttributes['priority'] = $instance->priority ?? 100;
-
-                    $definition->addTag('VisPlugin', $tagAttributes);
+            foreach ($this->getAttributes($class) as $instance) {
+                $tagAttributes = [];
+                if (!empty($instance->plugin)) {
+                    $tagAttributes['plugin'] = $instance->plugin;
                 }
-            } catch (\ReflectionException) {
-                continue;
+                $tagAttributes['priority'] = $instance->priority ?? 100;
+
+                $definition->addTag('VisPlugin', $tagAttributes);
             }
+        }
+    }
+
+    /**
+     * @param class-string $class
+     *
+     * @return VisPlugin[]
+     */
+    protected function getAttributes(string $class): array
+    {
+        try {
+            /** @var class-string $class */
+            $reflection = new \ReflectionClass($class);
+            $attributes = $reflection->getAttributes(VisPlugin::class);
+            $instances = [];
+
+            foreach ($attributes as $attribute) {
+                $instances[] = $attribute->newInstance();
+            }
+
+            return $instances;
+        } catch (\ReflectionException) {
+            return [];
         }
     }
 }

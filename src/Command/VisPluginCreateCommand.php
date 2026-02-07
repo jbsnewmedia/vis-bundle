@@ -41,7 +41,7 @@ class VisPluginCreateCommand extends Command
         });
 
         /** @var string $company */
-        $company = $io->ask('Company name', 'Company', function (mixed $answer) {
+        $company = $io->ask('Company name', null, function (mixed $answer) {
             if (!is_string($answer) || '' === $answer) {
                 throw new \RuntimeException('Company name cannot be empty');
             }
@@ -65,6 +65,8 @@ class VisPluginCreateCommand extends Command
             }
             $this->filesystem->remove($pluginPath);
             $io->success(sprintf('Deleted existing directory %s', $pluginDirName));
+
+            return Command::SUCCESS;
         }
 
         $addBundle = $io->confirm('Add bundle to config/bundles.php?', true);
@@ -135,7 +137,7 @@ class VisPluginCreateCommand extends Command
             '{$ucName}' => $ucName,
         ];
 
-        $skeletonDir = __DIR__.'/../Resources/skeleton/plugin';
+        $skeletonDir = $this->getSkeletonDir();
 
         $files = [
             'composer.json.skeleton' => '/composer.json',
@@ -154,13 +156,22 @@ class VisPluginCreateCommand extends Command
         ];
 
         foreach ($files as $skeletonFile => $targetFile) {
-            $content = file_get_contents($skeletonDir.'/'.$skeletonFile);
+            $skeletonPath = $skeletonDir.'/'.$skeletonFile;
+            if (!$this->filesystem->exists($skeletonPath)) {
+                continue;
+            }
+            $content = @file_get_contents($skeletonPath);
             if (false === $content) {
                 continue;
             }
             $content = str_replace(array_keys($replacements), array_values($replacements), $content);
             $this->filesystem->dumpFile($path.$targetFile, $content);
         }
+    }
+
+    protected function getSkeletonDir(): string
+    {
+        return __DIR__.'/../Resources/skeleton/plugin';
     }
 
     private function addBundleToConfig(string $name, string $company): void
@@ -204,10 +215,10 @@ class VisPluginCreateCommand extends Command
         $namespace = sprintf('%s\\Vis%sPluginBundle\\', $company, $name);
         $path = $pluginDirName.'/src/';
 
-        if (!isset($data['autoload'])) {
+        if (!isset($data['autoload']) || !is_array($data['autoload'])) {
             $data['autoload'] = [];
         }
-        if (!isset($data['autoload']['psr-4'])) {
+        if (!isset($data['autoload']['psr-4']) || !is_array($data['autoload']['psr-4'])) {
             $data['autoload']['psr-4'] = [];
         }
         $data['autoload']['psr-4'][$namespace] = $path;

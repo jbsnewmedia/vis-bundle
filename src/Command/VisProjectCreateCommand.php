@@ -23,9 +23,10 @@ class VisProjectCreateCommand extends Command
     public function __construct(
         private readonly KernelInterface $kernel,
         private readonly Filesystem $filesystem = new Filesystem(),
+        ?string $skeletonDir = null,
     ) {
         parent::__construct();
-        $this->skeletonDir = __DIR__.'/../Resources/skeleton/project';
+        $this->skeletonDir = $skeletonDir ?? __DIR__.'/../Resources/skeleton/project';
     }
 
     protected function execute(InputInterface $input, OutputInterface $output): int
@@ -98,8 +99,8 @@ class VisProjectCreateCommand extends Command
 
         $io->section('Updating composer.json');
 
-        $projectComposerRaw = file_get_contents($composerFile);
-        $skeletonComposerRaw = file_get_contents($skeletonComposerFile);
+        $projectComposerRaw = @file_get_contents($composerFile);
+        $skeletonComposerRaw = @file_get_contents($skeletonComposerFile);
         if (false === $projectComposerRaw || false === $skeletonComposerRaw) {
             $io->error('Failed to read composer.json');
 
@@ -114,26 +115,38 @@ class VisProjectCreateCommand extends Command
             return;
         }
 
-        if (isset($skeletonComposer['require-dev'])) {
-            $projectComposer['require-dev'] = array_merge($projectComposer['require-dev'] ?? [], $skeletonComposer['require-dev']);
+        if (isset($skeletonComposer['require-dev']) && is_array($skeletonComposer['require-dev'])) {
+            $projectComposer['require-dev'] = array_merge(
+                is_array($projectComposer['require-dev'] ?? null) ? $projectComposer['require-dev'] : [],
+                $skeletonComposer['require-dev']
+            );
         }
 
-        if (isset($skeletonComposer['config'])) {
-            $projectComposer['config'] = array_merge($projectComposer['config'] ?? [], $skeletonComposer['config']);
-            if (isset($skeletonComposer['config']['allow-plugins'])) {
+        if (isset($skeletonComposer['config']) && is_array($skeletonComposer['config'])) {
+            $projectComposer['config'] = array_merge(
+                is_array($projectComposer['config'] ?? null) ? $projectComposer['config'] : [],
+                $skeletonComposer['config']
+            );
+            if (isset($skeletonComposer['config']['allow-plugins']) && is_array($skeletonComposer['config']['allow-plugins'])) {
                 $projectComposer['config']['allow-plugins'] = array_merge(
-                    $projectComposer['config']['allow-plugins'] ?? [],
+                    is_array($projectComposer['config']['allow-plugins'] ?? null) ? $projectComposer['config']['allow-plugins'] : [],
                     $skeletonComposer['config']['allow-plugins']
                 );
             }
         }
 
-        if (isset($skeletonComposer['extra'])) {
-            $projectComposer['extra'] = array_merge($projectComposer['extra'] ?? [], $skeletonComposer['extra']);
+        if (isset($skeletonComposer['extra']) && is_array($skeletonComposer['extra'])) {
+            $projectComposer['extra'] = array_merge(
+                is_array($projectComposer['extra'] ?? null) ? $projectComposer['extra'] : [],
+                $skeletonComposer['extra']
+            );
         }
 
-        if (isset($skeletonComposer['scripts'])) {
-            $projectComposer['scripts'] = array_merge($projectComposer['scripts'] ?? [], $skeletonComposer['scripts']);
+        if (isset($skeletonComposer['scripts']) && is_array($skeletonComposer['scripts'])) {
+            $projectComposer['scripts'] = array_merge(
+                is_array($projectComposer['scripts'] ?? null) ? $projectComposer['scripts'] : [],
+                $skeletonComposer['scripts']
+            );
         }
 
         $this->filesystem->dumpFile($composerFile, json_encode($projectComposer, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES)."\n");
@@ -150,7 +163,7 @@ class VisProjectCreateCommand extends Command
         }
 
         $io->section('Patching src/Kernel.php');
-        $content = file_get_contents($kernelFile);
+        $content = @file_get_contents($kernelFile);
         if (false === $content) {
             $io->error('Failed to read src/Kernel.php.');
 
@@ -235,7 +248,7 @@ class VisProjectCreateCommand extends Command
         }
 
         $io->section('Patching public/index.php');
-        $content = file_get_contents($indexFile);
+        $content = @file_get_contents($indexFile);
         if (false === $content) {
             $io->error('Failed to read public/index.php');
 
@@ -271,7 +284,7 @@ class VisProjectCreateCommand extends Command
         }
 
         $io->section('Patching bin/console');
-        $content = file_get_contents($consoleFile);
+        $content = @file_get_contents($consoleFile);
         if (false === $content) {
             $io->error('Failed to read bin/console');
 
@@ -299,8 +312,12 @@ class VisProjectCreateCommand extends Command
 
     private function safePregReplace(string $pattern, string $replacement, string $subject, int $limit = -1): string
     {
-        $result = preg_replace($pattern, $replacement, $subject, $limit);
+        $result = @preg_replace($pattern, $replacement, $subject, $limit);
 
-        return $result ?? $subject;
+        if (null === $result) {
+            throw new \RuntimeException(sprintf('Error executing preg_replace with pattern "%s": %s', $pattern, preg_last_error_msg()));
+        }
+
+        return $result;
     }
 }

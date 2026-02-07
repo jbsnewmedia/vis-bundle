@@ -27,6 +27,7 @@ class PluginService
      */
     public function loadPluginsInfoFromJson(?string $pluginFilter = null): array
     {
+        /** @var array<int, array<string, mixed>> $plugins */
         $plugins = [];
         $pluginsPath = $this->projectDir.'/plugins/plugins.json';
         if (file_exists($pluginsPath)) {
@@ -36,6 +37,7 @@ class PluginService
                 if (is_array($pluginData)) {
                     foreach ($pluginData as $plugin) {
                         if (is_array($plugin) && (null === $pluginFilter || ($plugin['name'] ?? null) === $pluginFilter)) {
+                            /* @var array<string, mixed> $plugin */
                             $plugins[] = $plugin;
                         }
                     }
@@ -71,15 +73,15 @@ class PluginService
         $plugins = $this->loadPluginsInfoFromJson();
         $return = [];
         $pluginDirs = glob($this->projectDir.'/plugins/*');
-        if (false === $pluginDirs) {
+        if (false === $pluginDirs || [] === $pluginDirs) {
             return $return;
         }
-        $dirs = array_filter($pluginDirs, 'is_dir');
+        $dirs = array_filter($pluginDirs, is_dir(...));
         foreach ($dirs as $dir) {
             $pluginName = basename((string) $dir);
             $active = false;
             foreach ($plugins as $plugin) {
-                if (is_array($plugin) && ($plugin['name'] ?? null) === $pluginName) {
+                if (($plugin['name'] ?? null) === $pluginName) {
                     $active = $plugin['active'] ?? false;
                     break;
                 }
@@ -108,7 +110,10 @@ class PluginService
 
             $this->storePlugins($pluginData);
             $this->copyPluginsPublicFolder($pluginData);
-            exec($this->projectDir.'/bin/console cache:clear --env='.$this->environment);
+            $console = $this->projectDir.'/bin/console';
+            if (file_exists($console)) {
+                $this->executeConsoleCommand($console.' cache:clear --env='.$this->environment);
+            }
             $this->pluginActivationLifecycle($pluginData);
 
             return true;
@@ -118,7 +123,7 @@ class PluginService
     }
 
     /**
-     * @param array<string|mixed> $pluginData
+     * @param array<string, mixed> $pluginData
      */
     public function pluginActivationLifecycle(array $pluginData): void
     {
@@ -126,7 +131,7 @@ class PluginService
     }
 
     /**
-     * @param array<string|mixed> $pluginData
+     * @param array<string, mixed> $pluginData
      */
     public function pluginUpdateLifecycle(array $pluginData): void
     {
@@ -134,7 +139,7 @@ class PluginService
     }
 
     /**
-     * @param array<string|mixed> $pluginData
+     * @param array<string, mixed> $pluginData
      */
     private function runPluginLifecycle(array $pluginData): void
     {
@@ -145,7 +150,8 @@ class PluginService
         if (empty($pluginData['active'])) {
             return;
         }
-        $plugin = new $className(true, $pluginData['path'] ?? '', $this->projectDir);
+        $pluginPath = is_string($pluginData['path'] ?? null) ? (string) $pluginData['path'] : '';
+        $plugin = new $className(true, $pluginPath, $this->projectDir);
         if (method_exists($plugin, 'activate')) {
             $plugin->activate(new PluginInstallContext($this->appKernel->getContainer(), $pluginData));
         }
@@ -158,7 +164,8 @@ class PluginService
     {
         if (!empty($pluginData['public']) && is_string($pluginData['public'])) {
             $src = $pluginData['public'];
-            $dest = $this->projectDir.'/public/bundles/'.$pluginData['name'];
+            $pluginName = is_string($pluginData['name'] ?? null) ? (string) $pluginData['name'] : '';
+            $dest = $this->projectDir.'/public/bundles/'.$pluginName;
             $filesystem = new Filesystem();
             $filesystem->mkdir($dest, 0777);
             $filesystem->mirror($src, $dest, null, ['override' => true, 'delete' => true]);
@@ -171,9 +178,13 @@ class PluginService
         if (is_array($pluginData)) {
             $pluginData['active'] = false;
             $this->storePlugins($pluginData);
+            $pluginNameForPath = is_string($pluginData['name'] ?? null) ? (string) $pluginData['name'] : $pluginName;
             $filesystem = new Filesystem();
-            $filesystem->remove($this->projectDir.'/public/bundles/'.$pluginData['name']);
-            exec($this->projectDir.'/bin/console cache:clear --env='.$this->environment);
+            $filesystem->remove($this->projectDir.'/public/bundles/'.$pluginNameForPath);
+            $console = $this->projectDir.'/bin/console';
+            if (file_exists($console)) {
+                $this->executeConsoleCommand($console.' cache:clear --env='.$this->environment);
+            }
 
             return true;
         }
@@ -224,6 +235,7 @@ class PluginService
             }
             $composerData = json_decode($json, true, 512, \JSON_THROW_ON_ERROR);
             if (is_array($composerData)) {
+                /* @var array<string, mixed> $composerData */
                 return $composerData;
             }
         }
@@ -241,7 +253,7 @@ class PluginService
         $plugins = $this->loadPluginsInfoFromJson();
         $found = false;
         foreach ($plugins as $index => $plugin) {
-            if (is_array($plugin) && ($plugin['name'] ?? null) === $pluginUpdateData['name']) {
+            if (($plugin['name'] ?? null) === $pluginUpdateData['name']) {
                 $found = $index;
                 break;
             }
@@ -255,5 +267,10 @@ class PluginService
             $this->projectDir.'/plugins/plugins.json',
             json_encode($plugins, \JSON_PRETTY_PRINT)
         );
+    }
+
+    protected function executeConsoleCommand(string $command): void
+    {
+        @exec($command.' 2>/dev/null');
     }
 }

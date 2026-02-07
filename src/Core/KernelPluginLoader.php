@@ -170,8 +170,9 @@ abstract class KernelPluginLoader extends Bundle
             }
 
             foreach ((array) $psr4 as $namespace => $paths) {
-                $paths = is_array($paths) ? $paths : [$paths];
+                $paths = (array) $paths;
                 $pluginPath = isset($plugin['path']) && is_string($plugin['path']) ? $plugin['path'] : '';
+                /** @var string[] $paths */
                 $mappedPaths = $this->mapPsrPaths(
                     $pluginName, $paths,
                     $projectDir,
@@ -186,8 +187,9 @@ abstract class KernelPluginLoader extends Bundle
             }
 
             foreach ((array) $psr0 as $namespace => $paths) {
-                $paths = is_array($paths) ? $paths : [$paths];
+                $paths = (array) $paths;
                 $pluginPath = isset($plugin['path']) && is_string($plugin['path']) ? $plugin['path'] : '';
+                /** @var string[] $paths */
                 $mappedPaths = $this->mapPsrPaths(
                     $pluginName, $paths,
                     $projectDir,
@@ -236,10 +238,6 @@ abstract class KernelPluginLoader extends Bundle
     private function instantiatePlugins(string $projectDir): void
     {
         foreach ($this->pluginInfos as $pluginData) {
-            if (!is_array($pluginData)) {
-                continue;
-            }
-
             $className = $pluginData['baseClass'] ?? null;
             if (!is_string($className) || !class_exists($className)) {
                 continue;

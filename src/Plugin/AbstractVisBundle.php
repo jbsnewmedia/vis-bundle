@@ -21,7 +21,7 @@ abstract class AbstractVisBundle extends AbstractBundle
             $this->basePath = $this->getPath();
         }
         if ($projectDir && 0 !== mb_strpos($this->basePath, '/')) {
-            $this->basePath = $projectDir.'/'.$this->basePath;
+            $this->basePath = rtrim($projectDir, '/').'/'.$this->basePath;
         }
 
         $this->path = $this->computePluginClassPath();

@@ -45,6 +45,11 @@ class DynamicFilterExtension extends AbstractExtension
             throw new \RuntimeException(sprintf('Filter "%s" is not callable.', $filterName));
         }
 
-        return $callable($string);
+        $result = $callable($string);
+        if (!is_string($result)) {
+            return is_scalar($result) ? (string) $result : '';
+        }
+
+        return $result;
     }
 }

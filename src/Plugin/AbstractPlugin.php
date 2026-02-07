@@ -15,17 +15,10 @@ abstract class AbstractPlugin implements PluginInterface
 
     public function getPluginId(): ?string
     {
-        try {
-            $reflection = new \ReflectionClass(static::class);
-            $attributes = $reflection->getAttributes(VisPlugin::class);
-            foreach ($attributes as $attribute) {
-                /** @var VisPlugin $instance */
-                $instance = $attribute->newInstance();
-                if (!empty($instance->plugin)) {
-                    return $instance->plugin;
-                }
+        foreach ($this->getAttributes() as $instance) {
+            if (!empty($instance->plugin)) {
+                return $instance->plugin;
             }
-        } catch (\ReflectionException) {
         }
 
         return null;
@@ -33,19 +26,27 @@ abstract class AbstractPlugin implements PluginInterface
 
     public function getPriority(): int
     {
-        try {
-            $reflection = new \ReflectionClass(static::class);
-            $attributes = $reflection->getAttributes(VisPlugin::class);
-            foreach ($attributes as $attribute) {
-                /** @var VisPlugin $instance */
-                $instance = $attribute->newInstance();
-
-                return $instance->priority;
-            }
-        } catch (\ReflectionException) {
+        foreach ($this->getAttributes() as $instance) {
+            return $instance->priority;
         }
 
         return 100;
+    }
+
+    /**
+     * @return VisPlugin[]
+     */
+    protected function getAttributes(): array
+    {
+        $reflection = new \ReflectionClass(static::class);
+        $attributes = $reflection->getAttributes(VisPlugin::class);
+        $instances = [];
+
+        foreach ($attributes as $attribute) {
+            $instances[] = $attribute->newInstance();
+        }
+
+        return $instances;
     }
 
     public function createTool(): Tool

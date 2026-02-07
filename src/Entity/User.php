@@ -4,13 +4,12 @@ declare(strict_types=1);
 
 namespace JBSNewMedia\VisBundle\Entity;
 
-use Symfony\Component\Uid\Uuid;
-use DateTimeImmutable;
 use Doctrine\ORM\Mapping as ORM;
 use JBSNewMedia\VisBundle\Repository\VisUserRepository;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
+use Symfony\Component\Uid\Uuid;
 
 #[ORM\Entity(repositoryClass: VisUserRepository::class)]
 #[ORM\Table(name: '`vis_user`')]
@@ -22,14 +21,14 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(type: 'uuid')]
     private ?Uuid $id = null;
 
-    #[ORM\Column(length: 180)]
+    #[ORM\Column(length: 180, nullable: true)]
     private ?string $email = null;
 
     #[ORM\Column(type: 'datetime_immutable', nullable: true)]
-    private ?DateTimeImmutable $createdAt = null;
+    private ?\DateTimeImmutable $createdAt = null;
 
     #[ORM\Column(type: 'datetime_immutable', nullable: true)]
-    private ?DateTimeImmutable $updatedAt = null;
+    private ?\DateTimeImmutable $updatedAt = null;
 
     #[ORM\Column(type: 'uuid', nullable: true)]
     private ?Uuid $createdBy = null;
@@ -44,9 +43,9 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private array $roles = [];
 
     /**
-     * @var string The hashed password
+     * @var string|null The hashed password
      */
-    #[ORM\Column]
+    #[ORM\Column(nullable: true)]
     private ?string $password = null;
 
     public function __construct()
@@ -95,7 +94,10 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         $roles = $this->roles;
         $roles[] = 'ROLE_USER';
 
-        return array_unique($roles);
+        /** @var list<string> $rolesList */
+        $rolesList = array_values(array_unique($roles));
+
+        return $rolesList;
     }
 
     /**
@@ -103,7 +105,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      */
     public function setRoles(array $roles): static
     {
-        $this->roles = $roles;
+        $this->roles = array_values(array_unique($roles));
 
         return $this;
     }
@@ -111,16 +113,22 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function addRole(string $role): static
     {
         $this->roles[] = $role;
+        /** @var list<string> $rolesList */
+        $rolesList = array_values(array_unique($this->roles));
+        $this->roles = $rolesList;
 
         return $this;
     }
 
     public function removeRole(string $role): static
     {
-        $key = array_search($role, $this->roles, true);
-        if (false !== $key) {
-            unset($this->roles[$key]);
+        $filtered = [];
+        foreach ($this->roles as $r) {
+            if ($r !== $role) {
+                $filtered[] = $r;
+            }
         }
+        $this->roles = $filtered;
 
         return $this;
     }
@@ -136,6 +144,54 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function setPassword(string $password): static
     {
         $this->password = $password;
+
+        return $this;
+    }
+
+    public function getCreatedAt(): ?\DateTimeImmutable
+    {
+        return $this->createdAt;
+    }
+
+    public function setCreatedAt(?\DateTimeImmutable $createdAt): static
+    {
+        $this->createdAt = $createdAt;
+
+        return $this;
+    }
+
+    public function getUpdatedAt(): ?\DateTimeImmutable
+    {
+        return $this->updatedAt;
+    }
+
+    public function setUpdatedAt(?\DateTimeImmutable $updatedAt): static
+    {
+        $this->updatedAt = $updatedAt;
+
+        return $this;
+    }
+
+    public function getCreatedBy(): ?Uuid
+    {
+        return $this->createdBy;
+    }
+
+    public function setCreatedBy(?Uuid $createdBy): static
+    {
+        $this->createdBy = $createdBy;
+
+        return $this;
+    }
+
+    public function getUpdatedBy(): ?Uuid
+    {
+        return $this->updatedBy;
+    }
+
+    public function setUpdatedBy(?Uuid $updatedBy): static
+    {
+        $this->updatedBy = $updatedBy;
 
         return $this;
     }

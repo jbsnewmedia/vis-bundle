@@ -30,11 +30,14 @@ trait RolesTrait
     }
 
     /**
-     * @param array<string, string> $roles
+     * @param array<int|string, string> $roles
      */
     public function setRoles(array $roles): void
     {
-        $this->roles = $roles;
+        $this->roles = [];
+        foreach ($roles as $role) {
+            $this->addRole($role);
+        }
     }
 
     public function hasRole(string $role): bool
