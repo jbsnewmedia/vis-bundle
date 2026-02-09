@@ -18,10 +18,10 @@ class ClientToTool
 
     #[ORM\ManyToOne(targetEntity: Client::class, inversedBy: 'tools')]
     #[ORM\JoinColumn(nullable: false)]
-    private ?Client $client = null;
+    private Client $client;
 
     #[ORM\Column(length: 64)]
-    private ?string $tool = null;
+    private string $tool;
 
     #[ORM\Column(type: 'datetime_immutable', nullable: true)]
     private ?\DateTimeImmutable $createdAt = null;
