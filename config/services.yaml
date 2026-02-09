@@ -45,3 +45,12 @@ services:
         arguments:
             $translator: '@translator'
             $vis: '@JBSNewMedia\VisBundle\Service\Vis'
+
+    JBSNewMedia\VisBundle\Service\Vis:
+        arguments:
+            $locales: '%vis.locales%'
+            $defaultLocale: '%vis.default_locale%'
+
+    JBSNewMedia\VisBundle\EventListener\LocaleListener:
+        tags:
+            - { name: kernel.event_listener, event: kernel.request, priority: 20 }

@@ -1,0 +1,66 @@
+<?php
+
+declare(strict_types=1);
+
+namespace {$namespace}\Controller;
+
+use JBSNewMedia\VisBundle\Controller\VisAbstractController;
+use JBSNewMedia\VisBundle\Service\Vis;
+use {$namespace}\Service\{$name}Service;
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Contracts\Translation\TranslatorInterface;
+
+class {$name}Controller extends VisAbstractController
+{
+    public function __construct(protected Vis $vis, protected TranslatorInterface $translator)
+    {
+    }
+
+    #[Route('/vis/{$lcName}', name: 'vis_{$lcName}', methods: ['GET'])]
+    #[Route('/vis/{$lcName}/dashboard', name: 'vis_{$lcName}_dashboard', methods: ['GET'])]
+    public function dashboard(
+        {$name}Service $service,
+    ): Response {
+        $this->vis->setTool('{$lcName}');
+        $this->vis->setRoute('{$lcName}', 'vis_{$lcName}_dashboard');
+
+        return $this->render('@Vis{$name}Plugin/tool/dashboard.html.twig', [
+            'vis' => $this->vis,
+            '{$lcName}Service' => $service,
+        ]);
+    }
+
+    #[Route('/vis/{$lcName}/table_datatable', name: 'vis_{$lcName}_table_datatable', methods: ['GET'])]
+    public function tableDatatable(): Response
+    {
+        $this->vis->setTool('{$lcName}');
+        $this->vis->setRoute('{$lcName}', 'vis_{$lcName}_table_datatable');
+
+        return $this->render('@Vis/content/datatable.html.twig', [
+            'vis' => $this->vis,
+            'datatable_title' => $this->translator->trans('ddm.{$lcName}.title', [], 'vis_{$lcName}'),
+            'datatable_options' => [
+                'apiUrl' => $this->generateUrl('vis_{$lcName}_table_datatable_api'),
+                'perPage' => 5,
+                'sorting' => [
+                    'name' => 'asc',
+                ],
+            ],
+            'datatable_language' => [
+                'searchLabel' => $this->translator->trans('ddm.{$lcName}.search', [], 'vis_{$lcName}'),
+            ],
+        ]);
+    }
+
+    #[Route('/vis/{$lcName}/user', name: 'vis_{$lcName}_user', methods: ['GET'])]
+    public function user(): Response
+    {
+        $this->vis->setTool('{$lcName}');
+        $this->vis->setRoute('{$lcName}', 'vis_{$lcName}_user');
+
+        return $this->render('@Vis{$name}Plugin/content/user.html.twig', [
+            'vis' => $this->vis,
+        ]);
+    }
+}

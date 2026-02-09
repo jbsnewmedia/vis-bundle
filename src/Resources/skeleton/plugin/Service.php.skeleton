@@ -1,0 +1,17 @@
+<?php
+
+declare(strict_types=1);
+
+namespace {$namespace}\Service;
+
+class {$name}Service
+{
+    public function __construct()
+    {
+    }
+
+    public function getTestMessage(): string
+    {
+        return 'dashboard.test_message';
+    }
+}

@@ -1,4 +1,4 @@
-FROM webdevops/php-apache-dev:8.3
+FROM webdevops/php-apache-dev:8.2
 
 # Update and install
 RUN apt-get update && apt-get install -y
@@ -24,5 +24,7 @@ RUN apt-get update && apt-get install -y symfony-cli
 
 # Git config
 USER application
-RUN git config --global user.email "info@juergen-schwind.de"
-RUN git config --global user.name "jschwind"
+ARG GIT_USER_EMAIL
+ARG GIT_USER_NAME
+RUN git config --global user.email "${GIT_USER_EMAIL}"
+RUN git config --global user.name "${GIT_USER_NAME}"

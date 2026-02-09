@@ -27,7 +27,7 @@ class Sidebar extends Item
             if (file_exists(__DIR__.'/../../../templates/sidebar/'.$this->getType().'.html.twig')) {
                 $this->setTemplate('@Vis/sidebar/'.$this->getType().'.html.twig');
             } else {
-                throw new \Exception('Template not found: topbar/'.$this->getType().'.html.twig');
+                throw new \Exception('Template not found: sidebar/'.$this->getType().'.html.twig');
             }
         }
     }

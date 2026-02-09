@@ -1,0 +1,43 @@
+<button class="{{ item.class }}" data-bs-toggle="dropdown" aria-expanded="false" title="{{ item.label }}" id="{{ item.id }}">
+    {% if item.contentFilter == '' %}
+        {{ item.content }}
+    {% else %}
+        {{ item.content|dynamic_filter(item.contentFilter) }}
+    {% endif %}
+</button>
+<div class="dropdown-menu dropdown-menu-end rounded-0 me-1" aria-labelledby="{{ item.id }}">
+    {% for data_id, data_details in item.data %}
+        {% if data_details.label == '---' %}
+            <div class="dropdown-divider"></div>
+        {% else %}
+            <div class="dropdown-item vis-locale-item{% if item.dataKey == data_id %} active{% endif %}" style="cursor: pointer;" onclick="changeLocale('{{ path(data_details.route, data_details.routeparameters|default({})) }}')">
+                {% if data_details.icon is defined and data_details.icon != '' %}
+                    {{ data_details.icon|raw }} {{ data_details.label }}
+                {% else %}
+                    {{ data_details.label }}
+                {% endif %}
+            </div>
+        {% endif %}
+    {% endfor %}
+</div>
+
+<script>
+    function changeLocale(url) {
+        const urlWithTs = new URL(url, window.location.origin);
+        urlWithTs.searchParams.set('ts', Date.now());
+        fetch(urlWithTs, {
+            method: 'GET',
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest'
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                location.reload();
+            }
+        })
+        .catch(error => {
+        });
+    }
+</script>

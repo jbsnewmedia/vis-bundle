@@ -1,0 +1,10 @@
+{
+    "name": "{$lcCompany}/vis-{$lcName}-plugin",
+    "type": "symfony-vis-plugin",
+    "description": "VIS {$name} Plugin",
+    "autoload": {
+        "psr-4": {
+            "{$namespace}\\\": "src/"
+        }
+    }
+}

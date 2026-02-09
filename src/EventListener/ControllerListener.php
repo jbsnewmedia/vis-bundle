@@ -22,7 +22,6 @@ class ControllerListener implements EventSubscriberInterface
         $controller = $event->getController();
 
         if (is_array($controller) && $controller[0] instanceof VisAbstractController) {
-            // placeholder for future use
         }
     }
 

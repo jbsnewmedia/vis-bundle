@@ -1,0 +1,15 @@
+{% extends '@Vis/tool/base.html.twig' %}
+{% block vis_container %}
+    {{ parent() }}
+    <div class="card shadow">
+        <div class="card-header">
+            {{ 'dashboard.title'|trans({}, 'vis_{$lcName}') }}
+        </div>
+        <div class="card-body">
+            {{ 'dashboard.welcome'|trans({}, 'vis_{$lcName}') }}
+        </div>
+        <div class="card-footer">
+            <small class="text-muted">{{ {$lcName}Service.TestMessage|trans({}, 'vis_{$lcName}') }}</small>
+        </div>
+    </div>
+{% endblock %}

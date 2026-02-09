@@ -21,7 +21,7 @@ abstract class AbstractVisBundle extends AbstractBundle
             $this->basePath = $this->getPath();
         }
         if ($projectDir && 0 !== mb_strpos($this->basePath, '/')) {
-            $this->basePath = $projectDir.'/'.$this->basePath;
+            $this->basePath = rtrim($projectDir, '/').'/'.$this->basePath;
         }
 
         $this->path = $this->computePluginClassPath();
@@ -42,9 +42,6 @@ abstract class AbstractVisBundle extends AbstractBundle
         if (!$this->isActive()) {
             return;
         }
-        /*
-         * Register Plugin Template Path
-         */
         if (isset($container->getExtensions()['twig'])) {
             if (file_exists($this->getBasePath().'/src/Resources/view')) {
                 $container->prependExtensionConfig('twig', [
@@ -61,9 +58,6 @@ abstract class AbstractVisBundle extends AbstractBundle
             new PhpFileLoader($container, $fileLocator),
         ]);
 
-        /**
-         * Services der Plugins laden.
-         */
         $delegatingLoader = new DelegatingLoader($loaderResolver);
         $serviceFiles = glob($this->getPath().'/Resources/config/services.*');
         if (false !== $serviceFiles) {

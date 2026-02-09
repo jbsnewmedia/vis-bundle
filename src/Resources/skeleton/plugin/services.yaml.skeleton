@@ -1,0 +1,15 @@
+services:
+    _defaults:
+        autowire: true
+        autoconfigure: true
+
+    {$namespace}\:
+        resource: '../src/'
+        exclude:
+            - '../src/DependencyInjection/'
+            - '../src/Entity/'
+            - '../src/Kernel.php'
+        tags: [ 'controller.service_arguments' ]
+
+    {$namespace}\Controller\{$name}Controller:
+        tags: ['controller.service_arguments']

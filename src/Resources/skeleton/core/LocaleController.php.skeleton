@@ -1,0 +1,28 @@
+<?php
+
+declare(strict_types=1);
+
+namespace App\Controller;
+
+use JBSNewMedia\VisBundle\Controller\VisAbstractController;
+use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\Routing\Annotation\Route;
+
+class LocaleController extends VisAbstractController
+{
+    #[Route('/vis/api/locale/{_locale}', name: 'vis_api_locale')]
+    public function setLocale(Request $request, string $_locale): JsonResponse
+    {
+        if (!in_array($_locale, $this->vis->getLocales(), true)) {
+            $_locale = $this->vis->getDefaultLocale();
+        }
+
+        $request->getSession()->set('_locale', $_locale);
+
+        return new JsonResponse([
+            'locale' => $_locale,
+            'success' => true,
+        ]);
+    }
+}

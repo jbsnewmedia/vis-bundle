@@ -16,6 +16,16 @@ class VisExtension extends Extension
         $configuration = new Configuration();
         $config = $this->processConfiguration($configuration, $configs);
 
+        $locales = (array) ($config['locales'] ?? ['en']);
+        if ([] === $locales) {
+            $defaultLocale = $config['default_locale'] ?? 'en';
+            $locales = [is_scalar($defaultLocale) ? (string) $defaultLocale : 'en'];
+        }
+
+        $container->setParameter('vis.locales', $locales);
+        $defaultLocale = $config['default_locale'] ?? 'en';
+        $container->setParameter('vis.default_locale', is_scalar($defaultLocale) ? (string) $defaultLocale : 'en');
+
         $loader = new YamlFileLoader($container, new FileLocator(__DIR__.'/../../config'));
         $loader->load('services.yaml');
     }

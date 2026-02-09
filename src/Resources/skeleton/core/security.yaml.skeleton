@@ -1,0 +1,22 @@
+security:
+    providers:
+        vis_user_provider:
+            entity:
+                class: JBSNewMedia\VisBundle\Entity\User
+                property: email
+    firewalls:
+        vis:
+            lazy: true
+            provider: vis_user_provider
+            custom_authenticator: JBSNewMedia\VisBundle\Security\VisAuthenticator
+            logout:
+                path: vis_logout
+                target: vis
+            remember_me:
+                secret: '%kernel.secret%'
+                lifetime: 604800
+    access_control:
+        - { path: ^/vis/login, roles: null }
+        - { path: ^/vis/logout, roles: null }
+        - { path: ^/vis/register, roles: null }
+        - { path: ^/vis, roles: ROLE_USER }

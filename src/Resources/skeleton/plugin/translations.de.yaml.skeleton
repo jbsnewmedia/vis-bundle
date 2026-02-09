@@ -1,0 +1,29 @@
+main.title: "{$name}"
+navigation:
+    header_main: "Hauptbereich"
+    dashboard: "Übersicht"
+    table: "Tabelle"
+    datatable: "Datentabelle"
+    header_admin: "Administration"
+    user: "Benutzer"
+dashboard:
+    title: "{$name} Dashboard"
+    welcome: "Willkommen im Dashboard des VIS {$name} Plugins!"
+    test_message: "Dies ist eine Testnachricht vom {$name}Service."
+datatable:
+    {$lcName}:
+        title: "Übersicht der {$name}-Einträge"
+        search: "Suche in {$name}-Einträgen:"
+        columns:
+            name: "Name"
+            id: "ID"
+            age: "Alter"
+            city: "Stadt"
+            options: "Optionen"
+        actions:
+            edit: "Bearbeiten"
+            add: "Hinzufügen"
+            delete: "Löschen"
+user:
+    title: "{$name} Benutzer"
+    description: "Dies ist eine Demoseite für Benutzerinformationen."

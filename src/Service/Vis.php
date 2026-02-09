@@ -8,6 +8,7 @@ use JBSNewMedia\VisBundle\Model\Item;
 use JBSNewMedia\VisBundle\Model\Sidebar\Sidebar;
 use JBSNewMedia\VisBundle\Model\Tool;
 use JBSNewMedia\VisBundle\Model\Topbar\Topbar;
+use JBSNewMedia\VisBundle\Model\Topbar\TopbarDropdownLocale;
 use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
@@ -42,11 +43,16 @@ class Vis
      */
     protected array $routes = [];
 
+    /**
+     * @param string[] $locales
+     */
     public function __construct(
         protected TranslatorInterface $translator,
         protected UrlGeneratorInterface $router,
-        protected Security $security)
-    {
+        protected Security $security,
+        protected array $locales = ['en'],
+        protected string $defaultLocale = 'en',
+    ) {
         $user = $this->security->getUser();
         if (null !== $user) {
             $this->setRoles($user->getRoles());
@@ -104,7 +110,6 @@ class Vis
                 foreach ($tool->getRoles() as $role) {
                     $this->tools[$tool->getId()]->addRole($role);
                 }
-                dd($this->tools);
             }
 
             return true;
@@ -139,8 +144,30 @@ class Vis
         return $this->toolsCounter;
     }
 
+    public function getTranslator(): TranslatorInterface
+    {
+        return $this->translator;
+    }
+
+    /**
+     * @return string[]
+     */
+    public function getLocales(): array
+    {
+        return $this->locales;
+    }
+
+    public function getDefaultLocale(): string
+    {
+        return $this->defaultLocale;
+    }
+
     public function addTopbar(Topbar $item): bool
     {
+        if ($item instanceof TopbarDropdownLocale && count($this->locales) <= 1) {
+            return false;
+        }
+
         if ([] === $item->getRoles()) {
             $item->addRole('ROLE_USER');
         }
@@ -153,13 +180,13 @@ class Vis
         }
         $this->topbar[$item->getTool()][$item->getPosition()][$item->getId()] = $item;
 
-        uasort($this->topbar[$item->getTool()][$item->getPosition()], [$this, 'sortItems']);
+        uasort($this->topbar[$item->getTool()][$item->getPosition()], $this->sortItems(...));
 
         return true;
     }
 
     /**
-     * @return Topbar[]>
+     * @return array<string, Topbar>
      */
     public function getTopbar(string $position, string $tool): array
     {
@@ -175,7 +202,10 @@ class Vis
             return [];
         }
 
-        return $this->topbar[$tool][$position];
+        /** @var array<string, Topbar> $result */
+        $result = $this->topbar[$tool][$position];
+
+        return $result;
     }
 
     public function addSidebar(Sidebar $item, string $parent = ''): bool
@@ -207,13 +237,11 @@ class Vis
         if (null === $item->getCallbackFunction()) {
             $this->sidebar[$item->getTool()][$item->getId()] = $item;
         } else {
-            if (null !== $item->getCallbackFunction()) {
-                $callback = $item->getCallbackFunction();
-                $callback($this, $item);
-            }
+            $callback = $item->getCallbackFunction();
+            $callback($this, $item);
         }
 
-        uasort($this->sidebar[$item->getTool()], [$this, 'sortItems']);
+        uasort($this->sidebar[$item->getTool()], $this->sortItems(...));
 
         return true;
     }
@@ -227,7 +255,7 @@ class Vis
     }
 
     /**
-     * @return Sidebar[]
+     * @return array<string, Sidebar>
      */
     public function getSidebar(string $tool): array
     {
@@ -239,7 +267,10 @@ class Vis
             throw new \InvalidArgumentException('Vis: Tool "'.$tool.'" does not exist in sidebar');
         }
 
-        return $this->sidebar[$tool];
+        /** @var array<string, Sidebar> $result */
+        $result = $this->sidebar[$tool];
+
+        return $result;
     }
 
     public function setRoute(string $tool, string $route): void
@@ -247,14 +278,15 @@ class Vis
         $routes = explode('-', $route);
         $level = count($routes);
 
-        if (!isset($this->routes[$tool][$routes[0]]) || !is_array($this->routes[$tool][$routes[0]])) {
+        if (!isset($this->routes[$tool][$routes[0]])) {
             throw new \InvalidArgumentException('Vis: Sidebar route "'.$routes[0].'" does not exist');
         }
         $routeInfo = $this->routes[$tool][$routes[0]];
+        $child = null;
         if (is_array($routeInfo) && isset($routeInfo['parent']) && '' === $routeInfo['parent']) {
             $child = $this->sidebar[$tool][$routes[0]];
             $child->setActive(true);
-        } else {
+        } elseif (is_array($routeInfo) && isset($routeInfo['parent'])) {
             if (!isset($this->sidebar[$tool][$routeInfo['parent']])) {
                 throw new \InvalidArgumentException('Vis: Sidebar parent "'.$routeInfo['parent'].'" does not exist');
             }
@@ -262,6 +294,10 @@ class Vis
             $parent->setActive(true);
             $child = $this->sidebar[$tool][$routeInfo['parent']]->getChild($routes[0]);
             $child->setActive(true);
+        }
+
+        if (null === $child) {
+            return;
         }
 
         for ($i = 1; $i < $level; ++$i) {
@@ -273,7 +309,7 @@ class Vis
         }
     }
 
-    protected function sortItems(Item $a, Item $b): int
+    public function sortItems(Item $a, Item $b): int
     {
         return $a->getOrder() <=> $b->getOrder();
     }
