@@ -458,9 +458,6 @@ class PluginServiceCoverageTest extends TestCase
     }
     public function testLoadFromPluginPathGlobFailure(): void
     {
-        // Wir nutzen eine Reflection, um den projectDir zu manipulieren,
-        // falls PluginService diesen direkt nutzt.
-        // Da projectDir in PluginService protected ist, können wir eine Subklasse nutzen.
         $mockKernel = $this->createMock(KernelInterface::class);
         $mockKernel->method('getProjectDir')->willReturn('/non/existent/path/that/should/fail/glob');
 
@@ -494,7 +491,6 @@ class PluginServiceCoverageTest extends TestCase
         $service->setProjectDir($this->tempDir);
         $service->setEnvironment('test');
 
-        // Wir erstellen die Datei und machen sie ausführbar
         $this->filesystem->mkdir($this->tempDir . '/bin');
         $consolePath = $this->tempDir . '/bin/console';
         file_put_contents($consolePath, "#!/usr/bin/env php\n<?php echo 'cleared';");

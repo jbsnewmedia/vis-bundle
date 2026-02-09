@@ -170,7 +170,6 @@ class VisProjectCreateCommand extends Command
             return;
         }
 
-        // Add declare(strict_types=1); if not present
         if (!str_contains($content, 'declare(strict_types=1);')) {
             $content = str_replace('<?php', "<?php\n\ndeclare(strict_types=1);", $content);
         }

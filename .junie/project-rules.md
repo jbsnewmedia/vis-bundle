@@ -12,7 +12,6 @@ All commands should be executed within the Docker container.
 - **Run PHPUnit tests:**
   `docker exec vis-bundle-web-1 composer test`
 - **Goal:** Maintain 100% code coverage.
--
 - **Strict Rule:** `@codeCoverageIgnore` must never be used. All code paths must be tested.
 
 ### Code Quality & Static Analysis
@@ -23,16 +22,21 @@ All commands should be executed within the Docker container.
 - **Rector (Automated Refactoring):**
   `docker exec vis-bundle-web-1 composer bin-rector-process`
 
+## Code Style & Comments
+- **Minimal Commenting**: All comments `//` that are not strictly necessary for Code Quality (e.g., PHPStan types) must be removed.
+- **No Unnecessary Explanations**: Code should be self-explanatory. DocBlocks that only repeat method names or trivial logic are forbidden.
+- **Cleanup Command**: If comments have been added, they can be cleaned up using `composer bin-ecs-fix` (if configured) or manually.
+
 ## Project Structure Highlights
-- `.developer/`: Zusätzliche Entwicklungsdokumentation.
-- `.junie/`: KI-spezifische Konfiguration und Dokumentation.
-- `src/Core`: Kern-Services wie der `PluginService`.
-- `src/Command`: CLI-Tools für die Projektinitialisierung und -verwaltung.
-- `src/Plugin`: Basisklassen und Interfaces für das Plugin-System (`AbstractPlugin`).
-- `src/Entity`: Doctrine Entities für Benutzer, Rollen und andere persistente Daten.
-- `src/Model`: UI-Modelle für Sidebar, Topbar und andere Komponenten.
-- `src/Resources`: Enthält unter anderem Skeletons für die Code-Generierung.
-- `src/DependencyInjection`: Konfiguration der Bundle-Erweiterungen und Compiler-Pässe.
-- `tests/`: Umfassende Test-Suite für Core- und Plugin-Funktionalitäten.
+- `.developer/`: Additional development documentation.
+- `.junie/`: AI-specific configuration and documentation.
+- `src/Core`: Core services such as the `PluginService`.
+- `src/Command`: CLI tools for project initialization and management.
+- `src/Plugin`: Base classes and interfaces for the plugin system (`AbstractPlugin`).
+- `src/Entity`: Doctrine entities for users, roles, and other persistent data.
+- `src/Model`: UI models for sidebar, topbar, and other components.
+- `src/Resources`: Contains skeletons for code generation, among other things.
+- `src/DependencyInjection`: Configuration of bundle extensions and compiler passes.
+- `tests/`: Comprehensive test suite for core and plugin functionalities.
 
 

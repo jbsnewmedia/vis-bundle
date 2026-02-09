@@ -55,7 +55,6 @@ class VisCoreCreateCommandMethodsTest extends TestCase
     {
         $command = new VisCoreCreateCommand($this->kernel);
 
-        // Verwende einen Zielpfad, der ein Verzeichnis ist, um deterministisch ein Fehlschlagen auszulösen
         $dirTarget = $this->tempDir . '/is_a_dir_target';
         $this->filesystem->mkdir($dirTarget);
 
@@ -127,7 +126,6 @@ class VisCoreCreateCommandMethodsTest extends TestCase
     {
         $command = new VisCoreCreateCommand($this->kernel);
 
-        // Verwende einen Zielpfad, der ein Verzeichnis ist, um deterministisch ein Fehlschlagen auszulösen
         $dirPath = $this->tempDir . '/is_a_dir_fail';
         $this->filesystem->mkdir($dirPath);
 
@@ -161,7 +159,6 @@ class VisCoreCreateCommandMethodsTest extends TestCase
 
     public function testDumpMethodsFileNotCreatedPostDump(): void
     {
-        // Wir nutzen ein Mock-Filesystem, das bei exists() false zurückgibt, nachdem dumpFile() aufgerufen wurde.
         $mockFS = $this->createMock(Filesystem::class);
         $mockFS->method('exists')->willReturn(false);
 
