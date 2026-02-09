@@ -1,5 +1,12 @@
 # VisBundle
 
+[![Packagist Version](https://img.shields.io/packagist/v/jbsnewmedia/vis-bundle)](https://packagist.org/packages/jbsnewmedia/vis-bundle)
+[![Packagist Downloads](https://img.shields.io/packagist/dt/jbsnewmedia/vis-bundle)](https://packagist.org/packages/jbsnewmedia/vis-bundle)
+[![PHP Version Require](https://img.shields.io/packagist/php-v/jbsnewmedia/vis-bundle)](https://packagist.org/packages/jbsnewmedia/vis-bundle)
+[![License](https://img.shields.io/packagist/l/jbsnewmedia/vis-bundle)](https://packagist.org/packages/jbsnewmedia/vis-bundle)
+[![Tests](https://github.com/jbsnewmedia/vis-bundle/actions/workflows/tests.yml/badge.svg)](https://github.com/jbsnewmedia/vis-bundle/actions/workflows/tests.yml)
+[![codecov](https://codecov.io/gh/jbsnewmedia/vis-bundle/branch/main/graph/badge.svg)](https://codecov.io/gh/jbsnewmedia/vis-bundle)
+
 **VisBundle** is a comprehensive Symfony bundle designed as a complete admin interface. It integrates user and role management with dynamic sidebar and topbar components for creating robust administration panels.
 
 ## 🚀 Features
