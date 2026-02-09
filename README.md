@@ -3,6 +3,7 @@
 [![Packagist Version](https://img.shields.io/packagist/v/jbsnewmedia/vis-bundle)](https://packagist.org/packages/jbsnewmedia/vis-bundle)
 [![Packagist Downloads](https://img.shields.io/packagist/dt/jbsnewmedia/vis-bundle)](https://packagist.org/packages/jbsnewmedia/vis-bundle)
 [![PHP Version Require](https://img.shields.io/packagist/php-v/jbsnewmedia/vis-bundle)](https://packagist.org/packages/jbsnewmedia/vis-bundle)
+[![Symfony Version](https://img.shields.io/badge/symfony-%5E7.4-673ab7?logo=symfony)](https://symfony.com)
 [![License](https://img.shields.io/packagist/l/jbsnewmedia/vis-bundle)](https://packagist.org/packages/jbsnewmedia/vis-bundle)
 [![Tests](https://github.com/jbsnewmedia/vis-bundle/actions/workflows/tests.yml/badge.svg)](https://github.com/jbsnewmedia/vis-bundle/actions/workflows/tests.yml)
 [![codecov](https://codecov.io/gh/jbsnewmedia/vis-bundle/branch/main/graph/badge.svg)](https://codecov.io/gh/jbsnewmedia/vis-bundle)
