@@ -5,7 +5,7 @@
 [![PHP Version Require](https://img.shields.io/packagist/php-v/jbsnewmedia/vis-bundle)](https://packagist.org/packages/jbsnewmedia/vis-bundle)
 [![Symfony Version](https://img.shields.io/badge/symfony-%5E7.4-673ab7?logo=symfony)](https://symfony.com)
 [![License](https://img.shields.io/packagist/l/jbsnewmedia/vis-bundle)](https://packagist.org/packages/jbsnewmedia/vis-bundle)
-[![Tests](https://github.com/jbsnewmedia/vis-bundle/actions/workflows/tests.yml/badge.svg)](https://github.com/jbsnewmedia/vis-bundle/actions/workflows/tests.yml)
+[![Tests](https://github.com/jbsnewmedia/vis-bundle/actions/workflows/tests.yml/badge.svg?branch=main)](https://github.com/jbsnewmedia/vis-bundle/actions/workflows/tests.yml)
 [![PHP CS Fixer](https://img.shields.io/badge/php--cs--fixer-checked-brightgreen)](https://github.com/jbsnewmedia/vis-bundle/actions/workflows/tests.yml)
 [![PHPStan](https://img.shields.io/badge/phpstan-analysed-brightgreen)](https://github.com/jbsnewmedia/vis-bundle/actions/workflows/tests.yml)
 [![Rector](https://img.shields.io/badge/rector-checked-brightgreen)](https://github.com/jbsnewmedia/vis-bundle/actions/workflows/tests.yml)
