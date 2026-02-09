@@ -33,10 +33,24 @@ jobs:
           restore-keys: ${{ runner.os }}-composer-
 
       - name: Install dependencies
-        run: composer install --prefer-dist --no-progress
+        run: |
+          composer install --prefer-dist --no-progress --no-interaction
+          composer run bin-ecs-install
+          composer run bin-phpstan-install
+          composer run bin-rector-install
+          composer run bin-phpunit-install
+
+      - name: PHP CS Fixer (ECS)
+        run: composer run bin-ecs
+
+      - name: Rector Check
+        run: composer run bin-rector
+
+      - name: PHPStan Analysis
+        run: composer run bin-phpstan
 
       - name: Run Tests with Coverage
-        run: vendor/bin/phpunit --configuration phpunit-coverage.xml.dist --coverage-clover var/coverage.xml
+        run: vendor-bin/phpunit/vendor/bin/phpunit --configuration phpunit-coverage.xml.dist --coverage-clover var/coverage.xml
 
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v4
