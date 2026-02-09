@@ -12,6 +12,8 @@ All commands should be executed within the Docker container.
 - **Run PHPUnit tests:**
   `docker exec vis-bundle-web-1 composer test`
 - **Goal:** Maintain 100% code coverage.
+-
+- **Strict Rule:** `@codeCoverageIgnore` must never be used. All code paths must be tested.
 
 ### Code Quality & Static Analysis
 - **PHPStan (Static Analysis):**
@@ -22,9 +24,15 @@ All commands should be executed within the Docker container.
   `docker exec vis-bundle-web-1 composer bin-rector-process`
 
 ## Project Structure Highlights
-- `.developer/`: Additional development documentation.
-- `.junie/`: AI-specific configuration and documentation.
-- `src/Core`: Core services like `PluginService`.
-- `src/Command`: CLI tools for project initialization and management.
+- `.developer/`: Zusätzliche Entwicklungsdokumentation.
+- `.junie/`: KI-spezifische Konfiguration und Dokumentation.
+- `src/Core`: Kern-Services wie der `PluginService`.
+- `src/Command`: CLI-Tools für die Projektinitialisierung und -verwaltung.
+- `src/Plugin`: Basisklassen und Interfaces für das Plugin-System (`AbstractPlugin`).
+- `src/Entity`: Doctrine Entities für Benutzer, Rollen und andere persistente Daten.
+- `src/Model`: UI-Modelle für Sidebar, Topbar und andere Komponenten.
+- `src/Resources`: Enthält unter anderem Skeletons für die Code-Generierung.
+- `src/DependencyInjection`: Konfiguration der Bundle-Erweiterungen und Compiler-Pässe.
+- `tests/`: Umfassende Test-Suite für Core- und Plugin-Funktionalitäten.
 
 
