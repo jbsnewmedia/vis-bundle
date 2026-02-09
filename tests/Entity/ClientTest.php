@@ -54,4 +54,24 @@ class ClientTest extends TestCase
         $client->setUpdatedBy($uuid);
         $this->assertSame($uuid, $client->getUpdatedBy());
     }
+
+    public function testLifecycleCallbacks(): void
+    {
+        $client = new Client();
+
+        $this->assertNull($client->getCreatedAt());
+        $this->assertNull($client->getUpdatedAt());
+
+        $client->onPrePersist();
+
+        $this->assertInstanceOf(\DateTimeImmutable::class, $client->getCreatedAt());
+        $this->assertInstanceOf(\DateTimeImmutable::class, $client->getUpdatedAt());
+        $this->assertSame($client->getCreatedAt(), $client->getUpdatedAt());
+
+        $oldUpdatedAt = $client->getUpdatedAt();
+        usleep(1000); // Ensure a slight delay
+
+        $client->onPreUpdate();
+        $this->assertNotSame($oldUpdatedAt, $client->getUpdatedAt());
+    }
 }

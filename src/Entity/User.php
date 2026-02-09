@@ -15,6 +15,7 @@ use Symfony\Component\Uid\Uuid;
 #[ORM\Table(name: '`vis_user`')]
 #[ORM\UniqueConstraint(name: 'UNIQ_IDENTIFIER_EMAIL', fields: ['email'])]
 #[UniqueEntity(fields: ['email'], message: 'There is already an account with this email')]
+#[ORM\HasLifecycleCallbacks]
 class User implements UserInterface, PasswordAuthenticatedUserInterface
 {
     #[ORM\Id]
@@ -113,6 +114,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function addRole(string $role): static
     {
         $this->roles[] = $role;
+
         /** @var list<string> $rolesList */
         $rolesList = array_values(array_unique($this->roles));
         $this->roles = $rolesList;
@@ -194,6 +196,21 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         $this->updatedBy = $updatedBy;
 
         return $this;
+    }
+
+    #[ORM\PrePersist]
+    public function onPrePersist(): void
+    {
+        $now = new \DateTimeImmutable();
+
+        $this->createdAt ??= $now;
+        $this->updatedAt = $now;
+    }
+
+    #[ORM\PreUpdate]
+    public function onPreUpdate(): void
+    {
+        $this->updatedAt = new \DateTimeImmutable();
     }
 
     /**

@@ -87,4 +87,24 @@ class UserTest extends TestCase
         $user->setUpdatedBy($uuid);
         $this->assertSame($uuid, $user->getUpdatedBy());
     }
+
+    public function testLifecycleCallbacks(): void
+    {
+        $user = new User();
+
+        $this->assertNull($user->getCreatedAt());
+        $this->assertNull($user->getUpdatedAt());
+
+        $user->onPrePersist();
+
+        $this->assertInstanceOf(\DateTimeImmutable::class, $user->getCreatedAt());
+        $this->assertInstanceOf(\DateTimeImmutable::class, $user->getUpdatedAt());
+        $this->assertSame($user->getCreatedAt(), $user->getUpdatedAt());
+
+        $oldUpdatedAt = $user->getUpdatedAt();
+        usleep(1000);
+
+        $user->onPreUpdate();
+        $this->assertNotSame($oldUpdatedAt, $user->getUpdatedAt());
+    }
 }

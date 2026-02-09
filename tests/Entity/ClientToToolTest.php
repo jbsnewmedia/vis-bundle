@@ -24,18 +24,31 @@ class ClientToToolTest extends TestCase
         $clientToTool->setTool('my-tool');
         $this->assertEquals('my-tool', $clientToTool->getTool());
 
-        $now = new \DateTimeImmutable();
-        $clientToTool->setCreatedAt($now);
-        $this->assertSame($now, $clientToTool->getCreatedAt());
-
-        $clientToTool->setUpdatedAt($now);
-        $this->assertSame($now, $clientToTool->getUpdatedAt());
-
         $userUuid = Uuid::v7();
         $clientToTool->setCreatedBy($userUuid);
         $this->assertSame($userUuid, $clientToTool->getCreatedBy());
 
         $clientToTool->setUpdatedBy($userUuid);
         $this->assertSame($userUuid, $clientToTool->getUpdatedBy());
+    }
+
+    public function testLifecycleCallbacks(): void
+    {
+        $clientToTool = new ClientToTool();
+
+        $this->assertNull($clientToTool->getCreatedAt());
+        $this->assertNull($clientToTool->getUpdatedAt());
+
+        $clientToTool->onPrePersist();
+
+        $this->assertInstanceOf(\DateTimeImmutable::class, $clientToTool->getCreatedAt());
+        $this->assertInstanceOf(\DateTimeImmutable::class, $clientToTool->getUpdatedAt());
+        $this->assertSame($clientToTool->getCreatedAt(), $clientToTool->getUpdatedAt());
+
+        $oldUpdatedAt = $clientToTool->getUpdatedAt();
+        usleep(1000);
+
+        $clientToTool->onPreUpdate();
+        $this->assertNotSame($oldUpdatedAt, $clientToTool->getUpdatedAt());
     }
 }

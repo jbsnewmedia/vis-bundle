@@ -11,6 +11,7 @@ use Symfony\Component\Uid\Uuid;
 
 #[ORM\Entity]
 #[ORM\Table(name: '`vis_client`')]
+#[ORM\HasLifecycleCallbacks]
 class Client
 {
     #[ORM\Id]
@@ -130,5 +131,20 @@ class Client
     public function getTools(): Collection
     {
         return $this->tools;
+    }
+
+    #[ORM\PrePersist]
+    public function onPrePersist(): void
+    {
+        $now = new \DateTimeImmutable();
+
+        $this->createdAt ??= $now;
+        $this->updatedAt = $now;
+    }
+
+    #[ORM\PreUpdate]
+    public function onPreUpdate(): void
+    {
+        $this->updatedAt = new \DateTimeImmutable();
     }
 }

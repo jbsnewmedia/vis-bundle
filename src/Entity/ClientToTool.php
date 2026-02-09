@@ -9,6 +9,7 @@ use Symfony\Component\Uid\Uuid;
 
 #[ORM\Entity]
 #[ORM\Table(name: '`vis_client_to_tool`')]
+#[ORM\HasLifecycleCallbacks]
 class ClientToTool
 {
     #[ORM\Id]
@@ -16,10 +17,10 @@ class ClientToTool
     private ?Uuid $id = null;
 
     #[ORM\ManyToOne(targetEntity: Client::class, inversedBy: 'tools')]
-    #[ORM\JoinColumn(nullable: true)]
+    #[ORM\JoinColumn(nullable: false)]
     private ?Client $client = null;
 
-    #[ORM\Column(length: 64, nullable: true)]
+    #[ORM\Column(length: 64)]
     private ?string $tool = null;
 
     #[ORM\Column(type: 'datetime_immutable', nullable: true)]
@@ -73,23 +74,9 @@ class ClientToTool
         return $this->createdAt;
     }
 
-    public function setCreatedAt(?\DateTimeImmutable $createdAt): static
-    {
-        $this->createdAt = $createdAt;
-
-        return $this;
-    }
-
     public function getUpdatedAt(): ?\DateTimeImmutable
     {
         return $this->updatedAt;
-    }
-
-    public function setUpdatedAt(?\DateTimeImmutable $updatedAt): static
-    {
-        $this->updatedAt = $updatedAt;
-
-        return $this;
     }
 
     public function getCreatedBy(): ?Uuid
@@ -114,5 +101,20 @@ class ClientToTool
         $this->updatedBy = $updatedBy;
 
         return $this;
+    }
+
+    #[ORM\PrePersist]
+    public function onPrePersist(): void
+    {
+        $now = new \DateTimeImmutable();
+
+        $this->createdAt ??= $now;
+        $this->updatedAt = $now;
+    }
+
+    #[ORM\PreUpdate]
+    public function onPreUpdate(): void
+    {
+        $this->updatedAt = new \DateTimeImmutable();
     }
 }
