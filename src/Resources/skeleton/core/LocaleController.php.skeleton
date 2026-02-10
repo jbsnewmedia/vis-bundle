@@ -7,7 +7,7 @@ namespace App\Controller;
 use JBSNewMedia\VisBundle\Controller\VisAbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Routing\Attribute\Route;
 
 class LocaleController extends VisAbstractController
 {
