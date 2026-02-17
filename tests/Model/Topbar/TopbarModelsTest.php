@@ -59,6 +59,7 @@ class TopbarModelsTest extends TestCase
         $this->assertEquals('end', $button->getPosition());
         $this->assertStringContainsString('avalynx-simpleadmin-toggler-darkmode', $button->getClass());
         $this->assertEquals('Toggle Darkmode', $button->getLabel());
+        $this->assertEquals('@Vis/topbar/button_darkmode.html.twig', $button->getTemplate());
     }
 
     public function testTopbarLiveSearch(): void

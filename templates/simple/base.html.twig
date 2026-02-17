@@ -25,9 +25,11 @@
             <span class="ms-3">{{ 'navigation.title.sub'|vistrans }}</span>
         </div>
         <div class="flex-grow-1"></div>
-        <button class="btn btn-link justify-content-center align-items-center avalynx-simpleadmin-toggler-darkmode avalynx-simpleadmin-header-button" onclick="avalynxSimpleAdminToggleDarkmode()" title="{{ 'main.toggle.darkmode'|vistrans }}">
-            <i class="fa-solid fa-circle-half-stroke fa-fw"></i>
-        </button>
+        {% for item in vis.getTopbar('end', vis.getTool()) %}
+            {% if (item.template != '') %}
+                {{ include(item.template) }}
+            {% endif %}
+        {% endfor %}
     </header>
     <div id="avalynx-simpleadmin-main" class="justify-content-center">
         <div id="avalynx-simpleadmin-loader" class="position-absolute w-100 border-top">

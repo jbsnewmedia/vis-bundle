@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="{{ app.request.locale|default('en')|replace({'_':'-'}) }}">
+<html lang="{{ app.request.locale|default('en')|replace({'_':'-'}) }}" data-bs-theme="{{ app.request.hasSession ? app.session.get('darkmode', 'light') : 'light' }}">
     <head>
         <meta charset="UTF-8">
         <title>{% block title %}VIS{% endblock %}</title>
@@ -9,6 +9,16 @@
 
         {% block javascripts %}
             {{ renderAssetComposerJavascripts() }}
+            <script>
+                avalynxSimpleAdminDarkmodeSave = function (status) {
+                    fetch('{{ path('vis_api_darkmode', {'status': 'STATUS'}) }}'.replace('STATUS', status), {
+                        method: 'GET',
+                        headers: {
+                            'X-Requested-With': 'XMLHttpRequest'
+                        }
+                    });
+                }
+            </script>
         {% endblock %}
     </head>
     <body id="avalynx-simpleadmin-body">

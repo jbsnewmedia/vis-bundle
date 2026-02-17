@@ -26,6 +26,10 @@ class VisExtension extends Extension
         $defaultLocale = $config['default_locale'] ?? 'en';
         $container->setParameter('vis.default_locale', is_scalar($defaultLocale) ? (string) $defaultLocale : 'en');
 
+        $topbarConfig = $config['topbar'] ?? [];
+        $container->setParameter('vis.topbar.darkmode', $topbarConfig['darkmode'] ?? true);
+        $container->setParameter('vis.topbar.locale', $topbarConfig['locale'] ?? true);
+
         $loader = new YamlFileLoader($container, new FileLocator(__DIR__.'/../../config'));
         $loader->load('services.yaml');
     }
