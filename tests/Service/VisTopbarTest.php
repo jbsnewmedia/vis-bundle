@@ -67,8 +67,21 @@ class VisTopbarTest extends TestCase
     public function testGetTopbarExceptionsAndEmptyPosition(): void
     {
         // unknown tool
-        $this->expectException(\InvalidArgumentException::class);
-        $this->visMultiLocale->getTopbar('end', 'unknown');
+        $items = $this->visMultiLocale->getTopbar('end', 'unknown');
+        $this->assertSame([], $items);
+    }
+
+    public function testGetTopbarGuestDefaults(): void
+    {
+        // Position end should have default items (darkmode and locale)
+        $items = $this->visMultiLocale->getTopbarGuest('end');
+        $this->assertCount(2, $items);
+        $this->assertArrayHasKey('toggle_darkmode_end', $items);
+        $this->assertArrayHasKey('dropdown_locale', $items);
+
+        // Position start should be empty
+        $items = $this->visMultiLocale->getTopbarGuest('start');
+        $this->assertSame([], $items);
     }
 
     public function testGetTopbarEmptyForMissingPosition(): void

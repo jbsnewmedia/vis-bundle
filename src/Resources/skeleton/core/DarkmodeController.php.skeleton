@@ -1,0 +1,28 @@
+<?php
+
+declare(strict_types=1);
+
+namespace App\Controller;
+
+use JBSNewMedia\VisBundle\Controller\VisAbstractController;
+use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\Routing\Attribute\Route;
+
+class DarkmodeController extends VisAbstractController
+{
+    #[Route('/vis/api/darkmode/{mode}/{timestamp}', name: 'vis_api_darkmode')]
+    public function setDarkmode(Request $request, string $mode, string $timestamp): JsonResponse
+    {
+        if (!in_array($mode, ['light', 'dark'], true)) {
+            $mode = 'light';
+        }
+
+        $request->getSession()->set('darkmode', $mode);
+
+        return new JsonResponse([
+            'darkmode' => $mode,
+            'success' => true,
+        ]);
+    }
+}

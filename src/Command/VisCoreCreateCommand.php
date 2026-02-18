@@ -21,6 +21,8 @@ class VisCoreCreateCommand extends Command
 {
     protected bool $error = false;
 
+    private readonly string $skeletonDir;
+
     /**
      * @var array<int, string>
      */
@@ -30,9 +32,11 @@ class VisCoreCreateCommand extends Command
 
     public function __construct(
         private readonly KernelInterface $kernel,
-        private readonly Filesystem $filesystem = new Filesystem(),
+        protected Filesystem $filesystem = new Filesystem(),
+        ?string $skeletonDir = null,
     ) {
         parent::__construct();
+        $this->skeletonDir = $skeletonDir ?? __DIR__.'/../Resources/skeleton/core';
     }
 
     protected function execute(InputInterface $input, OutputInterface $output): int
@@ -57,6 +61,12 @@ class VisCoreCreateCommand extends Command
             'de,en'
         );
 
+        /** @var string $vis_darkmode */
+        $vis_darkmode = $io->ask(
+            'Do you want to enable darkmode? (e.g. <fg=yellow>yes</>)',
+            'yes'
+        );
+
         $localesArray = array_filter(array_map(trim(...), explode(',', $vis_locales)));
         $useLocales = count($localesArray) > 1;
 
@@ -67,28 +77,49 @@ class VisCoreCreateCommand extends Command
         );
 
         $controllerFile = $this->kernel->getProjectDir().'/src/Controller/Vis/MainController.php';
-        $this->dumpMainController($controllerFile);
+        if (!$this->dumpMainController($controllerFile)) {
+            $this->error = true;
+        }
 
         $controllerFile = $this->kernel->getProjectDir().'/src/Controller/SecurityController.php';
-        $this->dumpSecurityController($controllerFile);
+        if (!$this->dumpSecurityController($controllerFile)) {
+            $this->error = true;
+        }
 
         if ($useLocales) {
             $controllerFile = $this->kernel->getProjectDir().'/src/Controller/LocaleController.php';
             if ($this->dumpLocaleController($controllerFile)) {
                 $io->info('Created LocaleController: '.$controllerFile);
+            } else {
+                $this->error = true;
             }
         }
 
         if ('yes' === $vis_registration) {
             $controllerFile = $this->kernel->getProjectDir().'/src/Controller/Vis/RegistrationController.php';
-            $this->dumpRegistrationController($controllerFile);
+            if (!$this->dumpRegistrationController($controllerFile)) {
+                $this->error = true;
+            }
+        }
+
+        if ('yes' === $vis_darkmode) {
+            $controllerFile = $this->kernel->getProjectDir().'/src/Controller/Vis/DarkmodeController.php';
+            if ($this->dumpDarkmodeController($controllerFile)) {
+                $io->info('Created DarkmodeController: '.$controllerFile);
+            } else {
+                $this->error = true;
+            }
         }
 
         if ('yes' === $vis_security) {
-            $this->updateSecurityYaml($useLocales);
+            if (!$this->updateSecurityYaml($useLocales)) {
+                $this->error = true;
+            }
         }
 
-        $this->updateVisYaml($vis_locales, $vis_default_locale);
+        if (!$this->updateVisYaml($vis_locales, $vis_default_locale)) {
+            $this->error = true;
+        }
 
         if ($this->error) {
             $this->errorMessage = implode("\n", $this->errorMessages);
@@ -102,10 +133,15 @@ class VisCoreCreateCommand extends Command
         return Command::SUCCESS;
     }
 
-    private function dumpMainController(string $controllerFile): bool
+    private function getSkeletonContent(string $skeletonFile): string|false
     {
-        $skeletonFile = __DIR__.'/../Resources/skeleton/core/MainController.php.skeleton';
-        $controllerContent = file_get_contents($skeletonFile);
+        return @file_get_contents($skeletonFile);
+    }
+
+    protected function dumpMainController(string $controllerFile): bool
+    {
+        $skeletonFile = $this->skeletonDir.'/MainController.php.skeleton';
+        $controllerContent = $this->getSkeletonContent($skeletonFile);
 
         if (false === $controllerContent) {
             $this->errorMessages[] = 'Skeleton file not found: '.$skeletonFile;
@@ -130,10 +166,10 @@ class VisCoreCreateCommand extends Command
         return true;
     }
 
-    private function dumpSecurityController(string $controllerFile): bool
+    protected function dumpSecurityController(string $controllerFile): bool
     {
-        $skeletonFile = __DIR__.'/../Resources/skeleton/core/SecurityController.php.skeleton';
-        $controllerContent = file_get_contents($skeletonFile);
+        $skeletonFile = $this->skeletonDir.'/SecurityController.php.skeleton';
+        $controllerContent = $this->getSkeletonContent($skeletonFile);
 
         if (false === $controllerContent) {
             $this->errorMessages[] = 'Skeleton file not found: '.$skeletonFile;
@@ -158,10 +194,10 @@ class VisCoreCreateCommand extends Command
         return true;
     }
 
-    private function dumpRegistrationController(string $controllerFile): bool
+    protected function dumpRegistrationController(string $controllerFile): bool
     {
-        $skeletonFile = __DIR__.'/../Resources/skeleton/core/RegistrationController.php.skeleton';
-        $controllerContent = file_get_contents($skeletonFile);
+        $skeletonFile = $this->skeletonDir.'/RegistrationController.php.skeleton';
+        $controllerContent = $this->getSkeletonContent($skeletonFile);
 
         if (false === $controllerContent) {
             $this->errorMessages[] = 'Skeleton file not found: '.$skeletonFile;
@@ -186,10 +222,10 @@ class VisCoreCreateCommand extends Command
         return true;
     }
 
-    private function dumpLocaleController(string $controllerFile): bool
+    protected function dumpLocaleController(string $controllerFile): bool
     {
-        $skeletonFile = __DIR__.'/../Resources/skeleton/core/LocaleController.php.skeleton';
-        $controllerContent = file_get_contents($skeletonFile);
+        $skeletonFile = $this->skeletonDir.'/LocaleController.php.skeleton';
+        $controllerContent = $this->getSkeletonContent($skeletonFile);
 
         if (false === $controllerContent) {
             $this->errorMessages[] = 'Skeleton file not found: '.$skeletonFile;
@@ -214,13 +250,41 @@ class VisCoreCreateCommand extends Command
         return true;
     }
 
-    private function updateVisYaml(string $locales, string $defaultLocale): bool
+    protected function dumpDarkmodeController(string $controllerFile): bool
+    {
+        $skeletonFile = $this->skeletonDir.'/DarkmodeController.php.skeleton';
+        $controllerContent = $this->getSkeletonContent($skeletonFile);
+
+        if (false === $controllerContent) {
+            $this->errorMessages[] = 'Skeleton file not found: '.$skeletonFile;
+
+            return false;
+        }
+
+        try {
+            $this->filesystem->dumpFile($controllerFile, $controllerContent);
+        } catch (\Throwable $e) {
+            $this->errorMessages[] = 'Controller cannot be created: '.$controllerFile.' - '.$e->getMessage();
+
+            return false;
+        }
+
+        if (!$this->filesystem->exists($controllerFile)) {
+            $this->errorMessages[] = 'Controller cannot be created: '.$controllerFile;
+
+            return false;
+        }
+
+        return true;
+    }
+
+    protected function updateVisYaml(string $locales, string $defaultLocale): bool
     {
         $yamlFile = $this->kernel->getProjectDir().'/config/packages/vis.yaml';
 
         $localesArray = array_map(trim(...), explode(',', $locales));
-        $skeletonFile = __DIR__.'/../Resources/skeleton/core/vis.yaml.skeleton';
-        $content = file_get_contents($skeletonFile);
+        $skeletonFile = $this->skeletonDir.'/vis.yaml.skeleton';
+        $content = $this->getSkeletonContent($skeletonFile);
 
         if (false === $content) {
             $this->errorMessages[] = 'Skeleton file not found: '.$skeletonFile;
@@ -251,6 +315,10 @@ class VisCoreCreateCommand extends Command
      */
     protected function getSecurityPatchData(string $skeletonFile): array
     {
+        if (!$this->filesystem->exists($skeletonFile)) {
+            return [];
+        }
+
         /** @var array<string, mixed> $patchData */
         $patchData = Yaml::parseFile($skeletonFile);
 
@@ -272,7 +340,7 @@ class VisCoreCreateCommand extends Command
             return false;
         }
 
-        $skeletonFile = __DIR__.'/../Resources/skeleton/core/security.yaml.skeleton';
+        $skeletonFile = $this->skeletonDir.'/security.yaml.skeleton';
         $patchSecurity = $this->getSecurityPatchData($skeletonFile);
 
         try {

@@ -10,7 +10,7 @@
         {% if data_details.label == '---' %}
             <div class="dropdown-divider"></div>
         {% else %}
-            <div class="dropdown-item vis-locale-item{% if item.dataKey == data_id %} active{% endif %}" style="cursor: pointer;" onclick="changeLocale('{{ path(data_details.route, data_details.routeparameters|default({})) }}')">
+            <div class="dropdown-item vis-locale-item{% if item.dataKey == data_id %} active{% endif %}" style="cursor: pointer;" onclick="changeLocale('{{ path(data_details.route, data_details.routeparameters|default({})) }}'.replace('__TIMESTAMP__', Date.now()))">
                 {% if data_details.icon is defined and data_details.icon != '' %}
                     {{ data_details.icon|raw }} {{ data_details.label }}
                 {% else %}
