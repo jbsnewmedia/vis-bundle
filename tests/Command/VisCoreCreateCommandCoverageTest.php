@@ -168,4 +168,54 @@ class VisCoreCreateCommandCoverageTest extends TestCase
 
         chmod($this->tempDir . '/config/packages', 0777);
     }
+
+    public function testDumpMethodsFilesystemError(): void
+    {
+        $fsMock = $this->createMock(Filesystem::class);
+        $fsMock->method('exists')->willReturn(false);
+        $fsMock->method('dumpFile')->willThrowException(new \Exception('Mock Error'));
+
+        $command = new class($this->kernel, $fsMock) extends VisCoreCreateCommand {
+            public function __construct($kernel, $fs) {
+                parent::__construct($kernel, $fs);
+            }
+            public function setFilesystem($fs) { $this->filesystem = $fs; }
+            public function callDumpMain($file) { return $this->dumpMainController($file); }
+            public function callDumpSecurity($file) { return $this->dumpSecurityController($file); }
+            public function callDumpRegistration($file) { return $this->dumpRegistrationController($file); }
+            public function callDumpLocale($file) { return $this->dumpLocaleController($file); }
+            public function callDumpDarkmode($file) { return $this->dumpDarkmodeController($file); }
+        };
+
+        $this->assertFalse($command->callDumpMain('test.php'));
+        $this->assertFalse($command->callDumpSecurity('test.php'));
+        $this->assertFalse($command->callDumpRegistration('test.php'));
+        $this->assertFalse($command->callDumpLocale('test.php'));
+        $this->assertFalse($command->callDumpDarkmode('test.php'));
+    }
+
+    public function testDumpMethodsExistsReturnsFalseAfterDump(): void
+    {
+        $fsMock = $this->createMock(Filesystem::class);
+        $fsMock->method('exists')->willReturn(false); // Simulate missing file after dump
+        // dumpFile should not return null if it's void, we use returnCallback or just let it be
+        $fsMock->method('dumpFile');
+
+        $command = new class($this->kernel, $fsMock) extends VisCoreCreateCommand {
+            public function __construct($kernel, $fs) {
+                parent::__construct($kernel, $fs);
+            }
+            public function callDumpMain($file) { return $this->dumpMainController($file); }
+            public function callDumpSecurity($file) { return $this->dumpSecurityController($file); }
+            public function callDumpRegistration($file) { return $this->dumpRegistrationController($file); }
+            public function callDumpLocale($file) { return $this->dumpLocaleController($file); }
+            public function callDumpDarkmode($file) { return $this->dumpDarkmodeController($file); }
+        };
+
+        $this->assertFalse($command->callDumpMain('test.php'));
+        $this->assertFalse($command->callDumpSecurity('test.php'));
+        $this->assertFalse($command->callDumpRegistration('test.php'));
+        $this->assertFalse($command->callDumpLocale('test.php'));
+        $this->assertFalse($command->callDumpDarkmode('test.php'));
+    }
 }
