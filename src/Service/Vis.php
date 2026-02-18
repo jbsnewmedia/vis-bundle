@@ -52,6 +52,8 @@ class Vis
         protected Security $security,
         protected array $locales = ['en'],
         protected string $defaultLocale = 'en',
+        protected bool $topbarDarkmode = true,
+        protected bool $topbarLocale = true,
     ) {
         $user = $this->security->getUser();
         if (null !== $user) {
@@ -190,12 +192,20 @@ class Vis
      */
     public function getTopbar(string $position, string $tool): array
     {
-        if (!$this->isTool($tool)) {
+        if ('' === $tool) {
+            $tool = '_guest_';
+        }
+
+        if (!$this->isTool($tool) && '_guest_' !== $tool) {
             throw new \InvalidArgumentException('Vis: Tool "'.$tool.'" does not exist');
         }
 
+        if ('end' === $position) {
+            $this->addTopbarDefault($tool);
+        }
+
         if (!isset($this->topbar[$tool])) {
-            throw new \InvalidArgumentException('Vis: Tool "'.$tool.'" does not exist in topbar');
+            return [];
         }
 
         if (!isset($this->topbar[$tool][$position])) {
@@ -206,6 +216,33 @@ class Vis
         $result = $this->topbar[$tool][$position];
 
         return $result;
+    }
+
+    protected function addTopbarDefault(string $tool): void
+    {
+        if ($this->topbarDarkmode && !isset($this->topbar[$tool]['end']['toggle_darkmode_end'])) {
+            $item = new \JBSNewMedia\VisBundle\Model\Topbar\TopbarButtonDarkmode($tool);
+            $item->setLabel($this->translator->trans('main.toggle.darkmode', domain: 'vis'));
+            $this->addTopbar($item);
+        }
+
+        if ($this->topbarLocale && !isset($this->topbar[$tool]['end']['dropdown_locale']) && count($this->locales) > 1) {
+            $locale = $this->translator->getLocale();
+            $item = new \JBSNewMedia\VisBundle\Model\Topbar\TopbarDropdownLocale($tool);
+            $item->setLabel($this->translator->trans('main.locale', domain: 'vis'));
+            $item->setContent(strtoupper($locale));
+            $item->setDataKey($locale);
+            $data = [];
+            foreach ($this->locales as $l) {
+                $data[$l] = [
+                    'route' => 'vis_api_locale',
+                    'routeparameters' => ['_locale' => $l],
+                    'label' => $this->translator->trans('locale.'.$l, domain: 'vis'),
+                ];
+            }
+            $item->setData($data);
+            $this->addTopbar($item);
+        }
     }
 
     public function addSidebar(Sidebar $item, string $parent = ''): bool
