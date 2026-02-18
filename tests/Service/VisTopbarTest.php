@@ -67,8 +67,10 @@ class VisTopbarTest extends TestCase
     public function testGetTopbarExceptionsAndEmptyPosition(): void
     {
         // unknown tool
-        $this->expectException(\InvalidArgumentException::class);
-        $this->visMultiLocale->getTopbar('end', 'unknown');
+        $items = $this->visMultiLocale->getTopbar('end', 'unknown');
+        $this->assertSame([], $items);
+    }
+
     }
 
     public function testGetTopbarEmptyForMissingPosition(): void

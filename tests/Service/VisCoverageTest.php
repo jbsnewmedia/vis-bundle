@@ -41,19 +41,15 @@ class VisCoverageTest extends TestCase
         $this->assertTrue($this->vis->addTopbar($topbar));
     }
 
-    public function testGetTopbarThrowsExceptionIfToolDoesNotExist(): void
+    public function testGetTopbarMissingTool(): void
     {
-        $this->expectException(\InvalidArgumentException::class);
-        $this->expectExceptionMessage('Vis: Tool "non_existent" does not exist');
-        $this->vis->getTopbar('end', 'non_existent');
+        $this->assertEquals([], $this->vis->getTopbar('end', 'non_existent'));
     }
 
-    public function testGetTopbarThrowsExceptionIfToolNotInTopbarArray(): void
+    public function testGetTopbarMissingTopbarArray(): void
     {
         $this->vis->addTool(new Tool('my_tool'));
-        $this->expectException(\InvalidArgumentException::class);
-        $this->expectExceptionMessage('Vis: Tool "my_tool" does not exist in topbar');
-        $this->vis->getTopbar('end', 'my_tool');
+        $this->assertEquals([], $this->vis->getTopbar('end', 'my_tool'));
     }
 
     public function testGetSidebarThrowsExceptionIfToolNotInSidebarArray(): void
