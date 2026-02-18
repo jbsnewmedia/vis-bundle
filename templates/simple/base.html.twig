@@ -24,10 +24,13 @@
             <img src="{{ getAssetComposerFile('navigation.logo.dark'|vistrans) }}" class="img-fluid avalynx-simpleadmin-navigation-logo avalynx-simpleadmin-darkmode-flex d-none" style="max-height: 40px; height: auto;" title="{{ 'navigation.title.default'|vistrans }}" alt="{{ 'navigation.title.alt'|vistrans }}">
             <span class="ms-3">{{ 'navigation.title.sub'|vistrans }}</span>
         </div>
+        {% for item in vis.getTopbarGuest('start') %}
+            {% include item.template with {'item': item} %}
+        {% endfor %}
         <div class="flex-grow-1"></div>
-        <button class="btn btn-link justify-content-center align-items-center avalynx-simpleadmin-toggler-darkmode avalynx-simpleadmin-header-button" onclick="avalynxSimpleAdminToggleDarkmode()" title="{{ 'main.toggle.darkmode'|vistrans }}">
-            <i class="fa-solid fa-circle-half-stroke fa-fw"></i>
-        </button>
+        {% for item in vis.getTopbarGuest('end') %}
+            {% include item.template with {'item': item} %}
+        {% endfor %}
     </header>
     <div id="avalynx-simpleadmin-main" class="justify-content-center">
         <div id="avalynx-simpleadmin-loader" class="position-absolute w-100 border-top">
