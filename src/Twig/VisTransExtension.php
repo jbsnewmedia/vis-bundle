@@ -8,10 +8,9 @@ use JBSNewMedia\VisBundle\Service\Vis;
 use Symfony\Component\Translation\TranslatorBagInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
 use Twig\Extension\AbstractExtension;
-use Twig\Extension\GlobalsInterface;
 use Twig\TwigFilter;
 
-class VisTransExtension extends AbstractExtension implements GlobalsInterface
+class VisTransExtension extends AbstractExtension
 {
     /**
      * @var array <string, string>
@@ -20,13 +19,6 @@ class VisTransExtension extends AbstractExtension implements GlobalsInterface
 
     public function __construct(protected TranslatorInterface $translator, protected Vis $vis)
     {
-    }
-
-    public function getGlobals(): array
-    {
-        return [
-            'vis' => $this->vis,
-        ];
     }
 
     public function getFilters(): array

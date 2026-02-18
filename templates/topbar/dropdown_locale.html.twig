@@ -23,7 +23,9 @@
 
 <script>
     function changeLocale(url) {
-        fetch(url, {
+        const urlWithTs = new URL(url, window.location.origin);
+        urlWithTs.searchParams.set('ts', Date.now());
+        fetch(urlWithTs, {
             method: 'GET',
             headers: {
                 'X-Requested-With': 'XMLHttpRequest'

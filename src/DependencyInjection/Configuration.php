@@ -29,18 +29,6 @@ class Configuration implements ConfigurationInterface
         $defaultLocaleNode = $children->scalarNode('default_locale');
         $defaultLocaleNode->defaultValue('en');
 
-        /** @var ArrayNodeDefinition $topbarNode */
-        $topbarNode = $children->arrayNode('topbar');
-        $topbarChildren = $topbarNode->addDefaultsIfNotSet()->children();
-
-        /** @var ScalarNodeDefinition $darkmodeNode */
-        $darkmodeNode = $topbarChildren->booleanNode('darkmode');
-        $darkmodeNode->defaultTrue();
-
-        /** @var ScalarNodeDefinition $localeNode */
-        $localeNode = $topbarChildren->booleanNode('locale');
-        $localeNode->defaultTrue();
-
         return $treeBuilder;
     }
 }
