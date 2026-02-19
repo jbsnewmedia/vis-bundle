@@ -1,4 +1,4 @@
-<button class="{{ item.class }}" onclick="{{ item.onClick }}" title="{{ item.label }}" id="{{ item.id }}">
+<button type="button" class="{{ item.class }}" onclick="avalynxSimpleAdminToggleDarkmode.call(this)" title="{{ item.label }}" id="{{ item.id }}">
     {% if item.contentFilter == '' %}
         {{ item.content }}
     {% else %}
