@@ -365,4 +365,52 @@ class Vis
     {
         return $this->sidebarClosed;
     }
+
+    /**
+     * @return array<string, string>
+     */
+    public function getAllAvailableRoles(): array
+    {
+        $roles = [];
+
+        foreach ($this->tools as $tool) {
+            foreach ($tool->getRoles() as $role) {
+                $roles[$role] = $role;
+            }
+        }
+
+        foreach ($this->sidebar as $toolSidebar) {
+            foreach ($toolSidebar as $item) {
+                $this->collectRoles($item, $roles);
+            }
+        }
+
+        foreach ($this->topbar as $positionTopbar) {
+            foreach ($positionTopbar as $toolTopbar) {
+                foreach ($toolTopbar as $item) {
+                    foreach ($item->getRoles() as $role) {
+                        $roles[$role] = $role;
+                    }
+                }
+            }
+        }
+
+        ksort($roles);
+
+        return $roles;
+    }
+
+    /**
+     * @param array<string, string> $roles
+     */
+    private function collectRoles(Sidebar $item, array &$roles): void
+    {
+        foreach ($item->getRoles() as $role) {
+            $roles[$role] = $role;
+        }
+
+        foreach ($item->getChildren() as $child) {
+            $this->collectRoles($child, $roles);
+        }
+    }
 }
