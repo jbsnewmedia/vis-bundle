@@ -73,6 +73,9 @@ class MainController extends AbstractController
         }
 
         $cookieTool = $request->cookies->get('vis_tool');
+        if ($cookieTool && isset($tools[$cookieTool]) && !$request->query->get('change')) {
+            return $this->redirectToRoute('vis_'.$cookieTool.'_dashboard');
+        }
 
         return $this->render('@Vis/simple/change.html.twig', [
             'tools' => $tools,
