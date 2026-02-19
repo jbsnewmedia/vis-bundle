@@ -492,6 +492,14 @@ class VisTest extends TestCase
         $result = $method->invoke($this->vis, $item2, $item3);
         $this->assertEquals(0, $result);
     }
+
+    public function testSidebarClosed(): void
+    {
+        $this->assertFalse($this->vis->isSidebarClosed());
+        $this->vis->setSidebarClosed(true);
+        $this->assertTrue($this->vis->isSidebarClosed());
+    }
+
     public function testAddSidebarNoMatchingRoles(): void
     {
         // Vis has no roles by default (except ROLE_USER if added)
