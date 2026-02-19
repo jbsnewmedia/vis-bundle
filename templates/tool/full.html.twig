@@ -11,8 +11,7 @@
 {% do addAssetComposer('avalynx/avalynx-simpleadmin/dist/css/avalynx-simpleadmin-sidenav-sub1.vars.css') %}
 {% do addAssetComposer('avalynx/avalynx-simpleadmin/dist/css/avalynx-simpleadmin-sidenav-sub1.css') %}
 {% do addAssetComposer('avalynx/avalynx-simpleadmin/dist/css/custom/avalynx-simpleadmin-light.css') %}
-{% do addAssetComposer('avalynx/avalynx-alert/dist/css/avalynx-alert.css') %}
-{% do addAssetComposer('avalynx/avalynx-alert/dist/js/avalynx-alert.js') %}
+{% do addAssetComposer('avalynx/avalynx-form/dist/js/avalynx-form.js') %}
 
 {% block javascripts %}
     {{ parent() }}
@@ -20,4 +19,10 @@
 
 {% block stylesheets %}
     {{ parent() }}
+{% endblock %}
+
+{% block body %}
+    {% if userModel is defined and userModel and not app.user %}
+        {{ include('@Vis/security/_login_modal.html.twig') }}
+    {% endif %}
 {% endblock %}
