@@ -7,13 +7,13 @@ namespace App\Controller\Vis;
 use Doctrine\ORM\EntityManagerInterface;
 use JBSNewMedia\VisBundle\Entity\User;
 use JBSNewMedia\VisBundle\Form\RegistrationFormType;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use JBSNewMedia\VisBundle\Controller\VisAbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Attribute\Route;
 
-class RegistrationController extends AbstractController
+class RegistrationController extends VisAbstractController
 {
     #[Route(path: '/vis/register', name: 'vis_register', priority: 10)]
     public function register(
@@ -40,6 +40,7 @@ class RegistrationController extends AbstractController
         }
 
         return $this->render('@Vis/simple/register.html.twig', [
+            'vis' => $this->vis,
             'registrationForm' => $form,
         ]);
     }

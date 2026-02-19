@@ -4,8 +4,7 @@ declare(strict_types=1);
 
 namespace App\Controller\Vis;
 
-use JBSNewMedia\VisBundle\Service\Vis;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use JBSNewMedia\VisBundle\Controller\VisAbstractController;
 use Symfony\Component\HttpFoundation\Cookie;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -15,12 +14,8 @@ use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
-class MainController extends AbstractController
+class MainController extends VisAbstractController
 {
-    public function __construct(public Vis $vis)
-    {
-    }
-
     #[Route(path: '/vis', name: 'vis', methods: ['GET', 'POST'])]
     #[IsGranted('ROLE_USER')]
     public function index(Request $request, TranslatorInterface $translator, UrlGeneratorInterface $urlGenerator): Response
@@ -78,6 +73,7 @@ class MainController extends AbstractController
         }
 
         return $this->render('@Vis/simple/change.html.twig', [
+            'vis' => $this->vis,
             'tools' => $tools,
             'cookieTool' => $cookieTool,
         ]);

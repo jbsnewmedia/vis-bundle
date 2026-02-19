@@ -81,13 +81,13 @@ class VisCoreCreateCommand extends Command
             $this->error = true;
         }
 
-        $controllerFile = $this->kernel->getProjectDir().'/src/Controller/SecurityController.php';
+        $controllerFile = $this->kernel->getProjectDir().'/src/Controller/Vis/SecurityController.php';
         if (!$this->dumpSecurityController($controllerFile)) {
             $this->error = true;
         }
 
         if ($useLocales) {
-            $controllerFile = $this->kernel->getProjectDir().'/src/Controller/LocaleController.php';
+            $controllerFile = $this->kernel->getProjectDir().'/src/Controller/Vis/LocaleController.php';
             if ($this->dumpLocaleController($controllerFile)) {
                 $io->info('Created LocaleController: '.$controllerFile);
             } else {
