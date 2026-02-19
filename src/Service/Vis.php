@@ -43,6 +43,8 @@ class Vis
      */
     protected array $routes = [];
 
+    protected bool $sidebarClosed = false;
+
     /**
      * @param string[] $locales
      */
@@ -350,5 +352,17 @@ class Vis
     public function sortItems(Item $a, Item $b): int
     {
         return $a->getOrder() <=> $b->getOrder();
+    }
+
+    public function setSidebarClosed(bool $sidebarClosed): self
+    {
+        $this->sidebarClosed = $sidebarClosed;
+
+        return $this;
+    }
+
+    public function isSidebarClosed(): bool
+    {
+        return $this->sidebarClosed;
     }
 }
