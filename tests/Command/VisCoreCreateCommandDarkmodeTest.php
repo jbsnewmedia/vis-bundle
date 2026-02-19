@@ -44,8 +44,8 @@ class VisCoreCreateCommandDarkmodeTest extends TestCase
 
         $this->assertSame(Command::SUCCESS, $status);
         $this->assertFileExists($this->tempDir.'/src/Controller/Vis/MainController.php');
-        $this->assertFileExists($this->tempDir.'/src/Controller/SecurityController.php');
-        $this->assertFileExists($this->tempDir.'/src/Controller/LocaleController.php');
+        $this->assertFileExists($this->tempDir.'/src/Controller/Vis/SecurityController.php');
+        $this->assertFileExists($this->tempDir.'/src/Controller/Vis/LocaleController.php');
         $this->assertFileExists($this->tempDir.'/src/Controller/Vis/DarkmodeController.php');
         $this->assertFileDoesNotExist($this->tempDir.'/src/Controller/Vis/RegistrationController.php');
     }

@@ -51,8 +51,8 @@ class VisCoreCreateCommandTest extends TestCase
 
         // Check if files were created
         $this->assertFileExists($this->tempDir . '/src/Controller/Vis/MainController.php');
-        $this->assertFileExists($this->tempDir . '/src/Controller/SecurityController.php');
-        $this->assertFileExists($this->tempDir . '/src/Controller/LocaleController.php');
+        $this->assertFileExists($this->tempDir . '/src/Controller/Vis/SecurityController.php');
+        $this->assertFileExists($this->tempDir . '/src/Controller/Vis/LocaleController.php');
         $this->assertFileExists($this->tempDir . '/src/Controller/Vis/RegistrationController.php');
         $this->assertFileExists($this->tempDir . '/config/packages/vis.yaml');
         $this->assertFileExists($this->tempDir . '/config/packages/security.yaml');
