@@ -7,9 +7,6 @@ services:
                 GIT_USER_NAME: ${GIT_USER_NAME}
         working_dir: /app
         user: application
-        ports:
-            - "80:80"
-            - "443:443"
         volumes:
             - ./:/app
         tmpfs:
