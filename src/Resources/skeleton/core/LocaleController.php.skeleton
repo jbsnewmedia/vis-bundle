@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Controller;
+namespace App\Controller\Vis;
 
 use JBSNewMedia\VisBundle\Controller\VisAbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -11,8 +11,8 @@ use Symfony\Component\Routing\Attribute\Route;
 
 class LocaleController extends VisAbstractController
 {
-    #[Route('/vis/api/locale/{_locale}', name: 'vis_api_locale')]
-    public function setLocale(Request $request, string $_locale): JsonResponse
+    #[Route('/vis/api/locale/{_locale}/{timestamp}', name: 'vis_api_locale')]
+    public function setLocale(Request $request, string $_locale, string $timestamp): JsonResponse
     {
         if (!in_array($_locale, $this->vis->getLocales(), true)) {
             $_locale = $this->vis->getDefaultLocale();

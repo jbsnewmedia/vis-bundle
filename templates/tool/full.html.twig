@@ -1,0 +1,28 @@
+{% extends '@Vis/base.html.twig' %}
+
+{% do addAssetComposer('twbs/bootstrap/dist/css/bootstrap.min.css') %}
+{% do addAssetComposer('twbs/bootstrap/dist/js/bootstrap.bundle.min.js') %}
+{% do addAssetComposer('fortawesome/font-awesome/css/all.min.css') %}
+{% do addAssetComposer('avalynx/avalynx-simpleadmin/dist/css/avalynx-simpleadmin.vars.css') %}
+{% if userModel is defined and userModel and not app.user %}
+    {% do addAssetComposer('avalynx/avalynx-simpleadmin/dist/js/avalynx-simpleadmin-guest.js') %}
+    {% do addAssetComposer('avalynx/avalynx-simpleadmin/dist/css/avalynx-simpleadmin-guest.css') %}
+    {% do addAssetComposer('avalynx/avalynx-form/dist/js/avalynx-form.js') %}
+{% else %}
+    {% do addAssetComposer('avalynx/avalynx-simpleadmin/dist/js/avalynx-simpleadmin.js') %}
+    {% do addAssetComposer('avalynx/avalynx-simpleadmin/dist/css/avalynx-simpleadmin.css') %}
+{% endif %}
+
+{% block javascripts %}
+    {{ parent() }}
+{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+{% endblock %}
+
+{% block body %}
+    {% if userModel is defined and userModel and not app.user %}
+        {{ include('@Vis/security/_login_modal.html.twig') }}
+    {% endif %}
+{% endblock %}

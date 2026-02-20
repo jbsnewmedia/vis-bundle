@@ -19,4 +19,5 @@ security:
         - { path: ^/vis/login, roles: null }
         - { path: ^/vis/logout, roles: null }
         - { path: ^/vis/register, roles: null }
+        - { path: ^/vis/public, roles: null }
         - { path: ^/vis, roles: ROLE_USER }

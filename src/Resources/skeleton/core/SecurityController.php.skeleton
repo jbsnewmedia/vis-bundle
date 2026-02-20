@@ -2,19 +2,21 @@
 
 declare(strict_types=1);
 
-namespace App\Controller;
+namespace App\Controller\Vis;
 
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use JBSNewMedia\VisBundle\Controller\VisAbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Authentication\AuthenticationUtils;
 
-class SecurityController extends AbstractController
+class SecurityController extends VisAbstractController
 {
     #[Route(path: '/vis/login', name: 'vis_login')]
     public function login(AuthenticationUtils $authenticationUtils): Response
     {
-        return $this->render('@Vis/simple/login.html.twig');
+        return $this->render('@Vis/simple/login.html.twig', [
+            'vis' => $this->vis,
+        ]);
     }
 
     #[Route(path: '/vis/logout', name: 'vis_logout')]

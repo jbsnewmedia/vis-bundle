@@ -20,8 +20,10 @@
 - **Plugin-Architektur** mit Composer Paketen oder JSON-basiertem laden als Projekt
 - **Lokalisierungs-Unterstützung** mit Session-basiertem Umschalten
 - **Sicherheits-Integration** mit Symfony Authenticator
+- **Darkmode-Unterstützung** mit Session-basiertem Umschalten
 - **Twig-Erweiterungen** für verbesserte Template-Funktionalität
 - **Multi-Tool-Unterstützung** mit Tool-Switching-Interface
+- **Sidebar-Status** (offen/geschlossen) persistierbar
 - **Responsive Design** via AvalynX SimpleAdmin
 
 ---
@@ -66,6 +68,7 @@ Dieser Befehl wird:
 - Den SecurityController für die Authentifizierung erstellen
 - Optional den RegistrationController erstellen
 - Den LocaleController für das Session-basierte Umschalten der Sprache erstellen
+- Den DarkmodeController für das Session-basierte Umschalten des Designs (hell/dunkel) erstellen
 - Die Konfigurationsdateien `security.yaml` und `vis.yaml` aktualisieren
 
 ### 3. Ersten Admin-Benutzer erstellen
