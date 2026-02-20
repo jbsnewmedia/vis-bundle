@@ -108,6 +108,7 @@ class PluginServiceTest extends TestCase
         ]));
 
         $this->filesystem->mkdir($this->tempDir . '/public/bundles/TestPlugin');
+        $this->filesystem->mkdir($this->tempDir . '/bin');
         file_put_contents($this->tempDir . '/bin/console', "#!/usr/bin/env php\n<?php echo 'ok';");
         chmod($this->tempDir . '/bin/console', 0755);
 

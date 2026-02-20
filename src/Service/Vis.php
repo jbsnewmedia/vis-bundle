@@ -373,6 +373,10 @@ class Vis
     {
         $roles = [];
 
+        foreach ($this->getRoles() as $role) {
+            $roles[$role] = $role;
+        }
+
         foreach ($this->tools as $tool) {
             foreach ($tool->getRoles() as $role) {
                 $roles[$role] = $role;

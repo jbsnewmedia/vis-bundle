@@ -553,4 +553,45 @@ class VisTest extends TestCase
         // If we reach here without exception, the early return worked
         $this->assertTrue(true);
     }
+
+    public function testGetAllAvailableRoles(): void
+    {
+        $this->vis->addRole('ROLE_USER');
+        $this->vis->addRole('ROLE_SIDEBAR1');
+        $this->vis->addRole('ROLE_CHILD1');
+        $this->vis->addRole('ROLE_TOPBAR1');
+
+        $tool = new Tool('tool1');
+        $tool->addRole('ROLE_TOOL1');
+        $this->vis->addTool($tool);
+
+        $sidebar = new Sidebar('tool1', 'sidebar1');
+        $sidebar->setRoles(['ROLE_SIDEBAR1']);
+        $child = new SidebarItem('tool1', 'child1', 'Child');
+        $child->setRoles(['ROLE_CHILD1']);
+        $sidebar->addChild($child);
+        $this->vis->addSidebar($sidebar);
+
+        $topbar = new Topbar('tool1', 'topbar1');
+        $topbar->setRoles(['ROLE_TOPBAR1']);
+        $this->vis->addTopbar($topbar);
+
+        $roles = $this->vis->getAllAvailableRoles();
+
+        $this->assertArrayHasKey('ROLE_USER', $roles);
+        $this->assertArrayHasKey('ROLE_TOOL1', $roles);
+        $this->assertArrayHasKey('ROLE_SIDEBAR1', $roles);
+        $this->assertArrayHasKey('ROLE_CHILD1', $roles);
+        $this->assertArrayHasKey('ROLE_TOPBAR1', $roles);
+
+        // Check sorting
+        $expected = [
+            'ROLE_CHILD1' => 'ROLE_CHILD1',
+            'ROLE_SIDEBAR1' => 'ROLE_SIDEBAR1',
+            'ROLE_TOOL1' => 'ROLE_TOOL1',
+            'ROLE_TOPBAR1' => 'ROLE_TOPBAR1',
+            'ROLE_USER' => 'ROLE_USER',
+        ];
+        $this->assertSame($expected, $roles);
+    }
 }
