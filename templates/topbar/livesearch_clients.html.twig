@@ -6,7 +6,7 @@
             {{ item.content|dynamic_filter(item.contentFilter) }}
         {% endif %}
     </button>
-    <ul class="dropdown-menu dropdown-menu-end rounded-0 me-1 avalynx-simpleadmin-livesearch{% if item.dataCounter > item.countForSearch %} avalynx-simpleadmin-livesearch-show{% endif %}" aria-labelledby="{{ item.id }}">
+    <ul class="dropdown-menu dropdown-menu-end rounded-0 me-1 avalynx-simpleadmin-livesearch{% if item.dataCounter > item.countForSearch %} avalynx-simpleadmin-livesearch-show avalynx-simpleadmin-livesearch-results{% endif %}" aria-labelledby="{{ item.id }}">
         {% if item.dataCounter > item.countForSearch %}
             <li>
                 <span class="dropdown-item-text">
