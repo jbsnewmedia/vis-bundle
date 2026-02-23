@@ -1,4 +1,4 @@
-{% if item.dataCounter > 1 %}
+{% if item.dataCounter > 0 %}
     <button class="{{ item.class }}" data-bs-toggle="dropdown" aria-expanded="false" title="{{ item.label }}" id="{{ item.id }}">
         {% if item.contentFilter == '' %}
             {{ item.content }}
@@ -18,8 +18,32 @@
         {% endif %}
         {% for data_id, data_details in item.data %}
             <li class="{% if item.dataCounter > item.countForSearch and item.dataKey != data_id %}d-none {% endif %}vis-livesearch-item">
-                <a class="dropdown-item{% if item.dataKey == data_id %} active{% endif %}" href="{{ path(data_details.route, data_details.routeparameters|default({})) }}">{{ data_details.label }}</a>
+                <div class="dropdown-item vis-client-item{% if item.dataKey == data_id %} active{% endif %}" style="cursor: pointer;" onclick="changeClient('{{ path(data_details.route, (data_details.routeParameters|default(data_details.routeparameters|default({})))|merge({'timestamp': '__TIMESTAMP__'})) }}'.replace('__TIMESTAMP__', Date.now()))">
+                    {{ data_details.label }}
+                </div>
             </li>
         {% endfor %}
     </ul>
+
+    <script>
+        if (typeof changeClient !== 'function') {
+            function changeClient(url) {
+                fetch(url, {
+                    method: 'GET',
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest'
+                    }
+                })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            location.reload();
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error changing client:', error);
+                    });
+            }
+        }
+    </script>
 {% endif %}

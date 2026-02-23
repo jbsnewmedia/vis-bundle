@@ -12,6 +12,7 @@ use JBSNewMedia\VisBundle\Model\Topbar\TopbarButtonDarkmode;
 use JBSNewMedia\VisBundle\Model\Topbar\TopbarDropdownLocale;
 use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
+use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
 class Vis
@@ -25,6 +26,11 @@ class Vis
     protected array $tools = [];
 
     protected string $toolId = '';
+
+    /**
+     * @var array<string, string>
+     */
+    protected array $clients = [];
 
     protected int $toolsCounter = 0;
 
@@ -45,6 +51,8 @@ class Vis
 
     protected bool $sidebarClosed = false;
 
+    protected string $selectedClientId = '';
+
     /**
      * @param string[] $locales
      */
@@ -52,6 +60,7 @@ class Vis
         protected TranslatorInterface $translator,
         protected UrlGeneratorInterface $router,
         protected Security $security,
+        protected RequestStack $requestStack,
         protected array $locales = ['en'],
         protected string $defaultLocale = 'en',
     ) {
@@ -129,6 +138,42 @@ class Vis
     public function getTools(): array
     {
         return $this->tools;
+    }
+
+    /**
+     * @param array<string, string> $clients
+     */
+    public function setClients(array $clients): void
+    {
+        $this->clients = $clients;
+    }
+
+    /**
+     * @return array<string, string>
+     */
+    public function getClients(): array
+    {
+        return $this->clients;
+    }
+
+    public function setSelectedClientId(string $clientId): void
+    {
+        $this->selectedClientId = $clientId;
+        $this->requestStack->getSession()->set('_vis_client_id', $clientId);
+    }
+
+    public function getSelectedClientId(): string
+    {
+        if ($this->selectedClientId === '') {
+            $this->selectedClientId = (string) $this->requestStack->getSession()->get('_vis_client_id', '');
+        }
+        return $this->selectedClientId;
+    }
+
+    public function getSelectedClientTitle(): ?string
+    {
+        $id = $this->getSelectedClientId();
+        return $this->clients[$id] ?? null;
     }
 
     protected function incToolsCounter(): void
