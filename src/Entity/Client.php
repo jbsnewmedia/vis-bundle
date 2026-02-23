@@ -18,7 +18,7 @@ class Client
     #[ORM\Column(type: 'uuid')]
     private ?Uuid $id = null;
 
-    #[ORM\Column(length: 64, nullable: true)]
+    #[ORM\Column(length: 64, unique: true, nullable: true)]
     private ?string $alias = null;
 
     #[ORM\Column(length: 255, nullable: true)]
