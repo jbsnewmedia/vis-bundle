@@ -19,7 +19,7 @@ class Client
     private ?Uuid $id = null;
 
     #[ORM\Column(length: 64, nullable: true)]
-    private ?string $number = null;
+    private ?string $alias = null;
 
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $title = null;
@@ -53,14 +53,14 @@ class Client
         return $this->id;
     }
 
-    public function getNumber(): ?string
+    public function getAlias(): ?string
     {
-        return $this->number;
+        return $this->alias;
     }
 
-    public function setNumber(string $number): static
+    public function setAlias(string $alias): static
     {
-        $this->number = $number;
+        $this->alias = $alias;
 
         return $this;
     }
