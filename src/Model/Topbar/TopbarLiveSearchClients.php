@@ -6,7 +6,7 @@ namespace JBSNewMedia\VisBundle\Model\Topbar;
 
 use JBSNewMedia\VisBundle\Service\Vis;
 
-class TopbarLiveSearchTools extends TopbarLiveSearch
+class TopbarLiveSearchClients extends TopbarLiveSearch
 {
     protected Vis $vis;
 
@@ -14,17 +14,33 @@ class TopbarLiveSearchTools extends TopbarLiveSearch
 
     public function __construct(
         string $tool,
-        string $id = 'dropdown_tools_end',
+        string $id = 'dropdown_clients_end',
         string $position = 'end',
     ) {
         parent::__construct($tool, $id);
         $this->setPosition($position);
         $this->setClass('btn btn-link justify-content-center align-items-center avalynx-simpleadmin-header-button');
-        $this->setContent('<i class="fa-solid fa-diagram-project fa-fw"></i>');
-        $this->setLabel('Toggle Sidebar');
+        $this->setContent('<i class="fa-solid fa-building fa-fw"></i>');
+        $this->setLabel('Clients');
         $this->setLabelSearch('Search');
-        $this->setOrder(100);
+        $this->setOrder(90);
         $this->setContentFilter('raw');
+        $this->setTemplate('@Vis/topbar/livesearch_clients.html.twig');
+    }
+
+    public function getLabel(): string
+    {
+        $title = $this->getVis()->getSelectedClientTitle();
+        if ($title) {
+            return $title;
+        }
+
+        return $this->getVis()->getTranslator()->trans('main.livesearch.client_select', domain: 'vis');
+    }
+
+    public function getContent(): string
+    {
+        return '<i class="fa-solid fa-building fa-fw"></i>';
     }
 
     public function setVis(Vis $vis): void
@@ -46,15 +62,16 @@ class TopbarLiveSearchTools extends TopbarLiveSearch
     {
         $this->dataSet = true;
         $data = [];
-        foreach ($this->getVis()->getTools() as $tool) {
-            $data[$tool->getId()] = [
-                'route' => 'vis_'.$tool->getId(),
-                'routeparameters' => [],
-                'label' => $tool->getTitle(),
+        $selectedId = $this->getVis()->getSelectedClientId();
+        foreach ($this->getVis()->getClients() as $id => $title) {
+            $data[$id] = [
+                'route' => 'vis_api_client',
+                'routeparameters' => ['id' => $id],
+                'label' => $title,
             ];
         }
         $this->setData($data);
-        $this->setDataKey($this->getVis()->getToolId());
+        $this->setDataKey($selectedId);
     }
 
     public function getDataCounter(): int
