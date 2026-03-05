@@ -26,6 +26,9 @@ class VisExtension extends Extension
         $defaultLocale = $config['default_locale'] ?? 'en';
         $container->setParameter('vis.default_locale', is_scalar($defaultLocale) ? (string) $defaultLocale : 'en');
 
+        $theme = $config['theme'] ?? 'Nexus';
+        $container->setParameter('vis.theme', is_scalar($theme) ? (string) $theme : 'Nexus');
+
         $loader = new YamlFileLoader($container, new FileLocator(__DIR__.'/../../config'));
         $loader->load('services.yaml');
     }

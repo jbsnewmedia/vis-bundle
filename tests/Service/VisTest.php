@@ -34,9 +34,7 @@ class VisTest extends TestCase
             $this->router,
             $this->security,
             ['en', 'de'],
-            'en',
-            true,
-            true
+            'en'
         );
     }
 

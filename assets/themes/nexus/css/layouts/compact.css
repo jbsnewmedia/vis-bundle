@@ -1,0 +1,42 @@
+/* Automatisch eingebundene Theme-Overrides. Wird per JS getauscht. */
+
+:root {
+  --card-radius: 8px;
+  --topbar-h:    52px;
+  --sidebar-w:   220px;
+}
+
+#content {
+  padding: 12px;
+}
+
+.card-body {
+  padding: 12px 14px;
+}
+
+.card-header {
+  padding: 8px 14px;
+  font-size: 13px;
+}
+
+.nav-link-item {
+  padding: 6px 12px; font-size: 13px;
+}
+
+.page-title {
+  font-size: 20px;
+}
+
+.page-header {
+  margin-bottom: 12px;
+}
+
+.kpi-card .kpi-value {
+  font-size: 24px;
+}
+
+.row.g-4 {
+  --bs-gutter-x: 12px;
+  --bs-gutter-y: 12px;
+}
+

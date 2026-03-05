@@ -50,6 +50,7 @@ services:
         arguments:
             $locales: '%vis.locales%'
             $defaultLocale: '%vis.default_locale%'
+            $theme: '%vis.theme%'
 
     JBSNewMedia\VisBundle\EventListener\LocaleListener:
         tags:

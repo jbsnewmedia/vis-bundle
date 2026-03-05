@@ -1,3 +1,4 @@
 vis:
     locales: {$locales}
     default_locale: {$default_locale}
+    theme: Nexus

@@ -1,0 +1,11 @@
+/* Automatisch eingebundene Theme-Overrides. Wird per JS getauscht. */
+
+:root {
+  --theme-primary:    #f97316;
+  --theme-accent:     #eab308;
+  --theme-active-bg:  rgba(249,115,22,.18);
+  --theme-active-txt: #fdba74;
+  --theme-glow:       rgba(249,115,22,.4);
+  --theme-ring:       rgba(249,115,22,.15);
+  --sidebar-bg:       #1c0f04;
+}

@@ -1,0 +1,129 @@
+/* Automatisch eingebundene Theme-Overrides. Wird per JS getauscht. */
+
+:root {
+  --card-radius:  18px;
+  --sidebar-bg:   rgba(242,242,247,.88);
+  --sb-text:      rgba(60,60,67,.7);
+  --sb-text-h:    var(--theme-primary);
+  --sb-sub:       rgba(60,60,67,.38);
+  --sb-section:   rgba(60,60,67,.32);
+  --sb-sep:       rgba(60,60,67,.1);
+  --sb-hover:     rgba(0,0,0,.05);
+  --sb-scroll:    rgba(0,0,0,.18);
+  --topbar-h:     60px;
+}
+
+[data-bs-theme="dark"] {
+  --sidebar-bg:   rgba(28,28,30,.88);
+  --sb-text:      rgba(255,255,255,.6);
+  --sb-text-h:    var(--theme-active-txt);
+  --sb-sub:       rgba(255,255,255,.35);
+  --sb-section:   rgba(255,255,255,.28);
+  --sb-sep:       rgba(255,255,255,.1);
+  --sb-hover:     rgba(255,255,255,.06);
+  --sb-scroll:    rgba(255,255,255,.2);
+}
+
+#sidebar {
+  backdrop-filter: blur(24px) saturate(1.8);
+  -webkit-backdrop-filter: blur(24px) saturate(1.8);
+  border-right: 1px solid var(--sb-sep);
+  box-shadow: none;
+}
+
+#topbar {
+  background: rgba(255,255,255,.78);
+  backdrop-filter: blur(24px) saturate(1.8);
+  -webkit-backdrop-filter: blur(24px) saturate(1.8);
+  border-bottom: 1px solid rgba(0,0,0,.08);
+  box-shadow: none;
+}
+
+[data-bs-theme="dark"] #topbar {
+  background: rgba(28,28,30,.82);
+  border-bottom-color: rgba(255,255,255,.08);
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Helvetica Neue', system-ui, sans-serif;
+}
+
+.nav-link-item {
+  border-radius: 10px;
+  margin: 2px 10px;
+  width: calc(100% - 20px);
+}
+
+.nav-link-item.active {
+  background: var(--theme-active-bg);
+  color: var(--theme-primary);
+  border-left: none;
+  padding-left: 16px;
+  font-weight: 600;
+}
+
+.nav-link-item.active .nav-icon {
+  color: var(--theme-primary);
+}
+
+.brand-icon {
+  border-radius: 14px;
+}
+
+.card {
+  border: none;
+  box-shadow: 0 4px 24px rgba(0,0,0,.07), 0 1px 4px rgba(0,0,0,.05);
+}
+
+[data-bs-theme="dark"] .card {
+  box-shadow: 0 4px 24px rgba(0,0,0,.3), 0 1px 4px rgba(0,0,0,.2);
+}
+
+.page-title {
+  font-size: 28px;
+  font-weight: 700;
+  letter-spacing: -.6px;
+}
+
+.btn {
+  border-radius: 12px;
+  font-weight: 600;
+}
+
+.btn-sm {
+  border-radius: 8px;
+}
+
+.form-control,
+ .form-select,
+ .input-group-text {
+  border-radius: 12px;
+}
+
+.input-group > :not(:last-child) { border-radius: 12px 0 0 12px; }
+
+.input-group > :last-child       { border-radius: 0 12px 12px 0; }
+
+.topbar-search .form-control {
+  border-radius: 20px;
+  background: rgba(0,0,0,.06);
+  border-color: transparent;
+}
+
+[data-bs-theme="dark"] .topbar-search .form-control {
+  background: rgba(255,255,255,.08);
+}
+
+.badge,
+ .nav-badge,
+ .style-badge,
+ .cat-badge {
+  border-radius: 20px;
+}
+
+.nav-section-label {
+  font-size: 11px;
+  letter-spacing: .04em;
+  font-weight: 700;
+}
+

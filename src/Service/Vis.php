@@ -63,6 +63,7 @@ class Vis
         protected RequestStack $requestStack,
         protected array $locales = ['en'],
         protected string $defaultLocale = 'en',
+        protected string $theme = 'Nexus',
     ) {
         $user = $this->security->getUser();
         if (null !== $user) {
@@ -207,6 +208,11 @@ class Vis
     public function getDefaultLocale(): string
     {
         return $this->defaultLocale;
+    }
+
+    public function getTheme(): string
+    {
+        return $this->theme;
     }
 
     public function addTopbar(Topbar $item): bool

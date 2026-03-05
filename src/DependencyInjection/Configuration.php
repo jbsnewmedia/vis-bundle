@@ -29,6 +29,10 @@ class Configuration implements ConfigurationInterface
         $defaultLocaleNode = $children->scalarNode('default_locale');
         $defaultLocaleNode->defaultValue('en');
 
+        /** @var ScalarNodeDefinition $themeNode */
+        $themeNode = $children->scalarNode('theme');
+        $themeNode->defaultValue('Nexus');
+
         return $treeBuilder;
     }
 }
