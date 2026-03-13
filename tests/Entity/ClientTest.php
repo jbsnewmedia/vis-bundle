@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace JBSNewMedia\VisBundle\Tests\Entity;
 
 use JBSNewMedia\VisBundle\Entity\Client;
-use JBSNewMedia\VisBundle\Entity\ClientToTool;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Uid\Uuid;
 use Doctrine\Common\Collections\Collection;
@@ -20,12 +19,12 @@ class ClientTest extends TestCase
         $this->assertCount(0, $client->getTools());
     }
 
-    public function testNumber(): void
+    public function testAlias(): void
     {
         $client = new Client();
-        $number = 'C12345';
-        $client->setNumber($number);
-        $this->assertEquals($number, $client->getNumber());
+        $alias = 'client-12345';
+        $client->setAlias($alias);
+        $this->assertEquals($alias, $client->getAlias());
     }
 
     public function testTitle(): void
