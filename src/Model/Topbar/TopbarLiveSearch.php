@@ -7,7 +7,7 @@ namespace JBSNewMedia\VisBundle\Model\Topbar;
 class TopbarLiveSearch extends Topbar
 {
     /**
-     * @var array<string, array{route: string, routeParameters: array<string, string|int>, label: string}>
+     * @var array<string, array{route: string, routeparameters: array<string, string|int>, label: string}>
      */
     protected array $data = [];
 
@@ -31,7 +31,7 @@ class TopbarLiveSearch extends Topbar
     }
 
     /**
-     * @param array<string, array{route: string, routeParameters: array<string, string|int>, label: string}> $data
+     * @param array<string, array{route: string, routeparameters: array<string, string|int>, label: string}> $data
      */
     public function setData(array $data): void
     {
@@ -40,7 +40,7 @@ class TopbarLiveSearch extends Topbar
     }
 
     /**
-     * @param array<string, array{route: string, routeParameters: array<string, string|int>, label: string}> $data
+     * @param array<string, array{route: string, routeparameters: array<string, string|int>, label: string}> $data
      */
     public function addData(array $data): void
     {
@@ -49,7 +49,7 @@ class TopbarLiveSearch extends Topbar
     }
 
     /**
-     * @return array<string, array{route: string, routeParameters: array<string, string|int>, label: string}> $data
+     * @return array<string, array{route: string, routeparameters: array<string, string|int>, label: string}> $data
      */
     public function getData(): array
     {

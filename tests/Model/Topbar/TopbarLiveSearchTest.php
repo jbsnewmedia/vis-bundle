@@ -26,7 +26,7 @@ class TopbarLiveSearchTest extends TestCase
         $data = [
             'tool1' => [
                 'route' => 'vis_tool1',
-                'routeParameters' => [],
+                'routeparameters' => [],
                 'label' => 'Tool 1'
             ]
         ];
@@ -34,7 +34,7 @@ class TopbarLiveSearchTest extends TestCase
         $this->assertEquals($data, $search->getData());
         $this->assertEquals(1, $search->getDataCounter());
 
-        $search->addData(['tool2' => ['route' => 'vis_tool2', 'routeParameters' => [], 'label' => 'Tool 2']]);
+        $search->addData(['tool2' => ['route' => 'vis_tool2', 'routeparameters' => [], 'label' => 'Tool 2']]);
         $this->assertCount(2, $search->getData());
         $this->assertEquals(2, $search->getDataCounter());
     }
@@ -87,5 +87,46 @@ class TopbarLiveSearchToolsTest extends TestCase
         $this->assertArrayHasKey('tool1', $data);
         $this->assertEquals('vis_tool1', $data['tool1']['route']);
         $this->assertEquals('Title 1', $data['tool1']['label']);
+    }
+}
+
+class TopbarLiveSearchClientsTest extends TestCase
+{
+    public function testConstructor(): void
+    {
+        $clientsSearch = new \JBSNewMedia\VisBundle\Model\Topbar\TopbarLiveSearchClients('test_tool');
+        $this->assertEquals('dropdown_clients_end', $clientsSearch->getId());
+        $this->assertEquals('end', $clientsSearch->getPosition());
+        $this->assertEquals(90, $clientsSearch->getOrder());
+    }
+
+    public function testSetVisAndDataLoading(): void
+    {
+        $vis = $this->createMock(Vis::class);
+        $vis->method('getClients')->willReturn(['id1' => 'Client 1', 'id2' => 'Client 2']);
+        $vis->method('getSelectedClientId')->willReturn('id1');
+        $vis->method('getSelectedClientTitle')->willReturn('Client 1');
+        $translator = $this->createMock(\Symfony\Contracts\Translation\TranslatorInterface::class);
+        $vis->method('getTranslator')->willReturn($translator);
+
+        $clientsSearch = new \JBSNewMedia\VisBundle\Model\Topbar\TopbarLiveSearchClients('test_tool');
+        $clientsSearch->setVis($vis);
+        $this->assertSame($vis, $clientsSearch->getVis());
+
+        // getDataCounter triggers setVisData
+        $count = $clientsSearch->getDataCounter();
+        $this->assertEquals(2, $count);
+
+        $data = $clientsSearch->getData();
+        $this->assertArrayHasKey('id1', $data);
+        $this->assertEquals('vis_api_client', $data['id1']['route']);
+        $this->assertEquals(['id' => 'id1'], $data['id1']['routeparameters']);
+        $this->assertEquals('Client 1', $data['id1']['label']);
+
+        $content = $clientsSearch->getContent();
+        $this->assertEquals('<i class="fa-solid fa-building fa-fw"></i>', $content);
+
+        $label = $clientsSearch->getLabel();
+        $this->assertEquals('Client 1', $label);
     }
 }

@@ -10,6 +10,8 @@ main:
     sidebar: "Sidebar umschalten"
   livesearch:
     tools: "Tool wechseln"
+    clients: "Mandant wechseln"
+    client_select: "Mandant wählen"
     placeholder: "Suchen..."
   profile:
     default: "Profil"
