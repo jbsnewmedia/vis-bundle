@@ -44,7 +44,7 @@ class TopbarModelsTest extends TestCase
     {
         $button = new TopbarButtonSidebar('test_tool');
         $this->assertEquals('start', $button->getPosition());
-        $this->assertStringContainsString('avalynx-simpleadmin-toggler-sidenav', $button->getClass());
+        $this->assertStringContainsString('avalynx-admin-toggler-sidenav', $button->getClass());
         $this->assertStringContainsString('d-none d-md-flex', $button->getClass());
         $this->assertEquals('Toggle Sidebar', $button->getLabel());
         $this->assertEquals('raw', $button->getContentFilter());
@@ -57,7 +57,7 @@ class TopbarModelsTest extends TestCase
     {
         $button = new TopbarButtonDarkmode('test_tool');
         $this->assertEquals('end', $button->getPosition());
-        $this->assertStringContainsString('avalynx-simpleadmin-toggler-darkmode', $button->getClass());
+        $this->assertStringContainsString('avalynx-admin-toggler-darkmode', $button->getClass());
         $this->assertEquals('Toggle Darkmode', $button->getLabel());
         $this->assertEquals('@Vis/topbar/button_darkmode.html.twig', $button->getTemplate());
     }

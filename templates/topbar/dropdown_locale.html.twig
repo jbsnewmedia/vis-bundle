@@ -5,7 +5,7 @@
         {{ item.content|dynamic_filter(item.contentFilter) }}
     {% endif %}
 </button>
-<div class="dropdown-menu dropdown-menu-end rounded-0 me-1" aria-labelledby="{{ item.id }}">
+<div class="dropdown-menu {{ item.dropdownClass|default('dropdown-menu-end') }} me-1" aria-labelledby="{{ item.id }}">
     {% for data_id, data_details in item.data %}
         {% if data_details.label == '---' %}
             <div class="dropdown-divider"></div>

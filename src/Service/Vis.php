@@ -11,8 +11,8 @@ use JBSNewMedia\VisBundle\Model\Topbar\Topbar;
 use JBSNewMedia\VisBundle\Model\Topbar\TopbarButtonDarkmode;
 use JBSNewMedia\VisBundle\Model\Topbar\TopbarDropdownLocale;
 use Symfony\Bundle\SecurityBundle\Security;
-use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\HttpFoundation\RequestStack;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
 class Vis
@@ -60,10 +60,12 @@ class Vis
         protected TranslatorInterface $translator,
         protected UrlGeneratorInterface $router,
         protected Security $security,
-        protected RequestStack $requestStack,
+        protected string $projectDir,
         protected array $locales = ['en'],
         protected string $defaultLocale = 'en',
-        protected string $theme = 'Nexus',
+        protected ?RequestStack $requestStack = null,
+        protected string $assetsPath = 'avalynx',
+        protected string $assetsSrcPath = 'dist',
     ) {
         $user = $this->security->getUser();
         if (null !== $user) {
@@ -160,20 +162,23 @@ class Vis
     public function setSelectedClientId(string $clientId): void
     {
         $this->selectedClientId = $clientId;
-        $this->requestStack->getSession()->set('_vis_client_id', $clientId);
+        $this->requestStack?->getSession()->set('_vis_client_id', $clientId);
     }
 
     public function getSelectedClientId(): string
     {
-        if ($this->selectedClientId === '') {
-            $this->selectedClientId = (string) $this->requestStack->getSession()->get('_vis_client_id', '');
+        if ('' === $this->selectedClientId) {
+            $sessionClientId = $this->requestStack?->getSession()->get('_vis_client_id', '');
+            $this->selectedClientId = is_string($sessionClientId) ? $sessionClientId : '';
         }
+
         return $this->selectedClientId;
     }
 
     public function getSelectedClientTitle(): ?string
     {
         $id = $this->getSelectedClientId();
+
         return $this->clients[$id] ?? null;
     }
 
@@ -210,9 +215,19 @@ class Vis
         return $this->defaultLocale;
     }
 
-    public function getTheme(): string
+    public function getProjectDir(): string
     {
-        return $this->theme;
+        return $this->projectDir;
+    }
+
+    public function getAssetsPath(): string
+    {
+        return $this->assetsPath;
+    }
+
+    public function getAssetsSrcPath(): string
+    {
+        return $this->assetsSrcPath;
     }
 
     public function addTopbar(Topbar $item): bool
@@ -270,8 +285,9 @@ class Vis
 
         if ('end' === $position) {
             if (!isset($items['toggle_darkmode_end'])) {
-                $items['toggle_darkmode_end'] = new TopbarButtonDarkmode('simple');
-                $items['toggle_darkmode_end']->setLabel($this->translator->trans('main.toggle.darkmode', domain: 'vis'));
+                $item = new TopbarButtonDarkmode('simple');
+                $item->setLabel($this->translator->trans('main.toggle.darkmode', domain: 'vis'));
+                $items['toggle_darkmode_end'] = $item;
             }
 
             if (!isset($items['dropdown_locale']) && count($this->locales) > 1) {

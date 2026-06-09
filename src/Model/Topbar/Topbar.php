@@ -14,11 +14,23 @@ class Topbar extends Item
 
     protected string $contentFilter = '';
 
+    protected string $dropdownClass = 'dropdown-menu-md-end';
+
     public function __construct(
         string $tool,
         string $id,
     ) {
         parent::__construct($tool, $id);
+    }
+
+    public function setDropdownClass(string $dropdownClass): void
+    {
+        $this->dropdownClass = $dropdownClass;
+    }
+
+    public function getDropdownClass(): string
+    {
+        return $this->dropdownClass;
     }
 
     public function setPosition(string $position): void

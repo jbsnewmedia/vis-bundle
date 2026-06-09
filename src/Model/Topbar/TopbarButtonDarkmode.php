@@ -14,11 +14,11 @@ class TopbarButtonDarkmode extends TopbarButton
         parent::__construct($tool, $id);
         $this->setPosition($position);
         $this->setTemplate('@Vis/topbar/button_darkmode.html.twig');
-        $this->setClass('btn btn-link justify-content-center align-items-center avalynx-simpleadmin-toggler-darkmode avalynx-simpleadmin-header-button');
-        $this->setContent('<i class="fa-solid fa-circle-half-stroke fa-fw"></i>');
+        $this->setClass('btn btn-link justify-content-center align-items-center avalynx-admin-toggler-darkmode avalynx-admin-header-button d-none d-sm-flex');
+        $this->setContent('');
         $this->setLabel('Toggle Darkmode');
         $this->setOrder(100);
-        $this->setOnClick('avalynxSimpleAdminToggleDarkmode()');
+        $this->setOnClick('AvalynxAdminToggleDarkmode()');
         $this->setContentFilter('raw');
         $this->generateTemplate();
     }

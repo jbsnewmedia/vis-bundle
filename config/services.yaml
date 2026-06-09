@@ -46,11 +46,19 @@ services:
             $translator: '@translator'
             $vis: '@JBSNewMedia\VisBundle\Service\Vis'
 
+    JBSNewMedia\VisBundle\Twig\VisLogoExtension:
+        arguments:
+            $router: '@router'
+            $vis: '@JBSNewMedia\VisBundle\Service\Vis'
+            $visTrans: '@JBSNewMedia\VisBundle\Twig\VisTransExtension'
+
     JBSNewMedia\VisBundle\Service\Vis:
         arguments:
+            $projectDir: '%kernel.project_dir%'
             $locales: '%vis.locales%'
             $defaultLocale: '%vis.default_locale%'
-            $theme: '%vis.theme%'
+            $assetsPath: '%vis.assets_path%'
+            $assetsSrcPath: '%vis.assets_src_path%'
 
     JBSNewMedia\VisBundle\EventListener\LocaleListener:
         tags:

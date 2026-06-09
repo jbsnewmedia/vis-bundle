@@ -1,20 +1,28 @@
 {% extends '@Vis/simple/base.html.twig' %}
 
-{% do addAssetComposer('avalynx/avalynx-form/dist/js/avalynx-form.js') %}
+{% do addAssetComposer(vis.getAssetsPath() ~ '/avalynx-form/' ~ vis.getAssetsSrcPath() ~ '/js/avalynx-form.js') %}
 
 {% block content %}
     {{ parent() }}
 <div class="container-fluid container-xxl col-12 col-sm-10 col-lg-12 col-xl-10 col-xxl-8 pt-5 p-md-5">
     <div class="row rounded border m-0 shadow bg-body text-body">
         <div class="col d-none py-3 d-lg-flex justify-content-center align-items-center">
-            <img src="{{ getAssetComposerFile('main.logo.default'|vistrans) }}" class="img-fluid m-5 avalynx-simpleadmin-main-logo avalynx-simpleadmin-lightmode-flex" style="max-width: 100%; height: auto;" title="{{ 'main.title.default'|vistrans }}" alt="{{ 'main.title.alt'|vistrans }}">
-            <img src="{{ getAssetComposerFile('main.logo.dark'|vistrans) }}" class="img-fluid m-5 avalynx-simpleadmin-main-logo avalynx-simpleadmin-darkmode-flex d-none" style="max-width: 100%; height: auto;" title="{{ 'main.title.default'|vistrans }}" alt="{{ 'main.title.alt'|vistrans }}">
+            {% set mainLogoDefault = vis_logo('main', 'default', null, 'main.logo.default') %}
+            {% set mainLogoDefaultHover = vis_logo_hover('main', 'default') %}
+            <img src="{{ mainLogoDefault }}" class="img-fluid m-5 avalynx-admin-main-logo avalynx-admin-lightmode-flex" style="max-width: 100%; height: auto;" title="{{ 'main.title.default'|vistrans }}" alt="{{ 'main.title.alt'|vistrans }}"{% if mainLogoDefaultHover %} onmouseover="this.src='{{ mainLogoDefaultHover }}'" onmouseout="this.src='{{ mainLogoDefault }}'"{% endif %}>
+
+            {% set mainLogoDark = vis_logo('main', 'dark', null, 'main.logo.dark') %}
+            {% set mainLogoDarkHover = vis_logo_hover('main', 'dark') %}
+            <img src="{{ mainLogoDark }}" class="img-fluid m-5 avalynx-admin-main-logo avalynx-admin-darkmode-flex d-none" style="max-width: 100%; height: auto;" title="{{ 'main.title.default'|vistrans }}" alt="{{ 'main.title.alt'|vistrans }}"{% if mainLogoDarkHover %} onmouseover="this.src='{{ mainLogoDarkHover }}'" onmouseout="this.src='{{ mainLogoDark }}'"{% endif %}>
         </div>
         <div class="col">
             <div class="m-2 m-md-5">
                 <div class="mt-5 pt-lg-4">
                     <div class="w-100">
                         <h3 class="mb-3">{{ 'login.title'|vistrans }}</h3>
+                        {% if error is defined and error %}
+                            <div class="alert alert-danger">{{ error.messageKey|trans(error.messageData, 'security') }}</div>
+                        {% endif %}
                         {% if app.user %}
                             <p class="mb-3">{{ 'login.loggedin'|vistrans }}</p>
                         {% else %}
@@ -42,7 +50,7 @@
 
                         <div class="form-group mb-4">
                             <label class="form-label" for="_username">{{ 'login.email'|vistrans }}:</label>
-                            <input type="text" name="_username" id="_username" class="form-control"/>
+                            <input type="text" name="_username" id="_username" class="form-control" value="{{ last_username|default('') }}"/>
                             <span class="invalid-feedback"></span>
                         </div>
 

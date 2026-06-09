@@ -11,10 +11,10 @@ class JsonKernelPluginLoader extends KernelPluginLoader
 {
     protected PluginService $pluginService;
 
-    public function __construct(ClassLoader $classLoader, KernelInterface $appKernel)
+    public function __construct(ClassLoader $classLoader, KernelInterface $appKernel, ?string $pluginDir = null)
     {
-        parent::__construct($classLoader);
-        $this->pluginService = new PluginService($appKernel);
+        parent::__construct($classLoader, $pluginDir);
+        $this->pluginService = new PluginService($appKernel, $this->getPluginDir($appKernel->getProjectDir()));
     }
 
     protected function loadPluginInfos(): void

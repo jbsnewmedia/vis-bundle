@@ -1,1 +1,116 @@
-{% extends '@Vis/themes/' ~ vis.theme|lower ~ '/tool/base.html.twig' %}
+{% extends '@Vis/base.html.twig' %}
+
+{% set themeSlug = app.session.get('vis_theme_slug') %}
+{% if themeSlug %}
+    {% do addAssetComposer('app/assets/css/theme-' ~ themeSlug ~ '.min.css') %}
+{% else %}
+    {% do addAssetComposer('app/assets/css/theme-001.min.css') %}
+{% endif %}
+{% do addAssetComposer('twbs/bootstrap/dist/js/bootstrap.bundle.min.js') %}
+{% do addAssetComposer('fortawesome/font-awesome/css/all.min.css') %}
+{% do addAssetComposer(vis.getAssetsPath() ~ '/avalynx-admin/' ~ vis.getAssetsSrcPath() ~ '/js/avalynx-admin.js') %}
+{% do addAssetComposer(vis.getAssetsPath() ~ '/avalynx-admin/' ~ vis.getAssetsSrcPath() ~ '/js/avalynx-admin-darkmode.js') %}
+{% do addAssetComposer(vis.getAssetsPath() ~ '/avalynx-admin/' ~ vis.getAssetsSrcPath() ~ '/css/avalynx-admin.vars.css') %}
+{% do addAssetComposer(vis.getAssetsPath() ~ '/avalynx-admin/' ~ vis.getAssetsSrcPath() ~ '/css/avalynx-admin.css') %}
+{% do addAssetComposer(vis.getAssetsPath() ~ '/avalynx-admin/' ~ vis.getAssetsSrcPath() ~ '/css/avalynx-admin-sidenav.vars.css') %}
+{% do addAssetComposer(vis.getAssetsPath() ~ '/avalynx-admin/' ~ vis.getAssetsSrcPath() ~ '/css/avalynx-admin-sidenav.css') %}
+{% do addAssetComposer(vis.getAssetsPath() ~ '/avalynx-admin/' ~ vis.getAssetsSrcPath() ~ '/css/avalynx-admin-sidenav-sub1.vars.css') %}
+{% do addAssetComposer(vis.getAssetsPath() ~ '/avalynx-admin/' ~ vis.getAssetsSrcPath() ~ '/css/avalynx-admin-sidenav-sub1.css') %}
+{% do addAssetComposer(vis.getAssetsPath() ~ '/avalynx-alert/' ~ vis.getAssetsSrcPath() ~ '/css/avalynx-alert.css') %}
+{% do addAssetComposer(vis.getAssetsPath() ~ '/avalynx-alert/' ~ vis.getAssetsSrcPath() ~ '/js/avalynx-alert.js') %}
+
+{% block javascripts %}
+    {{ parent() }}
+{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+{% endblock %}
+
+{% block body %}
+    <header id="avalynx-admin-header" class="sticky-top d-flex border-bottom shadow">
+        <div class="avalynx-admin-brand d-flex align-items-center justify-content-start overflow-visible">
+            {% set navLogoDefault = vis_logo('navigation', 'default', null, 'navigation.logo.default') %}
+            {% set navLogoDefaultHover = vis_logo_hover('navigation', 'default') %}
+            <img src="{{ navLogoDefault }}" class="img-fluid avalynx-admin-navigation-logo avalynx-admin-lightmode-flex" style="max-height: 40px; height: auto; min-width: 40px;" title="{{ 'navigation.title.default'|vistrans }}" alt="{{ 'navigation.title.alt'|vistrans }}"{% if navLogoDefaultHover %} onmouseover="this.src='{{ navLogoDefaultHover }}'" onmouseout="this.src='{{ navLogoDefault }}'"{% endif %}>
+
+            {% set navLogoDark = vis_logo('navigation', 'dark', null, 'navigation.logo.dark') %}
+            {% set navLogoDarkHover = vis_logo_hover('navigation', 'dark') %}
+            <img src="{{ navLogoDark }}" class="img-fluid avalynx-admin-navigation-logo avalynx-admin-darkmode-flex d-none" style="max-height: 40px; height: auto; min-width: 40px;" title="{{ 'navigation.title.default'|vistrans }}" alt="{{ 'navigation.title.alt'|vistrans }}"{% if navLogoDarkHover %} onmouseover="this.src='{{ navLogoDarkHover }}'" onmouseout="this.src='{{ navLogoDark }}'"{% endif %}>
+
+            {% set brandLogoDefault = vis_logo('brand', 'default') %}
+            {% set brandLogoDark = vis_logo('brand', 'dark') %}
+            {% if brandLogoDefault != '' or brandLogoDark != '' %}
+                {% if brandLogoDefault != '' %}
+                    <img src="{{ brandLogoDefault }}" class="img-fluid ms-3 avalynx-admin-lightmode-flex d-none d-sm-inline" style="max-height: 40px; height: auto;" title="{{ 'navigation.title.default'|vistrans }}" alt="{{ 'navigation.title.alt'|vistrans }}">
+                {% endif %}
+                {% if brandLogoDark != '' %}
+                    <img src="{{ brandLogoDark }}" class="img-fluid ms-3 avalynx-admin-darkmode-flex d-none d-sm-inline" style="max-height: 40px; height: auto;" title="{{ 'navigation.title.default'|vistrans }}" alt="{{ 'navigation.title.alt'|vistrans }}">
+                {% endif %}
+            {% else %}
+                <span class="ms-3 fs-4 d-none d-sm-inline"></span>
+            {% endif %}
+        </div>
+
+        {% for item in vis.topbar('start', vis.tool) %}
+
+            {% if (item.template != '') %}
+                {{ include(item.template) }}
+            {% endif %}
+
+        {% endfor %}
+
+        <div class="flex-grow-1"></div>
+
+        {% for item in vis.getTopbar('end', vis.getTool()) %}
+
+            {% if (item.template != '') %}
+                {{ include(item.template) }}
+            {% endif %}
+
+        {% endfor %}
+
+    </header>
+    <div id="avalynx-admin-main" class="d-flex">
+
+        <div id="avalynx-admin-loader" class="position-absolute w-100 border-top">
+            <div class="position-absolute top-50 start-50 translate-middle">
+                <div class="spinner-border text-primary" role="status">
+                    <span class="visually-hidden">Loading...</span>
+                </div>
+            </div>
+        </div>
+
+        <div id="avalynx-admin-sidenav" class="shadow{% if vis.sidebarClosed %} avalynx-admin-moved{% endif %}" tabindex="-1">
+
+            <div id="avalynx-admin-sidenav-body" class="p-0">
+
+                <div class="p-2 pe-1">
+
+                    <ul class="avalynx-admin-sidenav" id="avalynx-admin-sidenav-content">
+
+                        {% for item in vis.getSidebar(vis.getTool()) %}
+
+                            {% if (item.template != null) %}
+                                {{ include(item.template) }}
+                            {% endif %}
+
+                        {% endfor %}
+
+
+                    </ul>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <div id="avalynx-admin-container" class="flex-grow-1 p-4">
+
+            {% block vis_container %}{% endblock %}
+        </div>
+    </div>
+
+    {% block vis_scripts %}{% endblock %}
+{% endblock %}
