@@ -7,7 +7,7 @@ namespace JBSNewMedia\VisBundle\Model\Topbar;
 class TopbarDropdown extends Topbar
 {
     /**
-     * @var array<string, array{route: string, routeParameters: array<string, string|int>, icon: string, label: string}>
+     * @var array<string, array{route: string, routeparameters?: array<string, string|int>, routeParameters?: array<string, string|int>, icon?: string, label: string}>
      */
     protected array $data = [];
 
@@ -23,7 +23,7 @@ class TopbarDropdown extends Topbar
     }
 
     /**
-     * @param array<string, array{route: string, routeParameters: array<string, string|int>, icon: string, label: string}> $data
+     * @param array<string, array{route: string, routeparameters?: array<string, string|int>, routeParameters?: array<string, string|int>, icon?: string, label: string}> $data
      */
     public function setData(array $data): void
     {
@@ -31,7 +31,7 @@ class TopbarDropdown extends Topbar
     }
 
     /**
-     * @param array<string, array{route: string, routeParameters: array<string, string|int>, icon: string, label: string}> $data
+     * @param array<string, array{route: string, routeparameters?: array<string, string|int>, routeParameters?: array<string, string|int>, icon?: string, label: string}> $data
      */
     public function addData(array $data): void
     {
@@ -39,7 +39,7 @@ class TopbarDropdown extends Topbar
     }
 
     /**
-     * @return array<string, array{route: string, routeParameters: array<string, string|int>, icon: string, label: string}> $data
+     * @return array<string, array{route: string, routeparameters?: array<string, string|int>, routeParameters?: array<string, string|int>, icon?: string, label: string}> $data
      */
     public function getData(): array
     {
