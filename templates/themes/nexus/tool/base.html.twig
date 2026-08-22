@@ -1,0 +1,197 @@
+{% extends '@Vis/base.html.twig' %}
+
+{% set themeId = vis.theme|lower %}
+
+{% do addAssetComposer('twbs/bootstrap/dist/css/bootstrap.min.css') %}
+{% do addAssetComposer('twbs/bootstrap/dist/js/bootstrap.bundle.min.js') %}
+{% do addAssetComposer('jbsnewmedia/vis-bundle/assets/themes/' ~ themeId ~ '/css/dashboard.css') %}
+{% do addAssetComposer('jbsnewmedia/vis-bundle/assets/themes/' ~ themeId ~ '/js/nav.js') %}
+{% do addAssetComposer('jbsnewmedia/vis-bundle/assets/themes/' ~ themeId ~ '/js/dashboard.js') %}
+
+{% set themeLayout = app.session.get(themeId ~ '_layout', themeId) %}
+{% set themeColorTheme = app.session.get(themeId ~ '_color_theme', 'rose') %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+    <link id="tz-theme-css" rel="stylesheet" href="{{ getAssetComposerFile('jbsnewmedia/vis-bundle/assets/themes/' ~ themeId ~ '/css/themes/' ~ themeColorTheme ~ '.css') }}">
+    <link id="tz-layout-css" rel="stylesheet" href="{{ getAssetComposerFile('jbsnewmedia/vis-bundle/assets/themes/' ~ themeId ~ '/css/layouts/' ~ themeLayout ~ '.css') }}">
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script>
+        (function(){
+            var t = localStorage.getItem('tz-theme');
+            if (t === 'dark') document.documentElement.setAttribute('data-bs-theme', 'dark');
+            if (t === 'light') document.documentElement.setAttribute('data-bs-theme', 'light');
+            var s = localStorage.getItem('tz-sidebar');
+            if (s === 'hidden') document.documentElement.classList.add('sidebar-hidden-early');
+        })();
+        document.documentElement.dataset.nexusLayoutBase = '{{ getAssetComposerFile('jbsnewmedia/vis-bundle/assets/themes/' ~ themeId ~ '/css/layouts/' ~ themeId ~ '.css') | replace({(themeId ~ '.css'): ''}) | raw }}';
+        document.documentElement.dataset.nexusThemeBase = '{{ getAssetComposerFile('jbsnewmedia/vis-bundle/assets/themes/' ~ themeId ~ '/css/themes/rose.css') | replace({'rose.css': ''}) | raw }}';
+        function visDarkmodeSave(mode) {
+            fetch('{{ path('vis_api_darkmode', {mode: 'MODE', timestamp: 'TIMESTAMP'}) }}'.replace('MODE', mode).replace('TIMESTAMP', Date.now()));
+        }
+    </script>
+{% endblock %}
+
+{% block body %}
+
+<div id="sidebar-overlay"></div>
+
+<nav id="sidebar">
+    <a class="sidebar-brand" href="{{ path('vis') }}">
+        <div class="brand-icon">
+            <img src="{{ getAssetComposerFile('navigation.logo.default'|vistrans) }}" style="max-height:24px;height:auto;" alt="{{ 'navigation.title.alt'|vistrans }}">
+        </div>
+        <div>
+            <div class="brand-text">{{ 'navigation.title.default'|vistrans }}</div>
+            <div class="brand-sub">{{ 'navigation.title.sub'|vistrans }}</div>
+        </div>
+    </a>
+    <div class="sidebar-nav">
+
+        {% for item in vis.getSidebar(vis.getTool()) %}
+            {% if item.type == 'header' %}
+                <div class="nav-section"><span class="nav-section-label">{{ item.label }}</span></div>
+                {% if item.children is not empty %}
+                    {% for child in item.children %}
+                        {% if child.route != '' %}
+                            <a href="{{ path(child.route, child.routeparameters is not empty ? child.routeparameters : {}) }}"
+                               class="nav-link-item{% if child.active %} active{% endif %}"
+                               {% if child.target is defined and child.target != '' %} target="{{ child.target }}"{% endif %}>
+                                {% if child.icon != '' %}{{ child.icon|raw }}{% endif %}
+                                {{ child.label }}
+                                {{ child.badge|raw }}
+                                {{ child.counter|raw }}
+                            </a>
+                        {% endif %}
+                    {% endfor %}
+                {% endif %}
+            {% elseif item.type == 'item' %}
+                {% if item.children is not empty %}
+                    {% for child in item.children %}
+                        {% if child.route != '' %}
+                            <a href="{{ path(child.route, child.routeparameters is not empty ? child.routeparameters : {}) }}"
+                               class="nav-link-item{% if child.active %} active{% endif %}"
+                               {% if child.target is defined and child.target != '' %} target="{{ child.target }}"{% endif %}>
+                                {% if child.icon != '' %}{{ child.icon|raw }}{% endif %}
+                                {{ child.label }}
+                                {{ child.badge|raw }}
+                                {{ child.counter|raw }}
+                            </a>
+                        {% endif %}
+                    {% endfor %}
+                {% else %}
+                    {% if item.route != '' %}
+                        <a href="{{ path(item.route, item.routeparameters is not empty ? item.routeparameters : {}) }}"
+                           class="nav-link-item{% if item.active %} active{% endif %}"
+                           {% if item.target is defined and item.target != '' %} target="{{ item.target }}"{% endif %}>
+                            {% if item.icon != '' %}{{ item.icon|raw }}{% endif %}
+                            {{ item.label }}
+                            {{ item.badge|raw }}
+                            {{ item.counter|raw }}
+                        </a>
+                    {% endif %}
+                {% endif %}
+            {% endif %}
+        {% endfor %}
+
+    </div>
+    <div class="sidebar-footer">
+        {% if app.user %}
+        <div class="sidebar-user">
+            <div class="u-avatar">{{ app.user.userIdentifier|slice(0,2)|upper }}</div>
+            <div>
+                <div class="u-name">{{ app.user.userIdentifier }}</div>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</nav>
+
+<div id="main-wrapper">
+    <nav id="topbar">
+        <button class="tbtn" onclick="toggleSidebar()" title="{{ 'navigation.sidebar.toggle'|vistrans }}">
+            <i class="bi bi-list"></i>
+        </button>
+
+        <div class="flex-grow-1"></div>
+
+        <div class="topbar-actions">
+            {% for item in vis.getTopbar('end', vis.getTool()) %}
+                {% if item.type == 'button_darkmode' %}
+                    <button class="tbtn" onclick="toggleDarkMode()" id="darkBtn" title="{{ item.label }}">
+                        <i class="bi bi-moon"></i>
+                    </button>
+                {% elseif item.type == 'dropdown_locale' and vis.locales|length > 1 %}
+                    <div class="dropdown">
+                        <button class="tbtn" data-bs-toggle="dropdown" aria-expanded="false" title="{{ item.label }}" id="{{ item.id }}">
+                            {{ item.content|raw }}
+                        </button>
+                        <div class="dropdown-menu dropdown-menu-end" aria-labelledby="{{ item.id }}">
+                            {% for data_id, data_details in item.data %}
+                                {% if data_details.label == '---' %}
+                                    <div class="dropdown-divider"></div>
+                                {% else %}
+                                    <div class="dropdown-item{% if item.dataKey == data_id %} active{% endif %}" style="cursor:pointer"
+                                         onclick="changeLocale('{{ path(data_details.route, (data_details.routeParameters|default(data_details.routeparameters|default({})))|merge({'timestamp': '__TIMESTAMP__'})) }}'.replace('__TIMESTAMP__', Date.now()))">
+                                        {% if data_details.icon is defined and data_details.icon != '' %}{{ data_details.icon|raw }} {% endif %}{{ data_details.label }}
+                                    </div>
+                                {% endif %}
+                            {% endfor %}
+                        </div>
+                    </div>
+                {% elseif item.type == 'dropdown' %}
+                    <div class="dropdown">
+                        <button class="tbtn" data-bs-toggle="dropdown" aria-expanded="false" title="{{ item.label }}" id="{{ item.id }}">
+                            {{ item.content|dynamic_filter(item.contentFilter)|raw }}
+                        </button>
+                        <div class="dropdown-menu dropdown-menu-end" aria-labelledby="{{ item.id }}">
+                            {% for data_id, data_details in item.data %}
+                                {% if data_details.label == '---' %}
+                                    <div class="dropdown-divider"></div>
+                                {% else %}
+                                    <a class="dropdown-item{% if item.dataKey == data_id %} active{% endif %}"
+                                       href="{{ path(data_details.route, data_details.routeparameters|default({})) }}">
+                                        {% if data_details.icon is defined and data_details.icon != '' %}{{ data_details.icon|raw }} {% endif %}{{ data_details.label }}
+                                    </a>
+                                {% endif %}
+                            {% endfor %}
+                        </div>
+                    </div>
+                {% elseif item.type == 'button' %}
+                    <button class="tbtn" onclick="{{ item.onClick }}" title="{{ item.label }}" id="{{ item.id }}">
+                        {{ item.content|dynamic_filter(item.contentFilter)|raw }}
+                    </button>
+                {% endif %}
+            {% endfor %}
+
+            {% if app.user %}
+            <div class="topbar-divider"></div>
+            <div class="topbar-user">
+                <div class="tu-av">{{ app.user.userIdentifier|slice(0,2)|upper }}</div>
+                <span class="tu-name">{{ app.user.userIdentifier }}</span>
+            </div>
+            {% endif %}
+        </div>
+    </nav>
+
+    <div id="content">
+        {% block vis_container %}{% endblock %}
+    </div>
+</div>
+
+<script>
+function changeLocale(url) {
+    fetch(url, { method: 'GET', headers: { 'X-Requested-With': 'XMLHttpRequest' } })
+        .then(function(r){ return r.json(); })
+        .then(function(d){ if (d.success) location.reload(); });
+}
+</script>
+
+{% endblock %}

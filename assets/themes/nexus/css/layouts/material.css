@@ -1,0 +1,77 @@
+/* Automatisch eingebundene Theme-Overrides. Wird per JS getauscht. */
+
+:root {
+  --card-radius:  0px;
+  --sb-text:      rgba(15,23,42,.62);
+  --sb-text-h:    var(--theme-primary);
+  --sb-sub:       rgba(15,23,42,.4);
+  --sb-section:   rgba(15,23,42,.35);
+  --sb-sep:       rgba(15,23,42,.09);
+  --sb-hover:     rgba(15,23,42,.05);
+  --sb-scroll:    rgba(15,23,42,.18);
+  --sidebar-bg:   #f1f5f9;
+  --card-border:  1px solid var(--border-color);
+}
+
+[data-bs-theme="dark"] {
+  --sb-text:      rgba(255,255,255,.65);
+  --sb-text-h:    var(--theme-active-txt);
+  --sb-sub:       rgba(255,255,255,.4);
+  --sb-section:   rgba(255,255,255,.3);
+  --sb-sep:       rgba(255,255,255,.06);
+  --sb-hover:     rgba(255,255,255,.07);
+  --sb-scroll:    rgba(255,255,255,.18);
+  --sidebar-bg:   #1e293b;
+}
+
+.card,
+ .card-header,
+ .btn,
+ .form-control,
+ .form-select,
+ .input-group-text,
+ .dropdown-menu,
+ .badge,
+ .nav-badge,
+ .style-badge,
+ .cat-badge,
+ .nav-pills .nav-link,
+ .nav-link-item,
+ .brand-icon,
+ .topbar-search .form-control,
+ .checkin-scan-area,
+ .kurs-card,
+ .alert,
+ .list-group,
+ .list-group-item,
+ .progress,
+ .toast {
+  border-radius: 0 !important;
+}
+
+.card {
+  box-shadow: none;
+  border: var(--card-border);
+}
+
+#topbar {
+  box-shadow: 0 2px 8px rgba(0,0,0,.14);
+  border-bottom: none;
+}
+
+.nav-link-item.active {
+  background: transparent;
+  border-left: 3px solid var(--theme-primary);
+  color: var(--theme-primary);
+  font-weight: 700;
+}
+
+body {
+  font-family: 'Roboto', 'Inter', system-ui, sans-serif;
+}
+
+.kpi-card {
+  border-top: 3px solid var(--theme-primary);
+  border-radius: 0 !important;
+}
+

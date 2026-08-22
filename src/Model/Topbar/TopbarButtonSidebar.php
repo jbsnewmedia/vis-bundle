@@ -27,9 +27,9 @@ class TopbarButtonSidebar extends TopbarButton
         }
 
         $this->setPosition($position);
-        $this->setClass('btn btn-link justify-content-center align-items-center avalynx-simpleadmin-toggler-sidenav '.$options['class'].' avalynx-simpleadmin-header-button');
-        $this->setOnClick('avalynxSimpleAdminToggleSidenav();');
-        $this->setContent('<i class="fa-solid fa-align-left fa-fw"></i>');
+        $this->setClass('btn btn-link justify-content-center align-items-center avalynx-admin-toggler-sidenav '.$options['class'].' avalynx-admin-header-button');
+        $this->setOnClick('AvalynxAdminToggleSidenav();');
+        $this->setContent('<i class="fa-solid fa-bars fa-fw"></i>');
         $this->setLabel('Toggle Sidebar');
         $this->setOrder(100);
         $this->setContentFilter('raw');

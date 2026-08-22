@@ -14,6 +14,7 @@ use Symfony\Component\HttpKernel\Bundle\Bundle;
 
 abstract class KernelPluginLoader extends Bundle
 {
+    protected string $name = 'VisKernelPluginLoader';
     private string $pluginDir = 'plugins';
 
     /**
@@ -25,8 +26,11 @@ abstract class KernelPluginLoader extends Bundle
 
     private readonly KernelPluginCollection $pluginInstances;
 
-    public function __construct(private readonly ClassLoader $classLoader)
+    public function __construct(private readonly ClassLoader $classLoader, ?string $pluginDir = null)
     {
+        if ($pluginDir) {
+            $this->pluginDir = $pluginDir;
+        }
         $this->pluginInstances = new KernelPluginCollection();
     }
 

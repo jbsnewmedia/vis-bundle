@@ -1,0 +1,269 @@
+/* ─────────────────────────────────────────────────────────────
+   Android – Material You (Material Design 3)
+   Navigation Drawer + Tonal Surfaces + Shape System
+   ───────────────────────────────────────────────────────────── */
+
+:root {
+  --card-radius:    28px;
+  --card-border:    none;
+
+  /* MD3 Tonal surface: primary mit 8% opacity über bg gemischt */
+  --md-surface-tint: color-mix(in srgb, var(--theme-primary) 8%, transparent);
+
+  /* Sidebar: Surface Variant */
+  --sidebar-bg:     #ece6f0;  /* MD3 surface-variant light */
+  --sb-text:        #49454f;  /* MD3 on-surface-variant */
+  --sb-text-h:      #1c1b1f;  /* MD3 on-surface */
+  --sb-sub:         #79747e;
+  --sb-section:     #79747e;
+  --sb-sep:         #cac4d0;
+  --sb-hover:       rgba(103,80,164,.08);
+  --sb-scroll:      #cac4d0;
+
+  /* Layout sizing */
+  --sidebar-w:      280px;
+  --topbar-h:       64px;
+}
+
+[data-bs-theme="dark"] {
+  --sidebar-bg:     #2b2930;  /* MD3 surface-variant dark */
+  --sb-text:        #cac4d0;
+  --sb-text-h:      #e6e1e5;
+  --sb-sub:         #938f99;
+  --sb-section:     #938f99;
+  --sb-sep:         #49454f;
+  --sb-hover:       rgba(208,188,255,.08);
+  --sb-scroll:      #49454f;
+  --md-surface-tint: color-mix(in srgb, var(--theme-primary) 12%, transparent);
+}
+
+/* ── Body: Google Sans ─────────────────────────────────────── */
+body {
+  font-family: 'Google Sans', 'Nunito Sans', 'Inter', system-ui, sans-serif;
+}
+
+/* ── Tonal background tint ─────────────────────────────────── */
+#main-wrapper {
+  background: var(--md-surface-tint, transparent);
+}
+
+/* ── Sidebar: MD3 Navigation Drawer ───────────────────────── */
+#sidebar {
+  background: var(--sidebar-bg);
+  border-right: none;
+  box-shadow: none;
+}
+
+/* MD3 Brand: large rounded icon */
+.brand-icon {
+  border-radius: 16px;
+  width: 44px;
+  height: 44px;
+  font-size: 22px;
+}
+.brand-text { color: var(--sb-text-h); }
+
+/* MD3 Nav sections: uppercase subtle label */
+.nav-section-label {
+  font-size: 11px;
+  letter-spacing: .06em;
+  font-weight: 600;
+}
+
+/* MD3 Nav item: full-width indicator pill */
+.nav-link-item {
+  border-radius: 28px;
+  margin: 2px 12px;
+  width: calc(100% - 24px);
+  padding: 12px 18px;
+  font-size: 14px;
+  font-weight: 500;
+  letter-spacing: .01em;
+}
+.nav-link-item:hover {
+  background: var(--sb-hover);
+}
+
+/* Active: MD3 "Indicator" — filled tonal pill */
+.nav-link-item.active {
+  background: color-mix(in srgb, var(--theme-primary) 22%, transparent);
+  color: var(--theme-primary);
+  border-left: none;
+  padding-left: 18px;
+  font-weight: 700;
+}
+
+/* ── Topbar: MD3 Top App Bar ───────────────────────────────── */
+#topbar {
+  background: var(--sidebar-bg);
+  border-bottom: none;
+  box-shadow: 0 1px 2px rgba(0,0,0,.1), 0 2px 6px rgba(0,0,0,.08);
+}
+[data-bs-theme="dark"] #topbar {
+  background: var(--sidebar-bg);
+  box-shadow: 0 1px 4px rgba(0,0,0,.3);
+}
+
+/* Topbar search: MD3 Search Bar */
+.topbar-search .form-control {
+  border-radius: 28px;
+  background: color-mix(in srgb, var(--theme-primary) 8%, var(--bg-body));
+  border: none;
+  padding-left: 42px;
+  height: 40px;
+}
+.topbar-search .form-control:focus {
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--theme-primary) 25%, transparent);
+}
+
+/* ── Cards: MD3 Cards (Filled / Tonal) ────────────────────── */
+.card {
+  border-radius: 28px;
+  border: none;
+  box-shadow: 0 1px 2px rgba(0,0,0,.06);
+  background: color-mix(in srgb, var(--theme-primary) 4%, var(--bg-card));
+}
+[data-bs-theme="dark"] .card {
+  box-shadow: none;
+  background: color-mix(in srgb, var(--theme-primary) 6%, var(--bg-card));
+}
+.card-header {
+  border-radius: 28px 28px 0 0;
+  border-bottom: 1px solid var(--sb-sep);
+}
+
+/* KPI cards: MD3 Elevated Card */
+.kpi-card {
+  border-radius: 28px;
+  box-shadow: 0 2px 8px rgba(0,0,0,.1), 0 1px 3px rgba(0,0,0,.06);
+}
+
+/* ── Buttons: MD3 Shape System ─────────────────────────────── */
+/* Filled button: border-radius = full pill (36px) */
+.btn-danger, .btn-primary, .btn-success {
+  border-radius: 20px;
+  font-weight: 600;
+  letter-spacing: .01em;
+  padding: .45rem 1.2rem;
+  box-shadow: none;
+}
+/* Outlined / tonal: same radius */
+.btn-outline-danger, .btn-outline-primary, .btn-outline-secondary {
+  border-radius: 20px;
+  font-weight: 500;
+}
+/* Small buttons */
+.btn-sm {
+  border-radius: 14px;
+  font-size: .8rem;
+}
+
+/* ── Form Controls: MD3 Outlined TextField ─────────────────── */
+.form-control, .form-select {
+  border-radius: 4px 4px 0 0;
+  border-top: none;
+  border-left: none;
+  border-right: none;
+  border-bottom: 2px solid var(--border-color);
+  background: color-mix(in srgb, var(--theme-primary) 5%, var(--bg-card));
+  border-radius: 8px;
+}
+.form-control:focus, .form-select:focus {
+  border-color: var(--theme-primary);
+  box-shadow: none;
+  background: color-mix(in srgb, var(--theme-primary) 8%, var(--bg-card));
+}
+
+/* ── Input Group ───────────────────────────────────────────── */
+.input-group > :not(:last-child) { border-radius: 8px 0 0 8px; }
+.input-group > :last-child       { border-radius: 0 8px 8px 0; }
+.input-group-text {
+  border-radius: 0 8px 8px 0;
+  background: color-mix(in srgb, var(--theme-primary) 8%, var(--bg-card));
+}
+
+/* ── Badges / Chips: MD3 Chips ─────────────────────────────── */
+.badge {
+  border-radius: 8px;
+  font-weight: 600;
+  padding: .3em .7em;
+}
+.style-badge, .cat-badge, .nav-badge {
+  border-radius: 8px;
+}
+
+/* ── Nav Pills: MD3 Segmented Button ───────────────────────── */
+.nav-pills {
+  gap: 4px;
+}
+.nav-pills .nav-link {
+  border-radius: 20px;
+  font-size: 13px;
+  font-weight: 500;
+  border: 1px solid var(--border-color);
+}
+.nav-pills .nav-link.active {
+  border-color: var(--theme-primary);
+}
+
+/* ── Page Title: MD3 Display typography ────────────────────── */
+.page-title {
+  font-size: 26px;
+  font-weight: 700;
+  letter-spacing: -.3px;
+}
+
+/* ── FAB-style primary action buttons in page-header ──────── */
+.page-header .btn-danger {
+  border-radius: 16px;
+  padding: .5rem 1.4rem;
+  box-shadow: 0 3px 8px color-mix(in srgb, var(--theme-primary) 40%, transparent);
+}
+
+/* ── Progress: MD3 Linear Indicator ───────────────────────── */
+.progress {
+  border-radius: 4px;
+  background: color-mix(in srgb, var(--theme-primary) 15%, transparent);
+}
+.progress-bar {
+  border-radius: 4px;
+}
+
+/* ── Tables: MD3 style ─────────────────────────────────────── */
+.table {
+  border-radius: 0;
+}
+.table thead th {
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: .04em;
+  text-transform: uppercase;
+  color: var(--sb-text);
+  border-bottom: 2px solid var(--sb-sep);
+}
+
+/* ── Dropdown: MD3 Menu ────────────────────────────────────── */
+.dropdown-menu {
+  border-radius: 16px;
+  border: none;
+  box-shadow: 0 4px 16px rgba(0,0,0,.14), 0 2px 6px rgba(0,0,0,.08);
+}
+.dropdown-item {
+  border-radius: 8px;
+  margin: 1px 4px;
+  width: calc(100% - 8px);
+  font-size: 14px;
+}
+
+/* ── Alerts: MD3 Banner ────────────────────────────────────── */
+.alert {
+  border-radius: 16px;
+  border: none;
+  font-weight: 500;
+}
+
+/* ── Toast: MD3 Snackbar ───────────────────────────────────── */
+.toast {
+  border-radius: 8px;
+  box-shadow: 0 4px 16px rgba(0,0,0,.2);
+}

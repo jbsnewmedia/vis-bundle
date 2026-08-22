@@ -29,6 +29,18 @@ class Configuration implements ConfigurationInterface
         $defaultLocaleNode = $children->scalarNode('default_locale');
         $defaultLocaleNode->defaultValue('en');
 
+        /** @var ScalarNodeDefinition $assetsPathNode */
+        $adminAssetsPathNode = $children->scalarNode('assets_path');
+        $adminAssetsPathNode->defaultValue('avalynx');
+
+        /** @var ScalarNodeDefinition $assetsSrcPathNode */
+        $adminAssetsPathNode = $children->scalarNode('assets_src_path');
+        $adminAssetsPathNode->defaultValue('dist');
+
+        /** @var ScalarNodeDefinition $pluginPathNode */
+        $pluginPathNode = $children->scalarNode('plugin_path');
+        $pluginPathNode->defaultValue('plugins');
+
         return $treeBuilder;
     }
 }

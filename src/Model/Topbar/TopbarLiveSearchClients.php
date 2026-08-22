@@ -19,7 +19,7 @@ class TopbarLiveSearchClients extends TopbarLiveSearch
     ) {
         parent::__construct($tool, $id);
         $this->setPosition($position);
-        $this->setClass('btn btn-link justify-content-center align-items-center avalynx-simpleadmin-header-button');
+        $this->setClass('btn btn-link justify-content-center align-items-center avalynx-admin-header-button');
         $this->setContent('<i class="fa-solid fa-building fa-fw"></i>');
         $this->setLabel('Clients');
         $this->setLabelSearch('Search');

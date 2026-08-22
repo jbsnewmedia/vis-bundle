@@ -12,12 +12,14 @@ class PluginService
     protected string $projectDir;
     protected string $environment;
     protected KernelInterface $appKernel;
+    protected string $pluginDir;
 
-    public function __construct(KernelInterface $appKernel)
+    public function __construct(KernelInterface $appKernel, ?string $pluginDir = null)
     {
         $this->projectDir = $appKernel->getProjectDir();
         $this->environment = $appKernel->getEnvironment();
         $this->appKernel = $appKernel;
+        $this->pluginDir = $pluginDir ?? $this->projectDir.'/plugins';
     }
 
     /**
@@ -29,7 +31,7 @@ class PluginService
     {
         /** @var array<int, array<string, mixed>> $plugins */
         $plugins = [];
-        $pluginsPath = $this->projectDir.'/plugins/plugins.json';
+        $pluginsPath = $this->pluginDir.'/plugins.json';
         if (file_exists($pluginsPath)) {
             $json = file_get_contents($pluginsPath);
             if (false !== $json) {
@@ -72,7 +74,7 @@ class PluginService
     {
         $plugins = $this->loadPluginsInfoFromJson();
         $return = [];
-        $pluginDirs = glob($this->projectDir.'/plugins/*');
+        $pluginDirs = glob($this->pluginDir.'/*');
         if (false === $pluginDirs || [] === $pluginDirs) {
             return $return;
         }
@@ -101,7 +103,7 @@ class PluginService
         $pluginData = $this->createPluginData($pluginName);
         if (is_array($pluginData)) {
             $pluginsPublicFolder = null;
-            $publicFolder = $this->projectDir.'/plugins/'.$pluginName.'/public';
+            $publicFolder = $this->pluginDir.'/'.$pluginName.'/public';
             if (file_exists($publicFolder) && is_dir($publicFolder)) {
                 $pluginsPublicFolder = $publicFolder;
             }
@@ -199,15 +201,16 @@ class PluginService
      */
     private function createPluginData(string $pluginName): ?array
     {
-        $composerData = $this->loadPluginsComposer($this->projectDir.'/plugins/'.$pluginName);
+        $composerData = $this->loadPluginsComposer($this->pluginDir.'/'.$pluginName);
         if (
             is_array($composerData)
             && isset($composerData['extra'])
             && is_array($composerData['extra'])
             && isset($composerData['extra']['amicron-platform-plugin-class'])
         ) {
+            $path = str_replace($this->projectDir.'/', '', $this->pluginDir.'/'.$pluginName);
             return [
-                'path' => 'plugins/'.$pluginName,
+                'path' => $path,
                 'baseClass' => $composerData['extra']['amicron-platform-plugin-class'],
                 'name' => $pluginName,
                 'label' => $composerData['extra']['label'] ?? '',
@@ -264,7 +267,7 @@ class PluginService
             $plugins[$found] = $pluginUpdateData;
         }
         file_put_contents(
-            $this->projectDir.'/plugins/plugins.json',
+            $this->pluginDir.'/plugins.json',
             json_encode($plugins, \JSON_PRETTY_PRINT)
         );
     }

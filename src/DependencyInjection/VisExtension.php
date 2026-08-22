@@ -26,6 +26,15 @@ class VisExtension extends Extension
         $defaultLocale = $config['default_locale'] ?? 'en';
         $container->setParameter('vis.default_locale', is_scalar($defaultLocale) ? (string) $defaultLocale : 'en');
 
+        $assetsPath = $config['assets_path'] ?? 'avalynx';
+        $container->setParameter('vis.assets_path', is_scalar($assetsPath) ? (string) $assetsPath : 'avalynx');
+
+        $assetsSrcPath = $config['assets_src_path'] ?? 'dist';
+        $container->setParameter('vis.assets_src_path', is_scalar($assetsSrcPath) ? (string) $assetsSrcPath : 'dist');
+
+        $pluginPath = $config['plugin_path'] ?? 'plugins';
+        $container->setParameter('vis.plugin_path', is_scalar($pluginPath) ? (string) $pluginPath : 'plugins');
+
         $loader = new YamlFileLoader($container, new FileLocator(__DIR__.'/../../config'));
         $loader->load('services.yaml');
     }

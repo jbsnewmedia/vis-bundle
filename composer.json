@@ -16,7 +16,7 @@
   },
   "require": {
     "php": ">=8.2",
-    "avalynx/avalynx-simpleadmin": "^1.0",
+    "avalynx/avalynx-admin": "^1.0",
     "fortawesome/font-awesome": "^7.0",
     "jbsnewmedia/avalynx-web-pack": "^1.0",
     "jbsnewmedia/symfony-web-pack": "^1.0",

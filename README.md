@@ -209,9 +209,9 @@ class CustomPlugin extends AbstractPlugin
 
 ```twig
 {# templates/custom_sidebar_item.html.twig #}
-<li class="avalynx-simpleadmin-sidenav-item custom-item">
-    <h2 class="avalynx-simpleadmin-sidenav-header">
-        <a href="{{ path(item.route) }}" class="avalynx-simpleadmin-sidenav-link">
+<li class="avalynx-admin-sidenav-item custom-item">
+    <h2 class="avalynx-admin-sidenav-header">
+        <a href="{{ path(item.route) }}" class="avalynx-admin-sidenav-link">
             {{ item.icon|raw }}
             <span class="title">{{ item.label }}</span>
         </a>
@@ -282,8 +282,8 @@ security:
 
 ```twig
 {# With AssetComposerBundle integration #}
-{% do addAssetComposer('avalynx/avalynx-simpleadmin/src/css/avalynx-simpleadmin.css') %}
-{% do addAssetComposer('avalynx/avalynx-simpleadmin/src/js/avalynx-simpleadmin.js') %}
+{% do addAssetComposer('avalynx/avalynx-admin/src/css/avalynx-admin.css') %}
+{% do addAssetComposer('avalynx/avalynx-admin/src/js/avalynx-admin.js') %}
 ```
 
 ---

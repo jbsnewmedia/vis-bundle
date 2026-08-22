@@ -60,9 +60,12 @@ class Vis
         protected TranslatorInterface $translator,
         protected UrlGeneratorInterface $router,
         protected Security $security,
+        protected string $projectDir,
         protected array $locales = ['en'],
         protected string $defaultLocale = 'en',
         protected ?RequestStack $requestStack = null,
+        protected string $assetsPath = 'avalynx',
+        protected string $assetsSrcPath = 'dist',
     ) {
         $user = $this->security->getUser();
         if (null !== $user) {
@@ -212,6 +215,21 @@ class Vis
         return $this->defaultLocale;
     }
 
+    public function getProjectDir(): string
+    {
+        return $this->projectDir;
+    }
+
+    public function getAssetsPath(): string
+    {
+        return $this->assetsPath;
+    }
+
+    public function getAssetsSrcPath(): string
+    {
+        return $this->assetsSrcPath;
+    }
+
     public function addTopbar(Topbar $item): bool
     {
         if ($item instanceof TopbarDropdownLocale && count($this->locales) <= 1) {
@@ -267,8 +285,9 @@ class Vis
 
         if ('end' === $position) {
             if (!isset($items['toggle_darkmode_end'])) {
-                $items['toggle_darkmode_end'] = new TopbarButtonDarkmode('simple');
-                $items['toggle_darkmode_end']->setLabel($this->translator->trans('main.toggle.darkmode', domain: 'vis'));
+                $item = new TopbarButtonDarkmode('simple');
+                $item->setLabel($this->translator->trans('main.toggle.darkmode', domain: 'vis'));
+                $items['toggle_darkmode_end'] = $item;
             }
 
             if (!isset($items['dropdown_locale']) && count($this->locales) > 1) {
