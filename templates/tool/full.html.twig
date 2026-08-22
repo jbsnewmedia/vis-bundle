@@ -1,10 +1,9 @@
 {% extends '@Vis/base.html.twig' %}
 
-{% set themeSlug = app.session.get('vis_theme_slug') %}
-{% if themeSlug %}
-    {% do addAssetComposer('app/assets/css/theme-' ~ themeSlug ~ '.min.css') %}
+{% if vis.theme != 'vis' %}
+    {% do addAssetComposer(vis.getThemeAssetsPath() ~ '/' ~ vis.theme ~ '/css/theme.min.css') %}
 {% else %}
-    {% do addAssetComposer('app/assets/css/theme-001.min.css') %}
+    {% do addAssetComposer('twbs/bootstrap/dist/css/bootstrap.min.css') %}
 {% endif %}
 
 {% do addAssetComposer('twbs/bootstrap/dist/js/bootstrap.bundle.min.js') %}

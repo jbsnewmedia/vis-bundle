@@ -35,6 +35,9 @@ class VisExtension extends Extension
         $pluginPath = $config['plugin_path'] ?? 'plugins';
         $container->setParameter('vis.plugin_path', is_scalar($pluginPath) ? (string) $pluginPath : 'plugins');
 
+        $theme = $config['theme'] ?? 'vis';
+        $container->setParameter('vis.theme', is_scalar($theme) ? (string) $theme : 'vis');
+
         $loader = new YamlFileLoader($container, new FileLocator(__DIR__.'/../../config'));
         $loader->load('services.yaml');
     }

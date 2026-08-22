@@ -28,7 +28,7 @@ class DynamicFilterExtension extends AbstractExtension
 
     public function dynamicFilter(string $string, string $filterName): string
     {
-        if ('raw' === $filterName) {
+        if ('' === $filterName || 'raw' === $filterName) {
             return $string;
         }
 

@@ -76,6 +76,12 @@ class VisCoreCreateCommand extends Command
             'en'
         );
 
+        /** @var string $vis_theme */
+        $vis_theme = $io->ask(
+            'Which theme should be used as default? (e.g. <fg=yellow>vis</>)',
+            'vis'
+        );
+
         $controllerFile = $this->kernel->getProjectDir().'/src/Controller/Vis/MainController.php';
         if (!$this->dumpMainController($controllerFile)) {
             $this->error = true;
@@ -83,6 +89,11 @@ class VisCoreCreateCommand extends Command
 
         $controllerFile = $this->kernel->getProjectDir().'/src/Controller/Vis/SecurityController.php';
         if (!$this->dumpSecurityController($controllerFile)) {
+            $this->error = true;
+        }
+
+        $controllerFile = $this->kernel->getProjectDir().'/src/Controller/Vis/ThemeController.php';
+        if (!$this->dumpThemeController($controllerFile)) {
             $this->error = true;
         }
 
@@ -117,7 +128,7 @@ class VisCoreCreateCommand extends Command
             }
         }
 
-        if (!$this->updateVisYaml($vis_locales, $vis_default_locale)) {
+        if (!$this->updateVisYaml($vis_locales, $vis_default_locale, $vis_theme)) {
             $this->error = true;
         }
 
@@ -278,7 +289,35 @@ class VisCoreCreateCommand extends Command
         return true;
     }
 
-    protected function updateVisYaml(string $locales, string $defaultLocale): bool
+    protected function dumpThemeController(string $controllerFile): bool
+    {
+        $skeletonFile = $this->skeletonDir.'/ThemeController.php.skeleton';
+        $controllerContent = $this->getSkeletonContent($skeletonFile);
+
+        if (false === $controllerContent) {
+            $this->errorMessages[] = 'Skeleton file not found: '.$skeletonFile;
+
+            return false;
+        }
+
+        try {
+            $this->filesystem->dumpFile($controllerFile, $controllerContent);
+        } catch (\Throwable $e) {
+            $this->errorMessages[] = 'Controller cannot be created: '.$controllerFile.' - '.$e->getMessage();
+
+            return false;
+        }
+
+        if (!$this->filesystem->exists($controllerFile)) {
+            $this->errorMessages[] = 'Controller cannot be created: '.$controllerFile;
+
+            return false;
+        }
+
+        return true;
+    }
+
+    protected function updateVisYaml(string $locales, string $defaultLocale, string $theme): bool
     {
         $yamlFile = $this->kernel->getProjectDir().'/config/packages/vis.yaml';
 
@@ -295,6 +334,7 @@ class VisCoreCreateCommand extends Command
         $replacements = [
             '{$locales}' => (string) json_encode($localesArray),
             '{$default_locale}' => $defaultLocale,
+            '{$theme}' => $theme,
         ];
 
         $content = str_replace(array_keys($replacements), array_values($replacements), $content);

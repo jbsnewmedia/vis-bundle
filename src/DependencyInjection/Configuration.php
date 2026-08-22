@@ -41,6 +41,10 @@ class Configuration implements ConfigurationInterface
         $pluginPathNode = $children->scalarNode('plugin_path');
         $pluginPathNode->defaultValue('plugins');
 
+        /** @var ScalarNodeDefinition $themeNode */
+        $themeNode = $children->scalarNode('theme');
+        $themeNode->defaultValue('vis');
+
         return $treeBuilder;
     }
 }

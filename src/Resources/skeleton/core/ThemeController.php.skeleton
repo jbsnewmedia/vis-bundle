@@ -1,0 +1,33 @@
+<?php
+
+declare(strict_types=1);
+
+namespace App\Controller\Vis;
+
+use JBSNewMedia\VisBundle\Controller\VisAbstractController;
+use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\Routing\Attribute\Route;
+
+class ThemeController extends VisAbstractController
+{
+    #[Route('/vis/api/theme/{slug}/{timestamp}', name: 'vis_api_theme')]
+    public function setTheme(Request $request, string $slug, string $timestamp): JsonResponse
+    {
+        if ('default' === $slug || !$this->vis->isTheme($slug)) {
+            $this->vis->resetTheme();
+
+            return new JsonResponse([
+                'theme' => 'default',
+                'success' => true,
+            ]);
+        }
+
+        $this->vis->setTheme($slug);
+
+        return new JsonResponse([
+            'theme' => $slug,
+            'success' => true,
+        ]);
+    }
+}

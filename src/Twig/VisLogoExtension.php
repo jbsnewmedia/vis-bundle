@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace JBSNewMedia\VisBundle\Twig;
 
+use JBSNewMedia\AssetComposerBundle\Service\AssetComposer;
 use JBSNewMedia\VisBundle\Service\Vis;
 use Symfony\Component\Routing\Exception\RouteNotFoundException;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
@@ -15,7 +16,8 @@ class VisLogoExtension extends AbstractExtension
     public function __construct(
         protected UrlGeneratorInterface $router,
         protected Vis $vis,
-        protected VisTransExtension $visTrans
+        protected VisTransExtension $visTrans,
+        protected AssetComposer $assetComposer
     ) {
     }
 
@@ -55,10 +57,28 @@ class VisLogoExtension extends AbstractExtension
 
         // 3. Fallback logic: If no route, try the provided fallbackKey or fallback string
         if ($fallbackKey !== null) {
-            return $this->visTrans->translateKey($fallbackKey);
+            return $this->toAssetUrl($this->visTrans->translateKey($fallbackKey));
         }
 
         return $fallback ?? '';
+    }
+
+    /**
+     * Resolves an asset composer path (e.g. "jbsnewmedia/vis-bundle/assets/img/logo.svg")
+     * to a versioned URL. Returns the raw value when it cannot be resolved
+     * (e.g. project relative "assets/img/..." paths).
+     */
+    protected function toAssetUrl(string $path): string
+    {
+        if ('' === $path || str_starts_with($path, 'http') || str_starts_with($path, '/')) {
+            return $path;
+        }
+
+        try {
+            return $this->assetComposer->getAssetFileName($path);
+        } catch (\Throwable) {
+            return $path;
+        }
     }
 
     public function getLogoHover(string $type, string $mode): string
@@ -124,13 +144,6 @@ class VisLogoExtension extends AbstractExtension
 
         $filenames[] = sprintf('%s-%s%s.svg', $type, $mode, $hover ? '-hover' : '');
         $filenames[] = sprintf('%s%s.svg', $type, $hover ? '-hover' : '');
-
-        if ($type === 'navigation') {
-            $filenames[] = $hover ? 'heyPINA_kopf_zwinker.svg' : 'heyPINA_kopf.svg';
-        }
-        if ($type === 'main') {
-            $filenames[] = $hover ? 'heyPINA_hoernchen_zwinker.svg' : 'heyPINA_hoernchen.svg';
-        }
 
         // Fallbacks for old filenames
         if ($toolId !== '') {

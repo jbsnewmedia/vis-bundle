@@ -71,6 +71,6 @@
     </div>
 
     <script>
-        const visForm = new AvalynxForm('vis-register-form');
+        if (document.getElementById('vis-register-form')) { const visForm = new AvalynxForm('vis-register-form'); }
     </script>
 {% endblock %}

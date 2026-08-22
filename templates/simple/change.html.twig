@@ -58,7 +58,7 @@
 </div>
 
 <script>
-    const visForm = new AvalynxForm('vis-change-form');
+    if (document.getElementById('vis-change-form')) { const visForm = new AvalynxForm('vis-change-form'); }
 
     document.addEventListener('DOMContentLoaded', () => {
         const avalynxSelect = new AvalynxSelect('#_tool');

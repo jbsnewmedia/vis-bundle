@@ -53,6 +53,10 @@ class Vis
 
     protected string $selectedClientId = '';
 
+    public const DEFAULT_THEME = 'vis';
+
+    public const SESSION_KEY_THEME = 'vis_theme_slug';
+
     /**
      * @param string[] $locales
      */
@@ -66,6 +70,7 @@ class Vis
         protected ?RequestStack $requestStack = null,
         protected string $assetsPath = 'avalynx',
         protected string $assetsSrcPath = 'dist',
+        protected string $theme = self::DEFAULT_THEME,
     ) {
         $user = $this->security->getUser();
         if (null !== $user) {
@@ -228,6 +233,93 @@ class Vis
     public function getAssetsSrcPath(): string
     {
         return $this->assetsSrcPath;
+    }
+
+    /**
+     * Returns the active theme id. A valid session theme
+     * (switchable at runtime) wins over the configured default.
+     */
+    public function getTheme(): string
+    {
+        $session = $this->requestStack?->getSession();
+        if (null !== $session) {
+            $slug = $session->get(self::SESSION_KEY_THEME, '');
+            $slug = is_string($slug) ? trim($slug) : '';
+            if ('' !== $slug && $this->isTheme($slug)) {
+                return $slug;
+            }
+        }
+
+        if ($this->isTheme($this->theme)) {
+            return $this->theme;
+        }
+
+        return self::DEFAULT_THEME;
+    }
+
+    public function setTheme(string $theme): void
+    {
+        $session = $this->requestStack?->getSession();
+        if (null === $session) {
+            return;
+        }
+
+        if (!$this->isTheme($theme)) {
+            $session->remove(self::SESSION_KEY_THEME);
+
+            return;
+        }
+
+        $session->set(self::SESSION_KEY_THEME, $theme);
+    }
+
+    public function resetTheme(): void
+    {
+        $this->requestStack?->getSession()->remove(self::SESSION_KEY_THEME);
+    }
+
+    public function isTheme(string $theme): bool
+    {
+        return (bool) preg_match('/^[a-z0-9]+(?:-[a-z0-9]+)*$/', $theme)
+            && is_dir($this->getThemesPath().'/'.$theme);
+    }
+
+    /**
+     * @return list<array{id: string, name: string}>
+     */
+    public function getThemes(): array
+    {
+        $themes = [];
+        $dir = $this->getThemesPath();
+        if (!is_dir($dir)) {
+            return $themes;
+        }
+
+        $entries = scandir($dir) ?: [];
+        foreach ($entries as $entry) {
+            if (str_starts_with($entry, '.') || !is_dir($dir.'/'.$entry) || !$this->isTheme($entry)) {
+                continue;
+            }
+
+            $themes[] = [
+                'id' => $entry,
+                'name' => ucfirst($entry),
+            ];
+        }
+
+        usort($themes, static fn (array $a, array $b): int => strcasecmp($a['name'], $b['name']));
+
+        return $themes;
+    }
+
+    public function getThemesPath(): string
+    {
+        return \dirname(__DIR__, 2).'/templates/themes';
+    }
+
+    public function getThemeAssetsPath(): string
+    {
+        return 'jbsnewmedia/vis-bundle/assets/themes';
     }
 
     public function addTopbar(Topbar $item): bool

@@ -51,6 +51,12 @@ services:
             $router: '@router'
             $vis: '@JBSNewMedia\VisBundle\Service\Vis'
             $visTrans: '@JBSNewMedia\VisBundle\Twig\VisTransExtension'
+            $assetComposer: '@JBSNewMedia\AssetComposerBundle\Service\AssetComposer'
+
+    JBSNewMedia\VisBundle\Twig\VisThemeExtension:
+        arguments:
+            $twig: '@twig'
+            $vis: '@JBSNewMedia\VisBundle\Service\Vis'
 
     JBSNewMedia\VisBundle\Service\Vis:
         arguments:
@@ -59,6 +65,7 @@ services:
             $defaultLocale: '%vis.default_locale%'
             $assetsPath: '%vis.assets_path%'
             $assetsSrcPath: '%vis.assets_src_path%'
+            $theme: '%vis.theme%'
 
     JBSNewMedia\VisBundle\EventListener\LocaleListener:
         tags:
