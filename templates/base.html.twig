@@ -4,6 +4,19 @@
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>{% block title %}VIS{% endblock %}</title>
+        <script>
+            (function () {
+                try {
+                    if (window.parent !== window) {
+                        var theme = window.parent.document.documentElement.getAttribute('data-bs-theme');
+                        if (theme) {
+                            document.documentElement.setAttribute('data-bs-theme', theme);
+                        }
+                    }
+                } catch (e) {
+                }
+            })();
+        </script>
         {% block stylesheets %}
             {{ renderAssetComposerStylesheets() }}
         {% endblock %}

@@ -30,7 +30,7 @@
 
                 <form method="post" id="vis-change-form" action="{{ path('vis') }}">
 
-                    <div class="form-group mb-4">
+                    <div class="mb-4">
                         <label class="form-label" for="_tool">{{ 'change.tool'|vistrans }}:</label>
                         <select class="form-select avalynx-select" name="_tool" id="_tool">
                             <option value="">{{ 'change.select'|vistrans }}</option>
@@ -43,7 +43,7 @@
 
                     <button type="submit" class="btn btn-primary w-100 mb-4">{{ 'change.submit'|vistrans }}</button>
 
-                    <div class="form-group">
+                    <div class="mb-3">
                         <div class="form-check">
                             <input type="checkbox" name="_remember_me"{% if (cookieTool != '') %} checked{% endif %} id="_remember_me" class="form-check-input" value="1"/>
                             <label class="form-check-label" for="_remember_me">{{ 'change.rememberme'|vistrans }}</label>

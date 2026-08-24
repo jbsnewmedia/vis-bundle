@@ -8,7 +8,7 @@
 <div class="dropdown-menu {{ item.dropdownClass|default('dropdown-menu-end') }} me-1" aria-labelledby="{{ item.id }}">
     {% for data_id, data_details in item.data %}
         {% if data_details.label == '---' %}
-            <div class="dropdown-divider"></div>
+            <hr class="dropdown-divider">
         {% else %}
             <div class="dropdown-item vis-locale-item{% if item.dataKey == data_id %} active{% endif %}" style="cursor: pointer;" onclick="changeLocale('{{ path(data_details.route, (data_details.routeParameters|default(data_details.routeparameters|default({})))|merge({'timestamp': '__TIMESTAMP__'})) }}'.replace('__TIMESTAMP__', Date.now()))">
                 {% if data_details.icon is defined and data_details.icon != '' %}
