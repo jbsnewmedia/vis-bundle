@@ -6,6 +6,8 @@ namespace JBSNewMedia\VisBundle\Model\Topbar;
 
 class TopbarDropdownProfile extends TopbarDropdown
 {
+    protected string $avatar = 'jbsnewmedia/vis-bundle/assets/img/profile.jpg';
+
     public function __construct(
         string $tool,
         string $id = 'dropdown_profile_end',
@@ -18,5 +20,18 @@ class TopbarDropdownProfile extends TopbarDropdown
         $this->setLabel('Profile');
         $this->setOrder(100);
         $this->setContentFilter('raw');
+        $this->setTemplate('@Vis/topbar/dropdown_profile.html.twig');
+    }
+
+    public function setAvatar(string $avatar): self
+    {
+        $this->avatar = $avatar;
+
+        return $this;
+    }
+
+    public function getAvatar(): string
+    {
+        return $this->avatar;
     }
 }

@@ -16,11 +16,25 @@ class Topbar extends Item
 
     protected string $dropdownClass = 'dropdown-menu-md-end';
 
+    protected bool $dropdownIcon = true;
+
     public function __construct(
         string $tool,
         string $id,
     ) {
         parent::__construct($tool, $id);
+    }
+
+    public function setDropdownIcon(bool $dropdownIcon): self
+    {
+        $this->dropdownIcon = $dropdownIcon;
+
+        return $this;
+    }
+
+    public function isDropdownIcon(): bool
+    {
+        return $this->dropdownIcon;
     }
 
     public function setDropdownClass(string $dropdownClass): void

@@ -16,6 +16,7 @@ main:
   profile:
     default: "Profile"
     logout: "Logout"
+    avatar: "jbsnewmedia/vis-bundle/assets/img/profile.jpg"
   loading: "Loading..."
   locale: "Language"
 locale:
