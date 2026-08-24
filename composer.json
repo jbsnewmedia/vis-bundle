@@ -19,6 +19,7 @@
         "avalynx/avalynx-admin": "^1.0",
     "fortawesome/font-awesome": "^7.0",
     "jbsnewmedia/avalynx-web-pack": "^1.0",
+    "jbsnewmedia/bootstrap-bundle": "^1.0",
     "jbsnewmedia/symfony-web-pack": "^1.0",
     "symfony/framework-bundle": "^7.4",
     "symfony/finder": "^7.4",

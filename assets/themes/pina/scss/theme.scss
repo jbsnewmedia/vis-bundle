@@ -1,0 +1,284 @@
+// =====================================================================
+// VIS theme "pina" — native Bootstrap build (heyPINA corporate design)
+//
+// Brand palette:
+//   brown  #312016  (text / dark surfaces)
+//   creme  #ede8cc  (surfaces)
+//   orange #ee7d00  (primary accent)
+//   pink   #e5007d  (wink accent)
+//
+// This file compiles a full Bootstrap with the theme baked in
+// (SCSS variables instead of CSS overrides):
+//   php bin/console vis:themes:compile --theme=pina
+// Output: assets/themes/pina/css/theme.css + theme.min.css
+// =====================================================================
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+
+// ---------------------------------------------------------------------
+// Bootstrap variables (theme colors)
+// ---------------------------------------------------------------------
+$primary: #ee7d00;
+$secondary: #312016;
+$success: #7a9a01;
+$info: #e5007d;
+$warning: #f5a623;
+$danger: #d9381e;
+$light: #ede8cc;
+$dark: #312016;
+
+$primary-text-emphasis: #b45700;
+$primary-bg-subtle: #fbe3c2;
+$primary-border-subtle: #f5c88a;
+$secondary-text-emphasis: #312016;
+$secondary-bg-subtle: #f1ecd8;
+$secondary-border-subtle: #ddd3ac;
+
+// ---------------------------------------------------------------------
+// Bootstrap variables (dark mode — native)
+// ---------------------------------------------------------------------
+$body-color-dark: #ede8cc;
+$body-bg-dark: #221610;
+$body-secondary-color-dark: rgba(237, 232, 204, 0.6);
+$body-secondary-bg-dark: #33231a;
+$body-tertiary-bg-dark: #2c1e15;
+$border-color-dark: rgba(237, 232, 204, 0.14);
+$border-color-translucent-dark: rgba(237, 232, 204, 0.08);
+$headings-color-dark: #ede8cc;
+$link-color-dark: #f5962e;
+$link-hover-color-dark: #ffb05c;
+$primary-text-emphasis-dark: #f5962e;
+$primary-bg-subtle-dark: #3a2408;
+$primary-border-subtle-dark: #6b4210;
+$secondary-text-emphasis-dark: #ede8cc;
+$secondary-bg-subtle-dark: #33231a;
+$secondary-border-subtle-dark: #55402e;
+
+// ---------------------------------------------------------------------
+// Bootstrap variables (body, typography, radius, shadows)
+// ---------------------------------------------------------------------
+$body-bg: #f4efe2;
+$body-color: #312016;
+$body-secondary-color: rgba(49, 32, 22, 0.65);
+$body-secondary-bg: #f1ecd8;
+$body-tertiary-bg: #ede8cc;
+$border-color: rgba(49, 32, 22, 0.12);
+$border-color-translucent: rgba(49, 32, 22, 0.07);
+$link-color: #ee7d00;
+$link-hover-color: #c56a00;
+$headings-color: #312016;
+
+$font-family-base: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+$line-height-base: 1.6;
+
+$border-radius: 0.75rem;
+$border-radius-sm: 0.5rem;
+$border-radius-lg: 1rem;
+$border-radius-xl: 1.5rem;
+
+$box-shadow-sm: 0 1px 2px 0 rgba(49, 32, 22, 0.06);
+$box-shadow: 0 4px 6px -1px rgba(49, 32, 22, 0.1), 0 2px 4px -2px rgba(49, 32, 22, 0.08);
+$box-shadow-lg: 0 10px 15px -3px rgba(49, 32, 22, 0.1), 0 4px 6px -4px rgba(49, 32, 22, 0.08);
+
+// ---------------------------------------------------------------------
+// Bootstrap variables (components)
+// ---------------------------------------------------------------------
+$btn-padding-y: 0.625rem;
+$btn-padding-x: 1.25rem;
+$btn-font-weight: 500;
+$btn-border-radius: $border-radius;
+
+$card-spacer-y: 1.5rem;
+$card-spacer-x: 1.5rem;
+$card-border-width: 0;
+$card-border-radius: 1.25rem;
+$card-inner-border-radius: 1.25rem;
+$card-cap-bg: transparent;
+$card-bg: #fbf8ee;
+$card-box-shadow: 0 20px 27px 0 rgba(49, 32, 22, 0.08);
+
+$dropdown-border-radius: $border-radius;
+$dropdown-bg: #fbf8ee;
+
+// ---------------------------------------------------------------------
+// Bootstrap (compiled with the theme variables above — active states,
+// focus rings, checks/switches, pagination, … pick up $primary natively)
+// ---------------------------------------------------------------------
+@import 'bootstrap';
+
+// =====================================================================
+// Theme additions (everything without a Bootstrap variable)
+// =====================================================================
+
+// --- Avalynx admin variables (html prefix beats :root of avalynx-admin.vars.css) ---
+html[data-avalynx-admin-theme="pina"] {
+    --avalynx-admin-header-btn-color: #312016;
+    --avalynx-admin-header-btn-bg: #ede8cc;
+    --avalynx-admin-header-active-color: #fff;
+    --avalynx-admin-header-active-bg: #ee7d00;
+}
+
+html[data-avalynx-admin-theme="pina"][data-bs-theme="dark"] {
+    --avalynx-admin-header-btn-color: #ede8cc;
+    --avalynx-admin-header-btn-bg: #2c1e15;
+    --avalynx-admin-header-active-color: #fff;
+    --avalynx-admin-header-active-bg: #ee7d00;
+}
+
+// --- Sidenav ---
+html[data-avalynx-admin-theme="pina"] .avalynx-admin-sidenav {
+    --avalynx-admin-sidenav-active-bg: #ee7d00;
+    --avalynx-admin-sidenav-active-color: #fff;
+    --avalynx-admin-sidenav-btn-color: #312016;
+}
+
+html[data-avalynx-admin-theme="pina"][data-bs-theme="dark"] .avalynx-admin-sidenav {
+    --avalynx-admin-sidenav-btn-color: #ede8cc;
+}
+
+html[data-avalynx-admin-theme="pina"] .avalynx-admin-sidenav-sub1 {
+    --avalynx-admin-sidenav-sub1-active-bg: #fbe3c2;
+    --avalynx-admin-sidenav-sub1-active-color: #312016;
+}
+
+html[data-avalynx-admin-theme="pina"][data-bs-theme="dark"] .avalynx-admin-sidenav-sub1 {
+    --avalynx-admin-sidenav-sub1-active-bg: #3a2408;
+    --avalynx-admin-sidenav-sub1-active-color: #f5962e;
+}
+
+// --- Dark cards ---
+html[data-avalynx-admin-theme="pina"][data-bs-theme="dark"] .card {
+    --bs-card-bg: #2c1e15;
+    --bs-card-color: #ede8cc;
+    --bs-card-box-shadow: 0 20px 27px 0 rgba(0, 0, 0, 0.35);
+}
+
+// --- Dark dropdowns ---
+html[data-avalynx-admin-theme="pina"][data-bs-theme="dark"] .dropdown-menu {
+    --bs-dropdown-bg: #2c1e15;
+}
+
+// --- Buttons: soft shadow, no extra active shadow ---
+html[data-avalynx-admin-theme="pina"] .btn {
+    box-shadow: 0 1px 2px 0 rgba(49, 32, 22, 0.06);
+}
+
+html[data-avalynx-admin-theme="pina"] .btn:active,
+html[data-avalynx-admin-theme="pina"] .btn.active {
+    box-shadow: 0 1px 2px 0 rgba(49, 32, 22, 0.06);
+}
+
+// --- Exact primary button color steps (gradient look) ---
+html[data-avalynx-admin-theme="pina"] .btn-primary {
+    --bs-btn-hover-bg: #c56a00;
+    --bs-btn-hover-border-color: #c56a00;
+    --bs-btn-active-bg: #b45f00;
+    --bs-btn-active-border-color: #b45f00;
+    background-image: linear-gradient(310deg, #c56a00, #ee7d00);
+    border: none;
+    color: #fff;
+}
+
+html[data-avalynx-admin-theme="pina"] .btn-primary:hover,
+html[data-avalynx-admin-theme="pina"] .btn-primary:focus {
+    background-image: linear-gradient(310deg, #d47400, #f78e14);
+    color: #fff;
+}
+
+html[data-avalynx-admin-theme="pina"] .btn-dark {
+    --bs-btn-bg: #312016;
+    --bs-btn-border-color: #312016;
+    --bs-btn-hover-bg: #47301f;
+    --bs-btn-hover-border-color: #47301f;
+    color: #ede8cc;
+}
+
+html[data-avalynx-admin-theme="pina"] .btn-dark:hover {
+    color: #ede8cc;
+}
+
+// --- Topbar buttons: pill-shaped heyPINA style (creme chip, orange hover) ---
+html[data-avalynx-admin-theme="pina"] .avalynx-admin-header-button,
+html[data-avalynx-admin-theme="pina"] .avalynx-admin-header-link {
+    border-radius: 2rem;
+    margin-top: 4px !important;
+    margin-bottom: 4px !important;
+    margin-right: 4px !important;
+    min-width: 38px;
+    min-height: 38px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid rgba(49, 32, 22, 0.1);
+    transition: background-color 0.2s ease-in-out, color 0.2s ease-in-out, transform 0.15s ease-in-out;
+}
+
+html[data-avalynx-admin-theme="pina"] .avalynx-admin-header-button:hover,
+html[data-avalynx-admin-theme="pina"] .avalynx-admin-header-button:focus,
+html[data-avalynx-admin-theme="pina"] .avalynx-admin-header-link:hover,
+html[data-avalynx-admin-theme="pina"] .avalynx-admin-header-link:focus {
+    color: #fff !important;
+    background-color: #ee7d00 !important;
+    border-color: #ee7d00;
+    transform: translateY(-1px);
+}
+
+html[data-avalynx-admin-theme="pina"][data-bs-theme="dark"] .avalynx-admin-header-button,
+html[data-avalynx-admin-theme="pina"][data-bs-theme="dark"] .avalynx-admin-header-link {
+    border-color: rgba(237, 232, 204, 0.12);
+}
+
+// --- Cards: hover lift ---
+html[data-avalynx-admin-theme="pina"] .card {
+    transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+}
+
+html[data-avalynx-admin-theme="pina"] .card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 25px 30px -5px rgba(49, 32, 22, 0.14);
+}
+
+html[data-avalynx-admin-theme="pina"][data-bs-theme="dark"] .card:hover {
+    box-shadow: 0 25px 30px -5px rgba(0, 0, 0, 0.45);
+}
+
+// --- Inputs: comfort padding + soft focus ring ---
+html[data-avalynx-admin-theme="pina"] .form-control,
+html[data-avalynx-admin-theme="pina"] .form-select {
+    padding: 0.625rem 1rem;
+    border-radius: 0.75rem;
+}
+
+html[data-avalynx-admin-theme="pina"] .form-control:focus,
+html[data-avalynx-admin-theme="pina"] .form-select:focus {
+    border-color: rgba(238, 125, 0, 0.5);
+    box-shadow: 0 0 0 4px rgba(238, 125, 0, 0.12);
+}
+
+// --- Navbar: glass ---
+html[data-avalynx-admin-theme="pina"] .navbar {
+    padding-top: 1rem;
+    padding-bottom: 1rem;
+    backdrop-filter: blur(10px);
+    background-color: rgba(251, 248, 238, 0.8) !important;
+}
+
+html[data-avalynx-admin-theme="pina"] .navbar-brand {
+    font-weight: 700;
+}
+
+// --- Admin header: warm glass ---
+html[data-avalynx-admin-theme="pina"] #avalynx-admin-header {
+    backdrop-filter: blur(10px);
+    background-color: rgba(244, 239, 226, 0.85) !important;
+}
+
+html[data-avalynx-admin-theme="pina"][data-bs-theme="dark"] #avalynx-admin-header {
+    background-color: rgba(34, 22, 16, 0.85) !important;
+}
+
+// --- Sidenav: round links to match buttons ---
+html[data-avalynx-admin-theme="pina"] .avalynx-admin-sidenav-link,
+html[data-avalynx-admin-theme="pina"] .avalynx-admin-sidenav-button {
+    border-radius: 0.75rem !important;
+}

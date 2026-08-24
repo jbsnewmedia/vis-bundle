@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace JBSNewMedia\VisBundle\Service;
 
 use JBSNewMedia\VisBundle\Model\Item;
+use JBSNewMedia\VisBundle\Model\Setting\Setting;
 use JBSNewMedia\VisBundle\Model\Sidebar\Sidebar;
 use JBSNewMedia\VisBundle\Model\Tool;
 use JBSNewMedia\VisBundle\Model\Topbar\Topbar;
@@ -43,6 +44,11 @@ class Vis
      * @var array<string, Sidebar[]>
      */
     protected array $sidebar = [];
+
+    /**
+     * @var array<string, Setting[]>
+     */
+    protected array $settings = [];
 
     /**
      * @var array<string, array<string, array<string, string>|string>>
@@ -317,6 +323,25 @@ class Vis
         return \dirname(__DIR__, 2).'/templates/themes';
     }
 
+    /**
+     * Returns the asset-composer path of the compiled (native) theme CSS,
+     * or null when the active theme has no compiled CSS (falls back to
+     * the plain Bootstrap dist file).
+     */
+    public function getThemeCss(): ?string
+    {
+        $theme = $this->getTheme();
+        if (self::DEFAULT_THEME === $theme) {
+            return null;
+        }
+
+        if (!is_file(\dirname(__DIR__, 2).'/assets/themes/'.$theme.'/css/theme.min.css')) {
+            return null;
+        }
+
+        return 'jbsnewmedia/vis-bundle/assets/themes/'.$theme.'/css/theme.min.css';
+    }
+
     public function getThemeAssetsPath(): string
     {
         return 'jbsnewmedia/vis-bundle/assets/themes';
@@ -386,7 +411,8 @@ class Vis
                 $locale = $this->getTranslator()->getLocale();
                 $item = new TopbarDropdownLocale('simple');
                 $item->setLabel($this->translator->trans('main.locale', domain: 'vis'));
-                $item->setContent(strtoupper($locale));
+                $item->setContentFilter('raw');
+                $item->setContent('<i class="fa-solid fa-globe fa-fw"></i>');
                 $item->setDataKey($locale);
                 $data = [];
                 foreach ($this->getLocales() as $l) {
@@ -456,6 +482,50 @@ class Vis
     /**
      * @return array<string, Sidebar>
      */
+    public function addSetting(Setting $item): bool
+    {
+        if ([] === $item->getRoles()) {
+            $item->addRole('ROLE_USER');
+        }
+
+        $commonRoles = array_intersect($item->getRoles(), $this->getRoles());
+        if (empty($commonRoles)) {
+            return false;
+        }
+
+        if ('' !== $item->getRoute()) {
+            $this->routes[$item->getTool()][$item->getRoute()] = [
+                'route' => $item->getRoute(),
+                'parent' => '',
+            ];
+        }
+
+        $this->settings[$item->getTool()][$item->getId()] = $item;
+
+        uasort($this->settings[$item->getTool()], $this->sortItems(...));
+
+        return true;
+    }
+
+    /**
+     * @return Setting[]
+     */
+    public function getSettings(string $tool): array
+    {
+        if (!$this->isTool($tool)) {
+            return [];
+        }
+
+        if (!isset($this->settings[$tool])) {
+            return [];
+        }
+
+        /** @var array<string, Setting> $result */
+        $result = $this->settings[$tool];
+
+        return $result;
+    }
+
     public function getSidebar(string $tool): array
     {
         if (!$this->isTool($tool)) {

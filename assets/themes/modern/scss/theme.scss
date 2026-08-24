@@ -1,0 +1,298 @@
+// =====================================================================
+// VIS theme "modern" — native Bootstrap build
+//
+// The classic "Modern Soft UI" look: indigo primary on cool slate tones,
+// soft shadows, gradient primary buttons, borderless hover-lift cards.
+// Same component styling as "pina", different (cool/blue) palette.
+//
+// This file compiles a full Bootstrap with the theme baked in
+// (SCSS variables instead of CSS overrides):
+//   php bin/console vis:themes:compile --theme=modern
+// Output: assets/themes/modern/css/theme.css + theme.min.css
+// =====================================================================
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+
+// ---------------------------------------------------------------------
+// Bootstrap variables (theme colors)
+// ---------------------------------------------------------------------
+$primary: #6366f1;
+$secondary: #64748b;
+$success: #10b981;
+$info: #0ea5e9;
+$warning: #f59e0b;
+$danger: #ef4444;
+$light: #f8fafc;
+$dark: #0f172a;
+
+$primary-text-emphasis: #282960;
+$primary-bg-subtle: #e0e0fc;
+$primary-border-subtle: #c1c2f9;
+$secondary-text-emphasis: #2f3d52;
+$secondary-bg-subtle: #e8ecf1;
+$secondary-border-subtle: #cdd6e0;
+
+// ---------------------------------------------------------------------
+// Bootstrap variables (dark mode — native)
+// ---------------------------------------------------------------------
+$body-color-dark: #dee2e6;
+$body-bg-dark: #0f172a;
+$body-secondary-color-dark: rgba(222, 226, 230, 0.6);
+$body-secondary-bg-dark: #1e293b;
+$body-tertiary-bg-dark: #2b3035;
+$border-color-dark: rgba(222, 226, 230, 0.12);
+$border-color-translucent-dark: rgba(222, 226, 230, 0.07);
+$headings-color-dark: #e2e8f0;
+$link-color-dark: #818cf8;
+$link-hover-color-dark: #a5b4fc;
+$primary-text-emphasis-dark: #a1a3f7;
+$primary-bg-subtle-dark: #141430;
+$primary-border-subtle-dark: #3b3d91;
+$secondary-text-emphasis-dark: #dee2e6;
+$secondary-bg-subtle-dark: #1e293b;
+$secondary-border-subtle-dark: #334155;
+
+// ---------------------------------------------------------------------
+// Bootstrap variables (body, typography, radius, shadows)
+// ---------------------------------------------------------------------
+$body-bg: #f1f5f9;
+$body-color: #1e293b;
+$body-secondary-color: rgba(30, 41, 59, 0.65);
+$body-secondary-bg: #e9eef4;
+$body-tertiary-bg: #f8f9fa;
+$border-color: rgba(15, 23, 42, 0.08);
+$border-color-translucent: rgba(15, 23, 42, 0.05);
+$link-color: #6366f1;
+$link-hover-color: #4f46e5;
+$headings-color: #1e293b;
+
+$font-family-base: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+$line-height-base: 1.6;
+
+$border-radius: 0.75rem;
+$border-radius-sm: 0.5rem;
+$border-radius-lg: 1rem;
+$border-radius-xl: 1.5rem;
+
+$box-shadow-sm: 0 1px 2px 0 rgba(15, 23, 42, 0.06);
+$box-shadow: 0 4px 6px -1px rgba(15, 23, 42, 0.1), 0 2px 4px -2px rgba(15, 23, 42, 0.08);
+$box-shadow-lg: 0 10px 15px -3px rgba(15, 23, 42, 0.1), 0 4px 6px -4px rgba(15, 23, 42, 0.08);
+
+// ---------------------------------------------------------------------
+// Bootstrap variables (components)
+// ---------------------------------------------------------------------
+$btn-padding-y: 0.625rem;
+$btn-padding-x: 1.25rem;
+$btn-font-weight: 500;
+$btn-border-radius: $border-radius;
+
+$card-spacer-y: 1.5rem;
+$card-spacer-x: 1.5rem;
+$card-border-width: 0;
+$card-border-radius: 1.25rem;
+$card-inner-border-radius: 1.25rem;
+$card-cap-bg: transparent;
+$card-bg: #ffffff;
+$card-box-shadow: 0 20px 27px 0 rgba(15, 23, 42, 0.06);
+
+$dropdown-border-radius: $border-radius;
+
+// ---------------------------------------------------------------------
+// Bootstrap (compiled with the theme variables above — active states,
+// focus rings, checks/switches, pagination, … pick up $primary natively)
+// ---------------------------------------------------------------------
+@import 'bootstrap';
+
+// =====================================================================
+// Theme additions (everything without a Bootstrap variable)
+// =====================================================================
+
+// --- Avalynx admin variables (html prefix beats :root of avalynx-admin.vars.css) ---
+html[data-avalynx-admin-theme="modern"] {
+    --avalynx-admin-navi-bg: #f8f9fa;
+    --avalynx-admin-header-btn-color: #1e293b;
+    --avalynx-admin-header-btn-bg: transparent;
+    --avalynx-admin-header-active-color: #a1a3f7;
+    --avalynx-admin-header-active-bg: #141430;
+}
+
+html[data-avalynx-admin-theme="modern"][data-bs-theme="dark"] {
+    --avalynx-admin-navi-bg: #212529;
+    --avalynx-admin-light: var(--bs-border-color-translucent);
+    --avalynx-admin-header-btn-color: #dee2e6;
+    --avalynx-admin-header-btn-bg: transparent;
+    --avalynx-admin-header-active-color: #a1a3f7;
+    --avalynx-admin-header-active-bg: #141430;
+}
+
+// --- Sidenav: subtle indigo active state ---
+html[data-avalynx-admin-theme="modern"] .avalynx-admin-sidenav {
+    --avalynx-admin-sidenav-active-bg: #e0e0fc;
+    --avalynx-admin-sidenav-active-color: #282960;
+    --avalynx-admin-sidenav-btn-color: #1e293b;
+}
+
+html[data-avalynx-admin-theme="modern"][data-bs-theme="dark"] .avalynx-admin-sidenav {
+    --avalynx-admin-sidenav-active-bg: #141430;
+    --avalynx-admin-sidenav-active-color: #a1a3f7;
+    --avalynx-admin-sidenav-btn-color: #dee2e6;
+}
+
+html[data-avalynx-admin-theme="modern"] .avalynx-admin-sidenav-sub1 {
+    --avalynx-admin-sidenav-sub1-active-bg: #e0e0fc;
+    --avalynx-admin-sidenav-sub1-active-color: #282960;
+}
+
+html[data-avalynx-admin-theme="modern"][data-bs-theme="dark"] .avalynx-admin-sidenav-sub1 {
+    --avalynx-admin-sidenav-sub1-active-bg: #141430;
+    --avalynx-admin-sidenav-sub1-active-color: #a1a3f7;
+}
+
+// --- Dark cards ---
+html[data-avalynx-admin-theme="modern"][data-bs-theme="dark"] .card {
+    --bs-card-bg: #1e293b;
+    --bs-card-color: #e2e8f0;
+    --bs-card-box-shadow: 0 20px 27px 0 rgba(0, 0, 0, 0.35);
+}
+
+// --- Buttons: soft shadow, no extra active shadow ---
+html[data-avalynx-admin-theme="modern"] .btn {
+    box-shadow: 0 1px 2px 0 rgba(15, 23, 42, 0.06);
+}
+
+html[data-avalynx-admin-theme="modern"] .btn:active,
+html[data-avalynx-admin-theme="modern"] .btn.active {
+    box-shadow: 0 1px 2px 0 rgba(15, 23, 42, 0.06);
+}
+
+// --- Exact primary button color steps (gradient look) ---
+html[data-avalynx-admin-theme="modern"] .btn-primary {
+    --bs-btn-hover-bg: #4f46e5;
+    --bs-btn-hover-border-color: #4f46e5;
+    --bs-btn-active-bg: #4338ca;
+    --bs-btn-active-border-color: #4338ca;
+    background-image: linear-gradient(310deg, #3438ed, #6366f1);
+    border: none;
+    color: #fff;
+}
+
+html[data-avalynx-admin-theme="modern"] .btn-primary:hover,
+html[data-avalynx-admin-theme="modern"] .btn-primary:focus {
+    background-image: linear-gradient(310deg, #4c4fef, #7b7df3);
+    color: #fff;
+}
+
+html[data-avalynx-admin-theme="modern"] .btn-dark {
+    --bs-btn-bg: #0f172a;
+    --bs-btn-border-color: #0f172a;
+    --bs-btn-hover-bg: #1e293b;
+    --bs-btn-hover-border-color: #1e293b;
+    color: #f8fafc;
+}
+
+html[data-avalynx-admin-theme="modern"] .btn-dark:hover {
+    color: #f8fafc;
+}
+
+// --- Topbar buttons: flat icon chips (reference look) — transparent,
+//     full header height, rounded corners, no border/shadow ---
+html[data-avalynx-admin-theme="modern"] .avalynx-admin-header-button,
+html[data-avalynx-admin-theme="modern"] .avalynx-admin-header-link {
+    border-radius: 0.75rem;
+    margin-top: 4px !important;
+    margin-bottom: 4px !important;
+    margin-right: 4px !important;
+    min-height: calc(100% - 8px);
+    align-self: stretch;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border: none;
+    box-shadow: none;
+    transition: background-color 0.2s ease-in-out, color 0.2s ease-in-out;
+}
+
+html[data-avalynx-admin-theme="modern"] .avalynx-admin-header-button:hover,
+html[data-avalynx-admin-theme="modern"] .avalynx-admin-header-button:focus,
+html[data-avalynx-admin-theme="modern"] .avalynx-admin-header-link:hover,
+html[data-avalynx-admin-theme="modern"] .avalynx-admin-header-link:focus {
+    color: #a1a3f7 !important;
+    background-color: #141430 !important;
+    transform: none;
+}
+
+html[data-avalynx-admin-theme="modern"][data-bs-theme="light"] .avalynx-admin-header-button:hover,
+html[data-avalynx-admin-theme="modern"][data-bs-theme="light"] .avalynx-admin-header-button:focus,
+html[data-avalynx-admin-theme="modern"][data-bs-theme="light"] .avalynx-admin-header-link:hover,
+html[data-avalynx-admin-theme="modern"][data-bs-theme="light"] .avalynx-admin-header-link:focus {
+    color: #282960 !important;
+    background-color: #e0e0fc !important;
+}
+
+html[data-avalynx-admin-theme="modern"][data-bs-theme="dark"] body .avalynx-admin-header-button:hover,
+html[data-avalynx-admin-theme="modern"][data-bs-theme="dark"] body .avalynx-admin-header-button:focus,
+html[data-avalynx-admin-theme="modern"][data-bs-theme="dark"] body .avalynx-admin-header-link:hover,
+html[data-avalynx-admin-theme="modern"][data-bs-theme="dark"] body .avalynx-admin-header-link:focus {
+    color: #a1a3f7 !important;
+    background-color: #141430 !important;
+}
+
+// --- Cards: hover lift ---
+html[data-avalynx-admin-theme="modern"] .card {
+    transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+}
+
+html[data-avalynx-admin-theme="modern"] .card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 25px 30px -5px rgba(15, 23, 42, 0.12);
+}
+
+html[data-avalynx-admin-theme="modern"][data-bs-theme="dark"] .card:hover {
+    box-shadow: 0 25px 30px -5px rgba(0, 0, 0, 0.45);
+}
+
+// --- Inputs: comfort padding + soft focus ring ---
+html[data-avalynx-admin-theme="modern"] .form-control,
+html[data-avalynx-admin-theme="modern"] .form-select {
+    padding: 0.625rem 1rem;
+    border-radius: 0.75rem;
+}
+
+html[data-avalynx-admin-theme="modern"] .form-control:focus,
+html[data-avalynx-admin-theme="modern"] .form-select:focus {
+    border-color: rgba(99, 102, 241, 0.5);
+    box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.1);
+}
+
+// --- Navbar: glass ---
+html[data-avalynx-admin-theme="modern"] .navbar {
+    padding-top: 1rem;
+    padding-bottom: 1rem;
+    backdrop-filter: blur(10px);
+    background-color: rgba(255, 255, 255, 0.8) !important;
+}
+
+html[data-avalynx-admin-theme="modern"] .navbar-brand {
+    font-weight: 700;
+}
+
+// --- Admin header: solid surface with border-bottom (reference look, no glass).
+//     !important is required because Bootstrap's .border-bottom utility uses it. ---
+html[data-avalynx-admin-theme="modern"] #avalynx-admin-header {
+    background-color: #f8f9fa !important;
+    backdrop-filter: none;
+    border-bottom: 1px solid rgba(15, 23, 42, 0.12) !important;
+    box-shadow: 0 4px 6px -1px rgba(15, 23, 42, 0.07), 0 2px 4px -2px rgba(15, 23, 42, 0.06);
+}
+
+html[data-avalynx-admin-theme="modern"][data-bs-theme="dark"] body #avalynx-admin-header {
+    background-color: #212529 !important;
+    border-bottom: 1px solid #495057 !important;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
+}
+
+// --- Sidenav: round links to match buttons ---
+html[data-avalynx-admin-theme="modern"] .avalynx-admin-sidenav-link,
+html[data-avalynx-admin-theme="modern"] .avalynx-admin-sidenav-button {
+    border-radius: 0.75rem !important;
+}
