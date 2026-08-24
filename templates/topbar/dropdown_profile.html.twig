@@ -1,0 +1,26 @@
+<button type="button" class="{{ item.class }}{% if item.isDropdownIcon %} dropdown-toggle{% endif %}" data-bs-toggle="dropdown" aria-expanded="false" title="{{ item.label }}" id="{{ item.id }}">
+    {% if item.avatar is not empty %}
+        <img src="{{ getAssetComposerFile(item.avatar) }}" class="rounded-circle" style="width: 32px; height: 32px;" alt="{{ item.label }}">
+    {% else %}
+        {% if item.contentFilter == '' %}
+            {{ item.content }}
+        {% else %}
+            {{ item.content|dynamic_filter(item.contentFilter) }}
+        {% endif %}
+    {% endif %}
+</button>
+<div class="dropdown-menu {{ item.dropdownClass|default('dropdown-menu-end') }} me-1" aria-labelledby="{{ item.id }}">
+    {% for data_id, data_details in item.data %}
+        {% if data_details.label == '---' %}
+            <hr class="dropdown-divider">
+        {% else %}
+            <a class="dropdown-item{% if item.dataKey == data_id %} active{% endif %}" href="{{ path(data_details.route, data_details.routeparameters|default({})) }}">
+                {% if data_details.icon is defined and data_details.icon != '' %}
+                    {{ data_details.icon|raw }} {{ data_details.label }}
+                {% else %}
+                    {{ data_details.label }}
+                {% endif %}
+            </a>
+        {% endif %}
+    {% endfor %}
+</div>
