@@ -53,7 +53,7 @@ class VisPluginEnableCommand extends Command
 
         if (!$this->pluginService->enablePlugin($relativePath)) {
             $io->error(sprintf(
-                'Plugin "%s" cannot be enabled. Check that plugins/%s/composer.json exists and contains "extra.amicron-platform-plugin-class".',
+                'Plugin "%s" cannot be enabled. Check that plugins/%s/composer.json exists and contains "extra.vis-plugin-class".',
                 $relativePath,
                 $relativePath
             ));

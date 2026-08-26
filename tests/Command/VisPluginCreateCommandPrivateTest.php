@@ -54,7 +54,7 @@ class VisPluginCreateCommandPrivateTest extends TestCase
         $composer = json_decode((string) file_get_contents($path . '/composer.json'), true);
         $this->assertIsArray($composer);
         $this->assertSame(['Acme\\VisTestPluginBundle\\' => 'src/'], $composer['autoload']['psr-4']);
-        $this->assertSame('Acme\\VisTestPluginBundle\\VisTestPluginBundle', $composer['extra']['amicron-platform-plugin-class']);
+        $this->assertSame('Acme\\VisTestPluginBundle\\VisTestPluginBundle', $composer['extra']['vis-plugin-class']);
     }
 
     public function testActivatePluginInPluginsJson(): void

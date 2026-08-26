@@ -8,8 +8,6 @@
         }
     },
     "extra": {
-        "amicron-platform-plugin-class": "{$namespaceJson}\\{$bundleName}",
-        "label": "VIS {$name} Plugin",
-        "description": "VIS {$name} Plugin"
+        "vis-plugin-class": "{$namespaceJson}\\{$bundleName}"
     }
 }

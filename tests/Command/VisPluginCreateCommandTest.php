@@ -59,7 +59,7 @@ class VisPluginCreateCommandTest extends TestCase
         $pluginComposer = json_decode((string) file_get_contents($pluginPath . '/composer.json'), true);
         $this->assertIsArray($pluginComposer);
         $this->assertSame(['Acme\\VisDemoPluginBundle\\' => 'src/'], $pluginComposer['autoload']['psr-4']);
-        $this->assertSame('Acme\\VisDemoPluginBundle\\VisDemoPluginBundle', $pluginComposer['extra']['amicron-platform-plugin-class']);
+        $this->assertSame('Acme\\VisDemoPluginBundle\\VisDemoPluginBundle', $pluginComposer['extra']['vis-plugin-class']);
 
         // Check the plugin is registered in plugins.json
         $plugins = json_decode((string) file_get_contents($this->tempDir . '/plugins/plugins.json'), true);

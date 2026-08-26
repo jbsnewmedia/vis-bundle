@@ -97,7 +97,7 @@ class PluginServiceCoverageTest extends TestCase
     {
         $this->filesystem->mkdir($this->tempDir . '/plugins/TestPlugin');
         file_put_contents($this->tempDir . '/plugins/TestPlugin/composer.json', json_encode([
-            'extra' => ['amicron-platform-plugin-class' => 'stdClass']
+            'extra' => ['vis-plugin-class' => 'stdClass']
         ]));
 
         // bin/console does not exist
@@ -135,7 +135,7 @@ class PluginServiceCoverageTest extends TestCase
     {
         $this->filesystem->mkdir($this->tempDir . '/plugins/TestPlugin');
         file_put_contents($this->tempDir . '/plugins/TestPlugin/composer.json', json_encode([
-            'extra' => ['amicron-platform-plugin-class' => 'stdClass']
+            'extra' => ['vis-plugin-class' => 'stdClass']
         ]));
 
         $this->filesystem->mkdir($this->tempDir . '/bin');
@@ -151,7 +151,7 @@ class PluginServiceCoverageTest extends TestCase
         $this->filesystem->mkdir($this->tempDir . '/plugins/TestPlugin');
         file_put_contents($this->tempDir . '/plugins/TestPlugin/composer.json', json_encode([
             'name' => 'TestPlugin',
-            'extra' => ['amicron-platform-plugin-class' => 'stdClass']
+            'extra' => ['vis-plugin-class' => 'stdClass']
         ]));
         file_put_contents($this->tempDir . '/plugins/plugins.json', json_encode([['name' => 'TestPlugin', 'active' => true]]));
 
@@ -190,7 +190,7 @@ class PluginServiceCoverageTest extends TestCase
     {
         $this->filesystem->mkdir($this->tempDir . '/plugins/ActivePlugin');
         file_put_contents($this->tempDir . '/plugins/ActivePlugin/composer.json', json_encode([
-            'extra' => ['amicron-platform-plugin-class' => 'stdClass']
+            'extra' => ['vis-plugin-class' => 'stdClass']
         ]));
         file_put_contents($this->tempDir . '/plugins/plugins.json', json_encode([
             ['name' => 'ActivePlugin', 'active' => true]
@@ -257,7 +257,7 @@ class PluginServiceCoverageTest extends TestCase
     {
         $this->filesystem->mkdir($this->tempDir . '/plugins/MinimalPlugin');
         file_put_contents($this->tempDir . '/plugins/MinimalPlugin/composer.json', json_encode([
-            'extra' => ['amicron-platform-plugin-class' => 'stdClass']
+            'extra' => ['vis-plugin-class' => 'stdClass']
         ]));
 
         $ref = new \ReflectionMethod(PluginService::class, 'createPluginData');
@@ -265,8 +265,6 @@ class PluginServiceCoverageTest extends TestCase
         $result = $ref->invoke($this->service, 'MinimalPlugin');
 
         $this->assertNotNull($result);
-        $this->assertEquals('', $result['label']);
-        $this->assertEquals('', $result['description']);
         $this->assertNull($result['autoload']);
     }
 
@@ -472,7 +470,7 @@ class PluginServiceCoverageTest extends TestCase
     {
         $this->filesystem->mkdir($this->tempDir . '/plugins/TestPlugin');
         file_put_contents($this->tempDir . '/plugins/TestPlugin/composer.json', json_encode([
-            'extra' => ['amicron-platform-plugin-class' => 'stdClass']
+            'extra' => ['vis-plugin-class' => 'stdClass']
         ]));
 
         $service = new class($this->kernel) extends PluginService {
@@ -506,7 +504,7 @@ class PluginServiceCoverageTest extends TestCase
         $this->filesystem->mkdir($this->tempDir . '/plugins/TestPlugin');
         file_put_contents($this->tempDir . '/plugins/TestPlugin/composer.json', json_encode([
             'name' => 'TestPlugin',
-            'extra' => ['amicron-platform-plugin-class' => 'stdClass']
+            'extra' => ['vis-plugin-class' => 'stdClass']
         ]));
         file_put_contents($this->tempDir . '/plugins/plugins.json', json_encode([['name' => 'TestPlugin', 'active' => true]]));
 

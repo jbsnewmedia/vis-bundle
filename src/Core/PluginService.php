@@ -206,19 +206,16 @@ class PluginService
             is_array($composerData)
             && isset($composerData['extra'])
             && is_array($composerData['extra'])
-            && isset($composerData['extra']['amicron-platform-plugin-class'])
+            && isset($composerData['extra']['vis-plugin-class'])
         ) {
             $path = str_replace($this->projectDir.'/', '', $this->pluginDir.'/'.$pluginName);
 
             return [
                 'path' => $path,
-                'baseClass' => $composerData['extra']['amicron-platform-plugin-class'],
+                'baseClass' => $composerData['extra']['vis-plugin-class'],
                 'name' => $pluginName,
-                'label' => $composerData['extra']['label'] ?? '',
-                'description' => $composerData['extra']['description'] ?? '',
                 'managedByComposer' => false,
                 'autoload' => $composerData['autoload'] ?? null,
-                'extra' => $composerData['extra'],
             ];
         }
 

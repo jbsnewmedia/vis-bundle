@@ -27,7 +27,7 @@ class VisPluginEnableDisableCommandTest extends TestCase
 
         file_put_contents($this->tempDir . '/plugins/TestPlugin/composer.json', (string) json_encode([
             'autoload' => ['psr-4' => ['Acme\\VisTestPluginBundle\\' => 'src/']],
-            'extra' => ['amicron-platform-plugin-class' => 'Acme\\VisTestPluginBundle\\VisTestPluginBundle'],
+            'extra' => ['vis-plugin-class' => 'Acme\\VisTestPluginBundle\\VisTestPluginBundle'],
         ]));
         file_put_contents($this->tempDir . '/plugins/plugins.json', (string) json_encode([]));
 
@@ -71,7 +71,7 @@ class VisPluginEnableDisableCommandTest extends TestCase
         $this->filesystem->mkdir($this->tempDir . '/plugins/acme/vis-nested-plugin');
         file_put_contents($this->tempDir . '/plugins/acme/vis-nested-plugin/composer.json', (string) json_encode([
             'autoload' => ['psr-4' => ['Acme\\VisNestedPluginBundle\\' => 'src/']],
-            'extra' => ['amicron-platform-plugin-class' => 'Acme\\VisNestedPluginBundle\\VisNestedPluginBundle'],
+            'extra' => ['vis-plugin-class' => 'Acme\\VisNestedPluginBundle\\VisNestedPluginBundle'],
         ]));
 
         $commandTester = new CommandTester(new VisPluginEnableCommand($this->kernel));
@@ -175,7 +175,7 @@ class VisPluginEnableDisableCommandTest extends TestCase
         $this->filesystem->mkdir($this->tempDir . '/plugins/acme/vis-nested-plugin');
         file_put_contents($this->tempDir . '/plugins/acme/vis-nested-plugin/composer.json', (string) json_encode([
             'autoload' => ['psr-4' => ['Acme\\VisNestedPluginBundle\\' => 'src/']],
-            'extra' => ['amicron-platform-plugin-class' => 'Acme\\VisNestedPluginBundle\\VisNestedPluginBundle'],
+            'extra' => ['vis-plugin-class' => 'Acme\\VisNestedPluginBundle\\VisNestedPluginBundle'],
         ]));
 
         $commandTester = new CommandTester(new VisPluginDisableCommand($this->kernel));

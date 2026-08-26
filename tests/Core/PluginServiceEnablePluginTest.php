@@ -23,7 +23,7 @@ class PluginServiceEnablePluginTest extends TestCase
         $this->filesystem->mkdir($this->tempDir . '/public');
 
         file_put_contents($this->tempDir . '/plugins/TestPlugin/composer.json', json_encode([
-            'extra' => ['amicron-platform-plugin-class' => 'stdClass']
+            'extra' => ['vis-plugin-class' => 'stdClass']
         ]));
 
         // seed plugins.json as empty list

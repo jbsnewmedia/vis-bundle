@@ -61,7 +61,7 @@ class PluginServiceTest extends TestCase
         $this->filesystem->mkdir($this->tempDir . '/plugins/TestPlugin');
         file_put_contents($this->tempDir . '/plugins/TestPlugin/composer.json', json_encode([
             'name' => 'jbsnewmedia/test-plugin',
-            'extra' => ['amicron-platform-plugin-class' => 'Test\\Plugin']
+            'extra' => ['vis-plugin-class' => 'Test\\Plugin']
         ]));
 
         $plugins = $this->service->loadFromPluginPath();
@@ -76,7 +76,7 @@ class PluginServiceTest extends TestCase
         file_put_contents($this->tempDir . '/plugins/TestPlugin/public/test.txt', 'hello');
         file_put_contents($this->tempDir . '/plugins/TestPlugin/composer.json', json_encode([
             'name' => 'TestPlugin',
-            'extra' => ['amicron-platform-plugin-class' => 'Test\\Plugin']
+            'extra' => ['vis-plugin-class' => 'Test\\Plugin']
         ]));
 
         // Create dummy bin/console to avoid exec error
@@ -104,7 +104,7 @@ class PluginServiceTest extends TestCase
         $this->filesystem->mkdir($this->tempDir . '/plugins/TestPlugin');
         file_put_contents($this->tempDir . '/plugins/TestPlugin/composer.json', json_encode([
             'name' => 'TestPlugin',
-            'extra' => ['amicron-platform-plugin-class' => 'Test\\Plugin']
+            'extra' => ['vis-plugin-class' => 'Test\\Plugin']
         ]));
 
         $this->filesystem->mkdir($this->tempDir . '/public/bundles/TestPlugin');
