@@ -12,7 +12,7 @@ class VisCoreCreateCommandGetSecurityPatchDataTest extends TestCase
 {
     public function testGetSecurityPatchDataReadsSkeletonFile(): void
     {
-        $kernel = $this->createMock(KernelInterface::class);
+        $kernel = $this->createStub(KernelInterface::class);
         // projectDir not used in this test
         $kernel->method('getProjectDir')->willReturn(sys_get_temp_dir());
 

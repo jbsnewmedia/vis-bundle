@@ -81,11 +81,11 @@ class ExtraCoverageTest extends TestCase
 
     public function testVisServiceSortItems(): void
     {
-        $translator = $this->createMock(TranslatorInterface::class);
-        $router = $this->createMock(UrlGeneratorInterface::class);
-        $security = $this->createMock(Security::class);
+        $translator = $this->createStub(TranslatorInterface::class);
+        $router = $this->createStub(UrlGeneratorInterface::class);
+        $security = $this->createStub(Security::class);
 
-        $vis = new Vis($translator, $router, $security, ['de'], 'de');
+        $vis = new Vis($translator, $router, $security, sys_get_temp_dir(), ['de'], 'de');
 
         $item1 = new \JBSNewMedia\VisBundle\Model\Sidebar\Sidebar('tool', 'id1');
         $item1->setOrder(10);
@@ -99,12 +99,12 @@ class ExtraCoverageTest extends TestCase
 
     public function testVisServiceAddSidebarCallback(): void
     {
-        $translator = $this->createMock(TranslatorInterface::class);
-        $router = $this->createMock(UrlGeneratorInterface::class);
-        $security = $this->createMock(Security::class);
+        $translator = $this->createStub(TranslatorInterface::class);
+        $router = $this->createStub(UrlGeneratorInterface::class);
+        $security = $this->createStub(Security::class);
         $security->method('getUser')->willReturn(new \JBSNewMedia\VisBundle\Entity\User());
 
-        $vis = new Vis($translator, $router, $security, ['de'], 'de');
+        $vis = new Vis($translator, $router, $security, sys_get_temp_dir(), ['de'], 'de');
         $vis->addTool(new \JBSNewMedia\VisBundle\Model\Tool('tool'));
 
         $sidebar = new \JBSNewMedia\VisBundle\Model\Sidebar\Sidebar('tool', 'test');

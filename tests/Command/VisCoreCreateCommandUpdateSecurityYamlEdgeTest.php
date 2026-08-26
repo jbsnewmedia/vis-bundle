@@ -38,7 +38,7 @@ class VisCoreCreateCommandUpdateSecurityYamlEdgeTest extends TestCase
 
     public function testUpdateSecurityYamlWithInvalidAccessControlEntries(): void
     {
-        $kernel = $this->createMock(KernelInterface::class);
+        $kernel = $this->createStub(KernelInterface::class);
         $kernel->method('getProjectDir')->willReturn($this->tempDir);
 
         // Anonymous subclass to override getSecurityPatchData

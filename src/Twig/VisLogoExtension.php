@@ -17,7 +17,7 @@ class VisLogoExtension extends AbstractExtension
         protected UrlGeneratorInterface $router,
         protected Vis $vis,
         protected VisTransExtension $visTrans,
-        protected AssetComposer $assetComposer
+        protected AssetComposer $assetComposer,
     ) {
     }
 
@@ -34,7 +34,7 @@ class VisLogoExtension extends AbstractExtension
         $toolId = $this->vis->getToolId();
         $url = null;
 
-        if ($toolId !== '') {
+        if ('' !== $toolId) {
             $routeName = sprintf('vis_tool_%s_logo_%s', $type, $mode);
             $url = $this->generateUrlSafe($routeName, ['tool' => $toolId]);
         }
@@ -48,15 +48,16 @@ class VisLogoExtension extends AbstractExtension
             return $this->addVersion($url, $type, $mode, $toolId);
         }
 
-        if ($type === 'brand') {
+        if ('brand' === $type) {
             if ($url) {
                 return $url;
             }
+
             return '';
         }
 
         // 3. Fallback logic: If no route, try the provided fallbackKey or fallback string
-        if ($fallbackKey !== null) {
+        if (null !== $fallbackKey) {
             return $this->toAssetUrl($this->visTrans->translateKey($fallbackKey));
         }
 
@@ -87,7 +88,7 @@ class VisLogoExtension extends AbstractExtension
         $url = null;
 
         // 1. Tool specific route: vis_[tool]_[type]_logo_hover
-        if ($toolId !== '') {
+        if ('' !== $toolId) {
             $routeName = sprintf('vis_tool_%s_logo_%s_hover', $type, $mode);
             $url = $this->generateUrlSafe($routeName, ['tool' => $toolId]);
         }
@@ -110,7 +111,7 @@ class VisLogoExtension extends AbstractExtension
         $filenames = $this->getFilenames($type, $mode, $toolId, $hover);
 
         foreach ($filenames as $filename) {
-            $path = $this->vis->getProjectDir() . '/assets/img/' . $filename;
+            $path = $this->vis->getProjectDir().'/assets/img/'.$filename;
             if (file_exists($path)) {
                 return true;
             }
@@ -124,9 +125,9 @@ class VisLogoExtension extends AbstractExtension
         $filenames = $this->getFilenames($type, $mode, $toolId, $hover);
 
         foreach ($filenames as $filename) {
-            $path = $this->vis->getProjectDir() . '/assets/img/' . $filename;
+            $path = $this->vis->getProjectDir().'/assets/img/'.$filename;
             if (file_exists($path)) {
-                $url .= (str_contains($url, '?') ? '&' : '?') . 'v=' . filemtime($path);
+                $url .= (str_contains($url, '?') ? '&' : '?').'v='.filemtime($path);
                 break;
             }
         }
@@ -134,10 +135,13 @@ class VisLogoExtension extends AbstractExtension
         return $url;
     }
 
+    /**
+     * @return list<string>
+     */
     protected function getFilenames(string $type, string $mode, string $toolId, bool $hover = false): array
     {
         $filenames = [];
-        if ($toolId !== '') {
+        if ('' !== $toolId) {
             $filenames[] = sprintf('%s_%s-%s%s.svg', $toolId, $type, $mode, $hover ? '-hover' : '');
             $filenames[] = sprintf('%s_%s%s.svg', $toolId, $type, $hover ? '-hover' : '');
         }
@@ -146,7 +150,7 @@ class VisLogoExtension extends AbstractExtension
         $filenames[] = sprintf('%s%s.svg', $type, $hover ? '-hover' : '');
 
         // Fallbacks for old filenames
-        if ($toolId !== '') {
+        if ('' !== $toolId) {
             $filenames[] = sprintf('%s_%s_logo_%s%s.svg', $toolId, $type, $mode, $hover ? '_hover' : '');
             $filenames[] = sprintf('%s_%s_logo%s.svg', $toolId, $type, $hover ? '_hover' : '');
         }
@@ -156,6 +160,9 @@ class VisLogoExtension extends AbstractExtension
         return $filenames;
     }
 
+    /**
+     * @param array<string, mixed> $params
+     */
     protected function generateUrlSafe(string $routeName, array $params = []): ?string
     {
         try {

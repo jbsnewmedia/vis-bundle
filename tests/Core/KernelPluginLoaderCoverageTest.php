@@ -21,7 +21,7 @@ class KernelPluginLoaderCoverageTest extends TestCase
         $this->tempDir = sys_get_temp_dir() . '/vis_kernel_loader_coverage_' . uniqid();
         $this->filesystem = new Filesystem();
         $this->filesystem->mkdir($this->tempDir);
-        $this->classLoader = $this->createMock(ClassLoader::class);
+        $this->classLoader = $this->createStub(ClassLoader::class);
     }
 
     protected function tearDown(): void

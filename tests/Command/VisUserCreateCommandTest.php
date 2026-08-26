@@ -14,8 +14,8 @@ class VisUserCreateCommandTest extends TestCase
 {
     public function testCreateUserCommandAbort(): void
     {
-        $hasher = $this->createMock(UserPasswordHasherInterface::class);
-        $em = $this->createMock(EntityManagerInterface::class);
+        $hasher = $this->createStub(UserPasswordHasherInterface::class);
+        $em = $this->createStub(EntityManagerInterface::class);
 
         $command = new VisUserCreateCommand($hasher, $em);
         $commandTester = new CommandTester($command);
@@ -28,7 +28,7 @@ class VisUserCreateCommandTest extends TestCase
 
     public function testCreateUserCommandSuccess(): void
     {
-        $hasher = $this->createMock(UserPasswordHasherInterface::class);
+        $hasher = $this->createStub(UserPasswordHasherInterface::class);
         $em = $this->createMock(EntityManagerInterface::class);
 
         $hasher->method('hashPassword')->willReturn('hashed_password');
@@ -48,8 +48,8 @@ class VisUserCreateCommandTest extends TestCase
 
     public function testCreateUserCommandInvalidEmailThenQuit(): void
     {
-        $hasher = $this->createMock(UserPasswordHasherInterface::class);
-        $em = $this->createMock(EntityManagerInterface::class);
+        $hasher = $this->createStub(UserPasswordHasherInterface::class);
+        $em = $this->createStub(EntityManagerInterface::class);
 
         $command = new VisUserCreateCommand($hasher, $em);
         $commandTester = new CommandTester($command);

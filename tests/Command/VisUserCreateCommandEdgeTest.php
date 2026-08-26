@@ -18,8 +18,8 @@ class VisUserCreateCommandEdgeTest extends TestCase
 
     protected function setUp(): void
     {
-        $this->entityManager = $this->createMock(EntityManagerInterface::class);
-        $this->hasher = $this->createMock(UserPasswordHasherInterface::class);
+        $this->entityManager = $this->createStub(EntityManagerInterface::class);
+        $this->hasher = $this->createStub(UserPasswordHasherInterface::class);
     }
 
     public function testInvalidEmailThenQuit(): void
@@ -39,6 +39,7 @@ class VisUserCreateCommandEdgeTest extends TestCase
 
     public function testTooShortPasswordThenSuccess(): void
     {
+        $this->entityManager = $this->createMock(EntityManagerInterface::class);
         $command = new VisUserCreateCommand($this->hasher, $this->entityManager);
         $tester = new CommandTester($command);
 

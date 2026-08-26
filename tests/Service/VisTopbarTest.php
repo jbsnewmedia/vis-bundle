@@ -20,14 +20,14 @@ class VisTopbarTest extends TestCase
 
     protected function setUp(): void
     {
-        $translator = $this->createMock(TranslatorInterface::class);
-        $router = $this->createMock(UrlGeneratorInterface::class);
-        $security = $this->createMock(Security::class);
+        $translator = $this->createStub(TranslatorInterface::class);
+        $router = $this->createStub(UrlGeneratorInterface::class);
+        $security = $this->createStub(Security::class);
 
-        $this->visSingleLocale = new Vis($translator, $router, $security, ['en'], 'en');
+        $this->visSingleLocale = new Vis($translator, $router, $security, sys_get_temp_dir(), ['en'], 'en');
         $this->visSingleLocale->addTool(new Tool('test_tool'));
 
-        $this->visMultiLocale = new Vis($translator, $router, $security, ['en', 'de'], 'en');
+        $this->visMultiLocale = new Vis($translator, $router, $security, sys_get_temp_dir(), ['en', 'de'], 'en');
         $this->visMultiLocale->addTool(new Tool('test_tool'));
     }
 

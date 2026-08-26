@@ -15,40 +15,45 @@ use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 class VisUserRepositoryTest extends TestCase
 {
     private $registry;
-    private $entityManager;
-    private $repository;
 
     protected function setUp(): void
     {
-        $this->registry = $this->createMock(ManagerRegistry::class);
-        $this->entityManager = $this->createMock(EntityManagerInterface::class);
+        $this->registry = $this->createStub(ManagerRegistry::class);
+    }
 
-        // Mocking the parent constructor behavior of ServiceEntityRepository
-        $this->registry->method('getManagerForClass')->willReturn($this->entityManager);
-        $classMetadata = $this->createMock(\Doctrine\ORM\Mapping\ClassMetadata::class);
+    private function createRepository(EntityManagerInterface $entityManager): VisUserRepository
+    {
+        $this->registry->method('getManagerForClass')->willReturn($entityManager);
+        $classMetadata = $this->createStub(\Doctrine\ORM\Mapping\ClassMetadata::class);
         $classMetadata->name = User::class;
-        $this->entityManager->method('getClassMetadata')->willReturn($classMetadata);
+        $entityManager->method('getClassMetadata')->willReturn($classMetadata);
 
-        $this->repository = new VisUserRepository($this->registry);
+        return new VisUserRepository($this->registry);
     }
 
     public function testUpgradePassword(): void
     {
+        $entityManager = $this->createMock(EntityManagerInterface::class);
+        $repository = $this->createRepository($entityManager);
+
         $user = new User();
         $newPassword = 'new_hashed_password';
 
-        $this->entityManager->expects($this->once())->method('persist')->with($user);
-        $this->entityManager->expects($this->once())->method('flush');
+        $entityManager->expects($this->once())->method('persist')->with($user);
+        $entityManager->expects($this->once())->method('flush');
 
-        $this->repository->upgradePassword($user, $newPassword);
+        $repository->upgradePassword($user, $newPassword);
         $this->assertEquals($newPassword, $user->getPassword());
     }
 
     public function testUpgradePasswordThrowsExceptionForUnsupportedUser(): void
     {
-        $unsupportedUser = $this->createMock(PasswordAuthenticatedUserInterface::class);
+        $entityManager = $this->createStub(EntityManagerInterface::class);
+        $repository = $this->createRepository($entityManager);
+
+        $unsupportedUser = $this->createStub(PasswordAuthenticatedUserInterface::class);
 
         $this->expectException(UnsupportedUserException::class);
-        $this->repository->upgradePassword($unsupportedUser, 'password');
+        $repository->upgradePassword($unsupportedUser, 'password');
     }
 }

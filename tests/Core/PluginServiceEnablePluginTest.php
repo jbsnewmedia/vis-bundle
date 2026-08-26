@@ -30,10 +30,10 @@ class PluginServiceEnablePluginTest extends TestCase
         $this->filesystem->mkdir($this->tempDir . '/plugins');
         file_put_contents($this->tempDir . '/plugins/plugins.json', json_encode([]));
 
-        $kernel = $this->createMock(KernelInterface::class);
+        $kernel = $this->createStub(KernelInterface::class);
         $kernel->method('getProjectDir')->willReturn($this->tempDir);
 
-        $this->service = new PluginService($kernel, $this->tempDir, 'test');
+        $this->service = new PluginService($kernel, $this->tempDir . '/plugins');
 
         // create console to make enable/disable try to exec
         $this->filesystem->mkdir($this->tempDir . '/bin');

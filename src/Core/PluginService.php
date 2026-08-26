@@ -209,6 +209,7 @@ class PluginService
             && isset($composerData['extra']['amicron-platform-plugin-class'])
         ) {
             $path = str_replace($this->projectDir.'/', '', $this->pluginDir.'/'.$pluginName);
+
             return [
                 'path' => $path,
                 'baseClass' => $composerData['extra']['amicron-platform-plugin-class'],
@@ -256,7 +257,18 @@ class PluginService
         $plugins = $this->loadPluginsInfoFromJson();
         $found = false;
         foreach ($plugins as $index => $plugin) {
-            if (($plugin['name'] ?? null) === $pluginUpdateData['name']) {
+            if (!is_array($plugin)) {
+                continue;
+            }
+            if (($plugin['name'] ?? null) === ($pluginUpdateData['name'] ?? null) && null !== ($pluginUpdateData['name'] ?? null)) {
+                $found = $index;
+                break;
+            }
+            if (($plugin['path'] ?? null) === ($pluginUpdateData['path'] ?? null) && null !== ($pluginUpdateData['path'] ?? null)) {
+                $found = $index;
+                break;
+            }
+            if (($plugin['baseClass'] ?? null) === ($pluginUpdateData['baseClass'] ?? null) && null !== ($pluginUpdateData['baseClass'] ?? null)) {
                 $found = $index;
                 break;
             }

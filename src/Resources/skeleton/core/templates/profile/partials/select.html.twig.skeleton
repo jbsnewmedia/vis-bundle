@@ -1,0 +1,38 @@
+<p class="text-body-secondary">{{ description }}</p>
+
+<div class="list-group">
+    {% for option in options %}
+        <a href="#" class="list-group-item list-group-item-action vis-profile-select-item{% if option.active %} active{% endif %}" data-url="{{ option.url }}"{% if option.active %} aria-current="true"{% endif %}>
+            {% if option.active %}<i class="fa-solid fa-check fa-fw"></i> {% else %}<i class="fa-regular fa-circle fa-fw"></i> {% endif %}{{ option.label }}
+        </a>
+    {% endfor %}
+</div>
+
+<script>
+    (() => {
+        const init = () => {
+            document.querySelectorAll('.vis-profile-select-item').forEach((item) => {
+                item.addEventListener('click', (event) => {
+                    event.preventDefault();
+                    fetch(item.dataset.url.replace('__TIMESTAMP__', Date.now()), {
+                        method: 'GET',
+                        headers: {
+                            'X-Requested-With': 'XMLHttpRequest'
+                        }
+                    })
+                        .then((response) => response.json())
+                        .then((data) => {
+                            if (data.success) {
+                                location.reload();
+                            }
+                        });
+                });
+            });
+        };
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', init);
+        } else {
+            init();
+        }
+    })();
+</script>

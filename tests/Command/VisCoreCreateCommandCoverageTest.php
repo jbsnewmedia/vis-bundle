@@ -24,7 +24,7 @@ class VisCoreCreateCommandCoverageTest extends TestCase
         $this->filesystem->mkdir($this->tempDir . '/src/Controller/Vis');
         $this->filesystem->mkdir($this->tempDir . '/config/packages');
 
-        $this->kernel = $this->createMock(KernelInterface::class);
+        $this->kernel = $this->createStub(KernelInterface::class);
         $this->kernel->method('getProjectDir')->willReturn($this->tempDir);
     }
 
@@ -162,7 +162,7 @@ class VisCoreCreateCommandCoverageTest extends TestCase
         $command = new VisCoreCreateCommand($this->kernel);
         $ref = new \ReflectionMethod(VisCoreCreateCommand::class, 'updateVisYaml');
         $ref->setAccessible(true);
-        $result = $ref->invoke($command, 'de,en', 'en');
+        $result = $ref->invoke($command, 'de,en', 'en', 'vis');
 
         $this->assertFalse($result);
 
@@ -171,7 +171,7 @@ class VisCoreCreateCommandCoverageTest extends TestCase
 
     public function testDumpMethodsFilesystemError(): void
     {
-        $fsMock = $this->createMock(Filesystem::class);
+        $fsMock = $this->createStub(Filesystem::class);
         $fsMock->method('exists')->willReturn(false);
         $fsMock->method('dumpFile')->willThrowException(new \Exception('Mock Error'));
 
@@ -196,7 +196,7 @@ class VisCoreCreateCommandCoverageTest extends TestCase
 
     public function testDumpMethodsExistsReturnsFalseAfterDump(): void
     {
-        $fsMock = $this->createMock(Filesystem::class);
+        $fsMock = $this->createStub(Filesystem::class);
         $fsMock->method('exists')->willReturn(false); // Simulate missing file after dump
         // dumpFile should not return null if it's void, we use returnCallback or just let it be
         $fsMock->method('dumpFile');

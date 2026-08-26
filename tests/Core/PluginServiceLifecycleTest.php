@@ -27,7 +27,7 @@ final class PluginServiceLifecycleTest extends TestCase
         $this->filesystem->mkdir($this->tempDir.'/plugins/Demo');
         $this->filesystem->mkdir($this->tempDir.'/public');
 
-        $this->kernel = $this->createMock(KernelInterface::class);
+        $this->kernel = $this->createStub(KernelInterface::class);
         $this->kernel->method('getProjectDir')->willReturn($this->tempDir);
         $this->kernel->method('getEnvironment')->willReturn('test');
     }

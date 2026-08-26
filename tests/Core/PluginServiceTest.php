@@ -23,7 +23,7 @@ class PluginServiceTest extends TestCase
         $this->filesystem->mkdir($this->tempDir . '/config');
         $this->filesystem->mkdir($this->tempDir . '/plugins');
 
-        $this->kernel = $this->createMock(KernelInterface::class);
+        $this->kernel = $this->createStub(KernelInterface::class);
         $this->kernel->method('getProjectDir')->willReturn($this->tempDir);
         $this->kernel->method('getEnvironment')->willReturn('test');
 
@@ -182,7 +182,7 @@ class PluginServiceTest extends TestCase
         // But we can test when no directories are found.
         $emptyDir = sys_get_temp_dir() . '/empty_plugins_' . uniqid();
         $this->filesystem->mkdir($emptyDir . '/plugins');
-        $kernel = $this->createMock(KernelInterface::class);
+        $kernel = $this->createStub(KernelInterface::class);
         $kernel->method('getProjectDir')->willReturn($emptyDir);
         $service = new PluginService($kernel);
 

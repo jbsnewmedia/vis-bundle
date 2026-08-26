@@ -12,7 +12,7 @@ class PluginInstallContextTest extends TestCase
 {
     public function testGetters(): void
     {
-        $container = $this->createMock(ContainerInterface::class);
+        $container = $this->createStub(ContainerInterface::class);
         $pluginData = ['name' => 'test-plugin'];
         $context = new PluginInstallContext($container, $pluginData);
 

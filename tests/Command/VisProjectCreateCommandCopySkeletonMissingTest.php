@@ -36,7 +36,7 @@ class VisProjectCreateCommandCopySkeletonMissingTest extends TestCase
 
     public function testCopySkeletonFilesMissingDirectoryGraceful(): void
     {
-        $kernel = $this->createMock(KernelInterface::class);
+        $kernel = $this->createStub(KernelInterface::class);
         $kernel->method('getProjectDir')->willReturn($this->tempDir);
 
         $command = new VisProjectCreateCommand($kernel, $this->filesystem);

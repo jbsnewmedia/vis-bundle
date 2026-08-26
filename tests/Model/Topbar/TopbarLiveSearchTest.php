@@ -65,7 +65,7 @@ class TopbarLiveSearchToolsTest extends TestCase
 
     public function testSetVisAndDataLoading(): void
     {
-        $vis = $this->createMock(Vis::class);
+        $vis = $this->createStub(Vis::class);
         $tool1 = new Tool('tool1');
         $tool1->setTitle('Title 1');
         $tool2 = new Tool('tool2');
@@ -102,11 +102,11 @@ class TopbarLiveSearchClientsTest extends TestCase
 
     public function testSetVisAndDataLoading(): void
     {
-        $vis = $this->createMock(Vis::class);
+        $vis = $this->createStub(Vis::class);
         $vis->method('getClients')->willReturn(['id1' => 'Client 1', 'id2' => 'Client 2']);
         $vis->method('getSelectedClientId')->willReturn('id1');
         $vis->method('getSelectedClientTitle')->willReturn('Client 1');
-        $translator = $this->createMock(\Symfony\Contracts\Translation\TranslatorInterface::class);
+        $translator = $this->createStub(\Symfony\Contracts\Translation\TranslatorInterface::class);
         $vis->method('getTranslator')->willReturn($translator);
 
         $clientsSearch = new \JBSNewMedia\VisBundle\Model\Topbar\TopbarLiveSearchClients('test_tool');

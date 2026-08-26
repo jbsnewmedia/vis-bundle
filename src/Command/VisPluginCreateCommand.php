@@ -69,7 +69,7 @@ class VisPluginCreateCommand extends Command
             return Command::SUCCESS;
         }
 
-        $addBundle = $io->confirm('Add bundle to config/bundles.php?', true);
+        $activate = $io->confirm('Activate plugin now (register in plugins/plugins.json)?', true);
         $updateComposer = $io->confirm('Add namespace to composer.json?', true);
         $addRoutes = $io->confirm('Add routes to config/routes.yaml', true);
 
@@ -77,9 +77,9 @@ class VisPluginCreateCommand extends Command
 
         $this->createPluginStructure($pluginPath, $name, $company);
 
-        if ($addBundle) {
-            $this->addBundleToConfig($name, $company);
-            $io->success('Added bundle to config/bundles.php');
+        if ($activate) {
+            $this->activatePluginInPluginsJson($name, $company, $pluginDirName);
+            $io->success('Activated plugin in plugins/plugins.json');
         }
 
         if ($updateComposer) {
@@ -94,10 +94,7 @@ class VisPluginCreateCommand extends Command
 
         $io->success(sprintf('Plugin %s created successfully', $name));
 
-        $io->warning([
-            'IMPORTANT: You must run "composer dump" inside your docker container',
-            'to update the autoloader for the new namespace!',
-        ]);
+        $io->note('Run "composer dump" to update the autoloader for the new namespace (optional when the plugin is registered in plugins.json).');
 
         return Command::SUCCESS;
     }
@@ -129,6 +126,7 @@ class VisPluginCreateCommand extends Command
 
         $replacements = [
             '{$namespace}' => $namespace,
+            '{$namespaceJson}' => str_replace('\\', '\\\\', $namespace),
             '{$bundleName}' => $bundleName,
             '{$extensionName}' => $extensionName,
             '{$name}' => $name,
@@ -174,26 +172,54 @@ class VisPluginCreateCommand extends Command
         return __DIR__.'/../Resources/skeleton/plugin';
     }
 
-    private function addBundleToConfig(string $name, string $company): void
+    private function activatePluginInPluginsJson(string $name, string $company, string $pluginDirName): void
     {
-        $bundlesFile = $this->projectDir.'/config/bundles.php';
-        if (!$this->filesystem->exists($bundlesFile)) {
-            return;
+        $pluginsFile = $this->projectDir.'/plugins/plugins.json';
+
+        $plugins = [];
+        if ($this->filesystem->exists($pluginsFile)) {
+            $content = file_get_contents($pluginsFile);
+            if (false === $content) {
+                return;
+            }
+            $decoded = json_decode($content, true);
+            if (!is_array($decoded)) {
+                return;
+            }
+            /** @var array<int, mixed> $decoded */
+            $plugins = $decoded;
         }
 
         $bundleClass = sprintf('%s\\Vis%sPluginBundle\\Vis%sPluginBundle', $company, $name, $name);
-        $content = file_get_contents($bundlesFile);
-        if (false === $content) {
-            return;
+        $namespace = sprintf('%s\\Vis%sPluginBundle\\', $company, $name);
+
+        $entry = [
+            'path' => $pluginDirName,
+            'baseClass' => $bundleClass,
+            'autoload' => [
+                'psr-4' => [
+                    $namespace => 'src/',
+                ],
+            ],
+            'active' => true,
+            'public' => false,
+        ];
+
+        $found = false;
+        foreach ($plugins as $index => $plugin) {
+            if (is_array($plugin) && ($plugin['baseClass'] ?? null) === $bundleClass) {
+                $plugins[$index] = $entry;
+                $found = true;
+
+                break;
+            }
         }
 
-        if (str_contains($content, $bundleClass)) {
-            return;
+        if (!$found) {
+            $plugins[] = $entry;
         }
 
-        $newItem = sprintf("    %s::class => ['all' => true],\n];", $bundleClass);
-        $content = str_replace('];', $newItem, $content);
-        file_put_contents($bundlesFile, $content);
+        $this->filesystem->dumpFile($pluginsFile, json_encode($plugins, \JSON_PRETTY_PRINT | \JSON_UNESCAPED_SLASHES)."\n");
     }
 
     private function updateRootComposer(string $name, string $pluginDirName, string $company): void

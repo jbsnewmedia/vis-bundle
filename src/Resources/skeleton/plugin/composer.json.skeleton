@@ -4,7 +4,12 @@
     "description": "VIS {$name} Plugin",
     "autoload": {
         "psr-4": {
-            "{$namespace}\\\": "src/"
+            "{$namespaceJson}\\": "src/"
         }
+    },
+    "extra": {
+        "amicron-platform-plugin-class": "{$namespaceJson}\\{$bundleName}",
+        "label": "VIS {$name} Plugin",
+        "description": "VIS {$name} Plugin"
     }
 }

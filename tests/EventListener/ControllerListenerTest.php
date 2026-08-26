@@ -17,8 +17,8 @@ class ControllerListenerTest extends TestCase
 {
     public function testOnKernelControllerWithVisAbstractController(): void
     {
-        $vis = $this->createMock(Vis::class);
-        $security = $this->createMock(Security::class);
+        $vis = $this->createStub(Vis::class);
+        $security = $this->createStub(Security::class);
         $listener = new ControllerListener($vis, $security);
 
         $controller = new class extends VisAbstractController {
@@ -26,8 +26,7 @@ class ControllerListenerTest extends TestCase
         };
 
         $request = new Request();
-        $event = new ControllerEvent(
-            $this->createMock(HttpKernelInterface::class),
+        $event = new ControllerEvent($this->createStub(HttpKernelInterface::class),
             [$controller, 'someMethod'],
             $request,
             HttpKernelInterface::MAIN_REQUEST
@@ -41,15 +40,14 @@ class ControllerListenerTest extends TestCase
 
     public function testOnKernelControllerWithOtherController(): void
     {
-        $vis = $this->createMock(Vis::class);
-        $security = $this->createMock(Security::class);
+        $vis = $this->createStub(Vis::class);
+        $security = $this->createStub(Security::class);
         $listener = new ControllerListener($vis, $security);
 
         $controller = function() {};
 
         $request = new Request();
-        $event = new ControllerEvent(
-            $this->createMock(HttpKernelInterface::class),
+        $event = new ControllerEvent($this->createStub(HttpKernelInterface::class),
             $controller,
             $request,
             HttpKernelInterface::MAIN_REQUEST

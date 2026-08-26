@@ -24,7 +24,7 @@ class PluginServiceCoverageTest extends TestCase
         $this->filesystem = new Filesystem();
         $this->filesystem->mkdir($this->tempDir . '/plugins');
 
-        $this->kernel = $this->createMock(KernelInterface::class);
+        $this->kernel = $this->createStub(KernelInterface::class);
         $this->kernel->method('getProjectDir')->willReturn($this->tempDir);
         $this->kernel->method('getEnvironment')->willReturn('test');
 
@@ -205,7 +205,7 @@ class PluginServiceCoverageTest extends TestCase
     {
         $this->filesystem->mkdir($this->tempDir . '/plugins/LifecyclePlugin');
 
-        $container = $this->createMock(\Symfony\Component\DependencyInjection\ContainerInterface::class);
+        $container = $this->createStub(\Symfony\Component\DependencyInjection\ContainerInterface::class);
         $this->kernel->method('getContainer')->willReturn($container);
 
         $plugin = new class(true, 'plugins/LifecyclePlugin', $this->tempDir) extends \JBSNewMedia\VisBundle\Plugin\AbstractVisBundle {
@@ -231,7 +231,7 @@ class PluginServiceCoverageTest extends TestCase
     {
         $this->filesystem->mkdir($this->tempDir . '/plugins/UpdatePlugin');
 
-        $container = $this->createMock(\Symfony\Component\DependencyInjection\ContainerInterface::class);
+        $container = $this->createStub(\Symfony\Component\DependencyInjection\ContainerInterface::class);
         $this->kernel->method('getContainer')->willReturn($container);
 
         $plugin = new class(true, 'plugins/UpdatePlugin', $this->tempDir) extends \JBSNewMedia\VisBundle\Plugin\AbstractVisBundle {
@@ -272,7 +272,7 @@ class PluginServiceCoverageTest extends TestCase
 
     public function testPluginInstallContext(): void
     {
-        $container = $this->createMock(\Symfony\Component\DependencyInjection\ContainerInterface::class);
+        $container = $this->createStub(\Symfony\Component\DependencyInjection\ContainerInterface::class);
         $data = ['name' => 'Test'];
         $context = new PluginInstallContext($container, $data);
 
@@ -458,7 +458,7 @@ class PluginServiceCoverageTest extends TestCase
     }
     public function testLoadFromPluginPathGlobFailure(): void
     {
-        $mockKernel = $this->createMock(KernelInterface::class);
+        $mockKernel = $this->createStub(KernelInterface::class);
         $mockKernel->method('getProjectDir')->willReturn('/non/existent/path/that/should/fail/glob');
 
         $service = new PluginService($mockKernel);

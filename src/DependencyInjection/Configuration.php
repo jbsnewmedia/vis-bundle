@@ -30,12 +30,12 @@ class Configuration implements ConfigurationInterface
         $defaultLocaleNode->defaultValue('en');
 
         /** @var ScalarNodeDefinition $assetsPathNode */
-        $adminAssetsPathNode = $children->scalarNode('assets_path');
-        $adminAssetsPathNode->defaultValue('avalynx');
+        $assetsPathNode = $children->scalarNode('assets_path');
+        $assetsPathNode->defaultValue('avalynx');
 
         /** @var ScalarNodeDefinition $assetsSrcPathNode */
-        $adminAssetsPathNode = $children->scalarNode('assets_src_path');
-        $adminAssetsPathNode->defaultValue('dist');
+        $assetsSrcPathNode = $children->scalarNode('assets_src_path');
+        $assetsSrcPathNode->defaultValue('dist');
 
         /** @var ScalarNodeDefinition $pluginPathNode */
         $pluginPathNode = $children->scalarNode('plugin_path');

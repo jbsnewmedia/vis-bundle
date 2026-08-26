@@ -22,11 +22,13 @@ class VisUserRoleCommandsTest extends TestCase
     {
         $this->entityManager = $this->createMock(EntityManagerInterface::class);
         $this->repository = $this->createMock(EntityRepository::class);
-        $this->entityManager->method('getRepository')->with(User::class)->willReturn($this->repository);
     }
 
     public function testAddRoleCommandAbort(): void
     {
+        $this->entityManager->expects($this->never())->method('getRepository');
+        $this->repository->expects($this->never())->method('findOneBy');
+
         $command = new VisUserAddRoleCommand($this->entityManager);
         $commandTester = new CommandTester($command);
 
@@ -40,7 +42,8 @@ class VisUserRoleCommandsTest extends TestCase
     {
         $user = new User();
         $user->setEmail('test@example.com');
-        $this->repository->method('findOneBy')->with(['email' => 'test@example.com'])->willReturn($user);
+        $this->entityManager->expects($this->exactly(1))->method('getRepository')->with(User::class)->willReturn($this->repository);
+        $this->repository->expects($this->exactly(1))->method('findOneBy')->with(['email' => 'test@example.com'])->willReturn($user);
 
         $command = new VisUserAddRoleCommand($this->entityManager);
         $commandTester = new CommandTester($command);
@@ -58,7 +61,8 @@ class VisUserRoleCommandsTest extends TestCase
         $user->setEmail('test@example.com');
         $user->addRole('ROLE_ADMIN');
 
-        $this->repository->method('findOneBy')->with(['email' => 'test@example.com'])->willReturn($user);
+        $this->entityManager->expects($this->exactly(1))->method('getRepository')->with(User::class)->willReturn($this->repository);
+        $this->repository->expects($this->exactly(1))->method('findOneBy')->with(['email' => 'test@example.com'])->willReturn($user);
 
         $command = new VisUserRemoveRoleCommand($this->entityManager);
         $commandTester = new CommandTester($command);
@@ -74,7 +78,8 @@ class VisUserRoleCommandsTest extends TestCase
     {
         $user = new User();
         $user->setEmail('test@example.com');
-        $this->repository->method('findOneBy')->with(['email' => 'test@example.com'])->willReturn($user);
+        $this->entityManager->expects($this->exactly(1))->method('getRepository')->with(User::class)->willReturn($this->repository);
+        $this->repository->expects($this->exactly(1))->method('findOneBy')->with(['email' => 'test@example.com'])->willReturn($user);
 
         $command = new VisUserRemoveRoleCommand($this->entityManager);
         $commandTester = new CommandTester($command);

@@ -24,7 +24,7 @@ class VisCoreCreateCommandSkeletonMissingCoreTest extends TestCase
         $this->filesystem->mkdir($this->tempDir.'/src/Controller/Vis');
         $this->filesystem->mkdir($this->tempDir.'/config/packages');
 
-        $this->kernel = $this->createMock(KernelInterface::class);
+        $this->kernel = $this->createStub(KernelInterface::class);
         $this->kernel->method('getProjectDir')->willReturn($this->tempDir);
     }
 
@@ -57,7 +57,7 @@ class VisCoreCreateCommandSkeletonMissingCoreTest extends TestCase
         $nonExistentSkeletonDir = $this->tempDir.'/missing_skeletons';
         $command = new VisCoreCreateCommand($this->kernel, new Filesystem(), $nonExistentSkeletonDir);
 
-        $this->assertFalse($this->invokePrivate($command, 'updateVisYaml', ['de,en', 'en']));
+        $this->assertFalse($this->invokePrivate($command, 'updateVisYaml', ['de,en', 'en', 'vis']));
     }
 
     public function testGetSecurityPatchDataWithMissingSkeleton(): void
@@ -147,7 +147,7 @@ class VisCoreCreateCommandSkeletonMissingCoreTest extends TestCase
         $this->assertSame(Command::FAILURE, $status);
         $this->assertStringContainsString('Skeleton file not found', $tester->getDisplay());
 
-        $this->assertFalse($this->invokePrivate($command, 'updateVisYaml', ['de,en', 'en']));
+        $this->assertFalse($this->invokePrivate($command, 'updateVisYaml', ['de,en', 'en', 'vis']));
     }
 
     public function testUpdateSecurityYamlFailsWhenFileMissing(): void

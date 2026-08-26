@@ -31,7 +31,7 @@ class VisProjectCreateCommandTest extends TestCase
         file_put_contents($this->tempDir . '/public/index.php', "<?php\nreturn function (array \$context) {\n    return new Kernel(\$context['APP_ENV'], (bool) \$context['APP_DEBUG']);\n};\n");
         file_put_contents($this->tempDir . '/bin/console', "<?php\nreturn function (array \$context) {\n    \$kernel = new Kernel(\$context['APP_ENV'], (bool) \$context['APP_DEBUG']);\n    return new Application(\$kernel);\n};\n");
 
-        $this->kernel = $this->createMock(KernelInterface::class);
+        $this->kernel = $this->createStub(KernelInterface::class);
         $this->kernel->method('getProjectDir')->willReturn($this->tempDir);
     }
 

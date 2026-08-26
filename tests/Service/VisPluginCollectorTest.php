@@ -29,12 +29,12 @@ class VisPluginCollectorTest extends TestCase
     public function testProcessAllOrder(): void
     {
         $log = [];
-        $plugin1 = $this->createMock(PluginInterface::class);
+        $plugin1 = $this->createStub(PluginInterface::class);
         $plugin1->method('init')->willReturnCallback(function() use (&$log) { $log[] = 'p1_init'; });
         $plugin1->method('setTopBar')->willReturnCallback(function() use (&$log) { $log[] = 'p1_top'; });
         $plugin1->method('setNavigation')->willReturnCallback(function() use (&$log) { $log[] = 'p1_nav'; });
 
-        $plugin2 = $this->createMock(PluginInterface::class);
+        $plugin2 = $this->createStub(PluginInterface::class);
         $plugin2->method('init')->willReturnCallback(function() use (&$log) { $log[] = 'p2_init'; });
         $plugin2->method('setTopBar')->willReturnCallback(function() use (&$log) { $log[] = 'p2_top'; });
         $plugin2->method('setNavigation')->willReturnCallback(function() use (&$log) { $log[] = 'p2_nav'; });
@@ -53,8 +53,8 @@ class VisPluginCollectorTest extends TestCase
 
     public function testGetServices(): void
     {
-        $plugin1 = $this->createMock(PluginInterface::class);
-        $plugin2 = $this->createMock(PluginInterface::class);
+        $plugin1 = $this->createStub(PluginInterface::class);
+        $plugin2 = $this->createStub(PluginInterface::class);
 
         // TaggedIterator is expected to be ordered DESC by priority,
         // VisPluginCollector reverses it to ASC.
@@ -68,10 +68,10 @@ class VisPluginCollectorTest extends TestCase
 
     public function testGetByPlugin(): void
     {
-        $plugin1 = $this->createMock(PluginInterface::class);
+        $plugin1 = $this->createStub(PluginInterface::class);
         $plugin1->method('getPluginId')->willReturn('plugin1');
 
-        $plugin2 = $this->createMock(PluginInterface::class);
+        $plugin2 = $this->createStub(PluginInterface::class);
         $plugin2->method('getPluginId')->willReturn('plugin2');
 
         $collector = new VisPluginCollector([$plugin2, $plugin1]);
@@ -83,8 +83,8 @@ class VisPluginCollectorTest extends TestCase
 
     public function testGetServiceCount(): void
     {
-        $plugin1 = $this->createMock(PluginInterface::class);
-        $plugin2 = $this->createMock(PluginInterface::class);
+        $plugin1 = $this->createStub(PluginInterface::class);
+        $plugin2 = $this->createStub(PluginInterface::class);
         $collector = new VisPluginCollector([$plugin1, $plugin2]);
         $this->assertEquals(2, $collector->getServiceCount());
     }

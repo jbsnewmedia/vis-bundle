@@ -35,6 +35,14 @@ services:
         arguments:
             $projectDir: '%kernel.project_dir%'
 
+    JBSNewMedia\VisBundle\Command\VisPluginEnableCommand:
+        arguments:
+            $kernel: '@kernel'
+
+    JBSNewMedia\VisBundle\Command\VisPluginDisableCommand:
+        arguments:
+            $kernel: '@kernel'
+
     # Plugin manager with tagged locator
     JBSNewMedia\VisBundle\Service\PluginManager:
         arguments:

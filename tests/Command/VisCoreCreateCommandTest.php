@@ -24,7 +24,7 @@ class VisCoreCreateCommandTest extends TestCase
         $this->filesystem->mkdir($this->tempDir . '/src/Controller/Vis');
         $this->filesystem->mkdir($this->tempDir . '/config');
 
-        $this->kernel = $this->createMock(KernelInterface::class);
+        $this->kernel = $this->createStub(KernelInterface::class);
         $this->kernel->method('getProjectDir')->willReturn($this->tempDir);
     }
 

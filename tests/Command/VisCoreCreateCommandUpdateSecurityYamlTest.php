@@ -23,7 +23,7 @@ class VisCoreCreateCommandUpdateSecurityYamlTest extends TestCase
         $this->filesystem = new Filesystem();
         $this->filesystem->mkdir($this->tempDir.'/config/packages');
 
-        $this->kernel = $this->createMock(KernelInterface::class);
+        $this->kernel = $this->createStub(KernelInterface::class);
         $this->kernel->method('getProjectDir')->willReturn($this->tempDir);
     }
 

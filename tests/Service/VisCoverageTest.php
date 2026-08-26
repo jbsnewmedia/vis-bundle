@@ -22,14 +22,15 @@ class VisCoverageTest extends TestCase
 
     protected function setUp(): void
     {
-        $this->translator = $this->createMock(TranslatorInterface::class);
-        $this->router = $this->createMock(UrlGeneratorInterface::class);
-        $this->security = $this->createMock(Security::class);
+        $this->translator = $this->createStub(TranslatorInterface::class);
+        $this->router = $this->createStub(UrlGeneratorInterface::class);
+        $this->security = $this->createStub(Security::class);
 
         $this->vis = new Vis(
             $this->translator,
             $this->router,
             $this->security,
+            sys_get_temp_dir(),
             ['en', 'de'],
             'en'
         );

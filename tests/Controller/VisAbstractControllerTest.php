@@ -12,7 +12,7 @@ class VisAbstractControllerTest extends TestCase
 {
     public function testSetVis(): void
     {
-        $vis = $this->createMock(Vis::class);
+        $vis = $this->createStub(Vis::class);
         $controller = new class extends VisAbstractController {
             public function getVis(): Vis
             {

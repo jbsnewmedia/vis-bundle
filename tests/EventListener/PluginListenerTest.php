@@ -20,8 +20,7 @@ class PluginListenerTest extends TestCase
 
         $listener = new PluginListener($pluginManager);
         $request = new Request();
-        $event = new RequestEvent(
-            $this->createMock(HttpKernelInterface::class),
+        $event = new RequestEvent($this->createStub(HttpKernelInterface::class),
             $request,
             HttpKernelInterface::MAIN_REQUEST
         );

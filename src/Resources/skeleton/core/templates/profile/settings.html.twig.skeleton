@@ -1,0 +1,69 @@
+{% extends '@Vis/tool/base.html.twig' %}
+
+{% do addAssetComposer('avalynx/avalynx-select/dist/js/avalynx-select.js') %}
+{% do addAssetComposer('avalynx/avalynx-form/dist/js/avalynx-form.js') %}
+{% do addAssetComposer('avalynx/avalynx-alert/dist/js/avalynx-alert.js') %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block vis_container %}
+    {{ parent() }}
+    <div class="container-fluid container-xxl col-12 col-sm-10 col-lg-8 col-xl-6 pt-4">
+        <div class="card shadow">
+            <div class="card-header">
+                <h5 class="card-title mb-0">{{ title }}</h5>
+            </div>
+            <div class="card-body">
+                <p class="text-body-secondary">{{ description }}</p>
+
+                <div class="mb-3">
+                    <label class="form-label" for="vis-profile-setting">{{ 'profile.settings.select'|vistrans }}:</label>
+                    <select id="vis-profile-setting" class="form-select">
+                        <option value="" selected disabled>{{ 'profile.settings.selectPlaceholder'|vistrans }}</option>
+                        {% for setting in settings %}
+                            <option value="{{ path(setting.route, setting.routeParameters) }}">{{ setting.label }}</option>
+                        {% endfor %}
+                    </select>
+                    <span class="invalid-feedback"></span>
+                </div>
+
+                <div id="vis-profile-setting-container"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const container = document.getElementById('vis-profile-setting-container');
+
+            const loadSetting = (url) => {
+                if (!url) {
+                    container.innerHTML = '';
+                    return;
+                }
+                fetch(url, { headers: { 'X-Requested-With': 'XMLHttpRequest' } })
+                    .then((response) => response.text())
+                    .then((html) => {
+                        container.innerHTML = html;
+                        container.querySelectorAll('script').forEach((oldScript) => {
+                            const newScript = document.createElement('script');
+                            Array.from(oldScript.attributes).forEach((attr) => newScript.setAttribute(attr.name, attr.value));
+                            newScript.textContent = oldScript.textContent;
+                            oldScript.replaceWith(newScript);
+                        });
+                    });
+            };
+
+            new AvalynxSelect('#vis-profile-setting', {
+                liveSearch: true,
+                showAll: true,
+                scrollList: true,
+                scrollItems: 8,
+                noDefaultSelection: true,
+                onChange: (value) => {
+                    loadSetting(value || null);
+                }
+            });
+        });
+    </script>
+{% endblock %}

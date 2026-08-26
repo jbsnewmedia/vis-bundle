@@ -23,7 +23,7 @@ final class VisCoreCreateCommandPrivateTest extends TestCase
         $this->filesystem->mkdir($this->tempDir.'/src/Controller/Vis');
         $this->filesystem->mkdir($this->tempDir.'/config/packages');
 
-        $this->kernel = $this->createMock(KernelInterface::class);
+        $this->kernel = $this->createStub(KernelInterface::class);
         $this->kernel->method('getProjectDir')->willReturn($this->tempDir);
     }
 
@@ -77,7 +77,7 @@ final class VisCoreCreateCommandPrivateTest extends TestCase
         // Mock skeleton file location or ensure it's found.
         // The command uses __DIR__.'/../Resources/skeleton/core/vis.yaml.skeleton'
 
-        $result = $this->invokePrivate($command, 'updateVisYaml', ['de,en', 'en']);
+        $result = $this->invokePrivate($command, 'updateVisYaml', ['de,en', 'en', 'vis']);
         $this->assertTrue($result);
         $this->assertFileExists($visYaml);
         $content = file_get_contents($visYaml);

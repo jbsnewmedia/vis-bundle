@@ -18,8 +18,7 @@ class LocaleListenerTest extends TestCase
     {
         $listener = new LocaleListener();
         $request = new Request();
-        $event = new RequestEvent(
-            $this->createMock(HttpKernelInterface::class),
+        $event = new RequestEvent($this->createStub(HttpKernelInterface::class),
             $request,
             HttpKernelInterface::MAIN_REQUEST
         );
@@ -39,8 +38,7 @@ class LocaleListenerTest extends TestCase
         // Simuliere hasPreviousSession
         $request->cookies->set($session->getName(), '1');
 
-        $event = new RequestEvent(
-            $this->createMock(HttpKernelInterface::class),
+        $event = new RequestEvent($this->createStub(HttpKernelInterface::class),
             $request,
             HttpKernelInterface::MAIN_REQUEST
         );
@@ -58,8 +56,7 @@ class LocaleListenerTest extends TestCase
         $request->setSession($session);
         $request->cookies->set($session->getName(), '1');
 
-        $event = new RequestEvent(
-            $this->createMock(HttpKernelInterface::class),
+        $event = new RequestEvent($this->createStub(HttpKernelInterface::class),
             $request,
             HttpKernelInterface::MAIN_REQUEST
         );

@@ -42,7 +42,7 @@ class VisPluginCreateCommandTest extends TestCase
         $command = new VisPluginCreateCommand($this->tempDir, $this->filesystem);
         $commandTester = new CommandTester($command);
 
-        // Inputs: Name (Demo), Company (Acme), add bundle (yes), update composer (yes), add routes (yes)
+        // Inputs: Name (Demo), Company (Acme), activate plugin (yes), update composer (yes), add routes (yes)
         $commandTester->setInputs(['Demo', 'Acme', 'yes', 'yes', 'yes']);
 
         $exitCode = $commandTester->execute([]);
@@ -55,16 +55,43 @@ class VisPluginCreateCommandTest extends TestCase
         $this->assertDirectoryExists($pluginPath);
         $this->assertFileExists($pluginPath . '/src/VisDemoPluginBundle.php');
 
-        // Check if files were updated
-        $bundlesContent = file_get_contents($this->tempDir . '/config/bundles.php');
-        $this->assertStringContainsString('Acme\\VisDemoPluginBundle\\VisDemoPluginBundle::class => [\'all\' => true]', $bundlesContent);
+        // Check that the generated plugin composer.json is valid JSON
+        $pluginComposer = json_decode((string) file_get_contents($pluginPath . '/composer.json'), true);
+        $this->assertIsArray($pluginComposer);
+        $this->assertSame(['Acme\\VisDemoPluginBundle\\' => 'src/'], $pluginComposer['autoload']['psr-4']);
+        $this->assertSame('Acme\\VisDemoPluginBundle\\VisDemoPluginBundle', $pluginComposer['extra']['amicron-platform-plugin-class']);
 
-        $composerContent = json_decode(file_get_contents($this->tempDir . '/composer.json'), true);
+        // Check the plugin is registered in plugins.json
+        $plugins = json_decode((string) file_get_contents($this->tempDir . '/plugins/plugins.json'), true);
+        $this->assertIsArray($plugins);
+        $this->assertCount(1, $plugins);
+        $this->assertSame('plugins/acme/vis-demo-plugin', $plugins[0]['path']);
+        $this->assertSame('Acme\\VisDemoPluginBundle\\VisDemoPluginBundle', $plugins[0]['baseClass']);
+        $this->assertTrue($plugins[0]['active']);
+
+        // Check that the namespace was added to the root composer.json
+        $composerContent = json_decode((string) file_get_contents($this->tempDir . '/composer.json'), true);
         $this->assertArrayHasKey('Acme\\VisDemoPluginBundle\\', $composerContent['autoload']['psr-4']);
         $this->assertArrayHasKey('App\\', $composerContent['autoload']['psr-4']);
 
         $routesContent = file_get_contents($this->tempDir . '/config/routes.yaml');
         $this->assertStringContainsString('vis_demo_plugin:', $routesContent);
+    }
+
+    public function testExecuteWithoutActivation(): void
+    {
+        $command = new VisPluginCreateCommand($this->tempDir, $this->filesystem);
+        $commandTester = new CommandTester($command);
+
+        // Inputs: Name (Demo), Company (Acme), activate plugin (no), update composer (no), add routes (no)
+        $commandTester->setInputs(['Demo', 'Acme', 'no', 'no', 'no']);
+
+        $exitCode = $commandTester->execute([]);
+
+        $this->assertEquals(Command::SUCCESS, $exitCode);
+        $this->assertStringContainsString('Plugin Demo created successfully', $commandTester->getDisplay());
+        $this->assertDirectoryExists($this->tempDir . '/plugins/acme/vis-demo-plugin');
+        $this->assertFileDoesNotExist($this->tempDir . '/plugins/plugins.json');
     }
 
     public function testExecuteDirectoryExistsAndCancel(): void
@@ -92,7 +119,7 @@ class VisPluginCreateCommandTest extends TestCase
         $command = new VisPluginCreateCommand($this->tempDir, $this->filesystem);
         $commandTester = new CommandTester($command);
 
-        // Inputs: Name, Company, confirm delete (yes), add bundle (no), update composer (no), add routes (no)
+        // Inputs: Name, Company, confirm delete (yes), activate (no), update composer (no), add routes (no)
         $commandTester->setInputs(['Demo', 'Acme', 'yes', 'no', 'no', 'no']);
 
         $exitCode = $commandTester->execute([]);

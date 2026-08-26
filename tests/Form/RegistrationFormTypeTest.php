@@ -6,10 +6,12 @@ namespace JBSNewMedia\VisBundle\Tests\Form;
 
 use JBSNewMedia\VisBundle\Entity\User;
 use JBSNewMedia\VisBundle\Form\RegistrationFormType;
+use PHPUnit\Framework\Attributes\AllowMockObjectsWithoutExpectations;
 use Symfony\Component\Form\Test\TypeTestCase;
 use Symfony\Component\Form\Extension\Validator\ValidatorExtension;
 use Symfony\Component\Validator\Validation;
 
+#[AllowMockObjectsWithoutExpectations]
 class RegistrationFormTypeTest extends TypeTestCase
 {
     protected function getExtensions(): array

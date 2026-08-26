@@ -23,7 +23,7 @@ class CommandMethodsCoverageTest extends TestCase
         $this->tempDir = sys_get_temp_dir() . '/vis_command_methods_' . uniqid();
         $this->filesystem = new Filesystem();
         $this->filesystem->mkdir($this->tempDir);
-        $this->kernel = $this->createMock(KernelInterface::class);
+        $this->kernel = $this->createStub(KernelInterface::class);
         $this->kernel->method('getProjectDir')->willReturn($this->tempDir);
     }
 
@@ -67,7 +67,7 @@ class CommandMethodsCoverageTest extends TestCase
 
         $this->filesystem->mkdir($this->tempDir . '/config');
         file_put_contents($this->tempDir . '/config/bundles.php', "<?php return [];");
-        $this->invokePrivate($command, 'addBundleToConfig', ['Test', 'Company']);
+        $this->invokePrivate($command, 'activatePluginInPluginsJson', ['Test', 'Company', 'plugins/company/vis-test-plugin']);
 
         file_put_contents($this->tempDir . '/composer.json', json_encode(['autoload' => ['psr-4' => []]]));
         $this->invokePrivate($command, 'updateRootComposer', ['Test', 'plugins/test', 'Company']);
@@ -79,7 +79,7 @@ class CommandMethodsCoverageTest extends TestCase
     public function testVisProjectCreateCommandMethods(): void
     {
         $command = new VisProjectCreateCommand($this->kernel, $this->filesystem);
-        $io = $this->createMock(SymfonyStyle::class);
+        $io = $this->createStub(SymfonyStyle::class);
 
         $this->invokePrivate($command, 'copySkeletonFiles', [$this->tempDir, $io]);
 
@@ -138,7 +138,7 @@ class CommandMethodsCoverageTest extends TestCase
     }
     public function testJsonKernelPluginLoader(): void
     {
-        $loader = new \JBSNewMedia\VisBundle\Core\JsonKernelPluginLoader($this->createMock(\Composer\Autoload\ClassLoader::class), $this->kernel);
+        $loader = new \JBSNewMedia\VisBundle\Core\JsonKernelPluginLoader($this->createStub(\Composer\Autoload\ClassLoader::class), $this->kernel);
 
         $this->filesystem->mkdir($this->tempDir . '/plugins');
         file_put_contents($this->tempDir . '/plugins/plugins.json', json_encode([['name' => 'Test']]));

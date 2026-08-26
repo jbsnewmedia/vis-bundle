@@ -24,7 +24,7 @@ class VisCoreCreateCommandMethodsTest extends TestCase
         $this->tempDir = sys_get_temp_dir() . '/vis_core_methods_' . uniqid();
         $this->filesystem = new Filesystem();
         $this->filesystem->mkdir($this->tempDir);
-        $this->kernel = $this->createMock(KernelInterface::class);
+        $this->kernel = $this->createStub(KernelInterface::class);
         $this->kernel->method('getProjectDir')->willReturn($this->tempDir);
     }
 
@@ -86,7 +86,7 @@ class VisCoreCreateCommandMethodsTest extends TestCase
         // Make directory read-only to fail dumpFile
         chmod($this->tempDir . '/config/packages', 0555);
 
-        $result = $this->invokePrivate($command, 'updateVisYaml', ['de', 'de']);
+        $result = $this->invokePrivate($command, 'updateVisYaml', ['de', 'de', 'vis']);
         $this->assertFalse($result);
 
         chmod($this->tempDir . '/config/packages', 0777);
@@ -94,8 +94,8 @@ class VisCoreCreateCommandMethodsTest extends TestCase
 
     public function testExecuteFailure(): void
     {
-        $input = $this->createMock(InputInterface::class);
-        $output = $this->createMock(OutputInterface::class);
+        $input = $this->createStub(InputInterface::class);
+        $output = $this->createStub(OutputInterface::class);
 
         // Mock SymfonyStyle questions
         // 1. vis_registration, 2. vis_security, 3. vis_locales, 4. vis_default_locale
@@ -150,7 +150,7 @@ class VisCoreCreateCommandMethodsTest extends TestCase
                 $this->assertFalse(@$this->invokePrivate($command, 'dumpSecurityController', [$target]));
                 $this->assertFalse(@$this->invokePrivate($command, 'dumpRegistrationController', [$target]));
                 $this->assertFalse(@$this->invokePrivate($command, 'dumpLocaleController', [$target]));
-                $this->assertFalse(@$this->invokePrivate($command, 'updateVisYaml', ['de', 'de']));
+                $this->assertFalse(@$this->invokePrivate($command, 'updateVisYaml', ['de', 'de', 'vis']));
             } finally {
                 rename($tempSkeletonDir, $skeletonDir);
             }
@@ -159,7 +159,7 @@ class VisCoreCreateCommandMethodsTest extends TestCase
 
     public function testDumpMethodsFileNotCreatedPostDump(): void
     {
-        $mockFS = $this->createMock(Filesystem::class);
+        $mockFS = $this->createStub(Filesystem::class);
         $mockFS->method('exists')->willReturn(false);
 
         $command = new VisCoreCreateCommand($this->kernel, $mockFS);

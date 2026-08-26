@@ -22,7 +22,7 @@ class VisProjectCreateCommandCoverageTest extends TestCase
         $this->filesystem = new Filesystem();
         $this->filesystem->mkdir($this->tempDir);
 
-        $this->kernel = $this->createMock(KernelInterface::class);
+        $this->kernel = $this->createStub(KernelInterface::class);
         $this->kernel->method('getProjectDir')->willReturn($this->tempDir);
     }
 

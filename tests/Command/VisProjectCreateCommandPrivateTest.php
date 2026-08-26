@@ -26,7 +26,7 @@ class VisProjectCreateCommandPrivateTest extends TestCase
         $this->filesystem->mkdir($this->tempDir . '/public');
         $this->filesystem->mkdir($this->tempDir . '/bin');
 
-        $this->kernel = $this->createMock(KernelInterface::class);
+        $this->kernel = $this->createStub(KernelInterface::class);
         $this->kernel->method('getProjectDir')->willReturn($this->tempDir);
 
         $this->command = new VisProjectCreateCommand($this->kernel, $this->filesystem, $this->tempDir . '/skeleton');
@@ -47,7 +47,7 @@ class VisProjectCreateCommandPrivateTest extends TestCase
 
     public function testUpdateComposerJson(): void
     {
-        $io = $this->createMock(SymfonyStyle::class);
+        $io = $this->createStub(SymfonyStyle::class);
 
         $this->filesystem->mkdir($this->tempDir . '/skeleton');
         file_put_contents($this->tempDir . '/skeleton/composer.json', json_encode([
@@ -72,7 +72,7 @@ class VisProjectCreateCommandPrivateTest extends TestCase
 
     public function testPatchKernel(): void
     {
-        $io = $this->createMock(SymfonyStyle::class);
+        $io = $this->createStub(SymfonyStyle::class);
         file_put_contents($this->tempDir . '/src/Kernel.php', "<?php\nnamespace App;\nclass Kernel extends BaseKernel {\n    use MicroKernelTrait;\n}\n");
 
         $this->callMethod('patchKernel', [$this->tempDir, $io]);
@@ -87,7 +87,7 @@ class VisProjectCreateCommandPrivateTest extends TestCase
 
     public function testPatchIndexPhp(): void
     {
-        $io = $this->createMock(SymfonyStyle::class);
+        $io = $this->createStub(SymfonyStyle::class);
         file_put_contents($this->tempDir . '/public/index.php', "<?php\nreturn function (array \$context) {\n    return new Kernel(\$context['APP_ENV'], (bool) \$context['APP_DEBUG']);\n};\n");
 
         $this->callMethod('patchIndexPhp', [$this->tempDir, $io]);
@@ -99,7 +99,7 @@ class VisProjectCreateCommandPrivateTest extends TestCase
 
     public function testPatchConsolePhp(): void
     {
-        $io = $this->createMock(SymfonyStyle::class);
+        $io = $this->createStub(SymfonyStyle::class);
         file_put_contents($this->tempDir . '/bin/console', "<?php\nreturn function (array \$context) {\n    return new Kernel(\$context['APP_ENV'], (bool) \$context['APP_DEBUG']);\n};\n");
 
         $this->callMethod('patchConsolePhp', [$this->tempDir, $io]);
@@ -111,7 +111,7 @@ class VisProjectCreateCommandPrivateTest extends TestCase
 
     public function testUpdateComposerJsonMissingSections(): void
     {
-        $io = $this->createMock(SymfonyStyle::class);
+        $io = $this->createStub(SymfonyStyle::class);
         $file = $this->tempDir . '/composer.json';
         file_put_contents($file, json_encode(['require' => []]));
 
@@ -161,7 +161,7 @@ class VisProjectCreateCommandPrivateTest extends TestCase
 
     public function testUpdateComposerJsonFilesNotFound(): void
     {
-        $io = $this->createMock(SymfonyStyle::class);
+        $io = $this->createStub(SymfonyStyle::class);
         // Files do not exist in the non_existent_dir
         $this->callMethod('updateComposerJson', [$this->tempDir . '/non_existent_dir', $io]);
         $this->assertTrue(true); // Should return early
@@ -329,7 +329,7 @@ class VisProjectCreateCommandPrivateTest extends TestCase
 
     public function testUpdateComposerJsonInvalidJson(): void
     {
-        $io = $this->createMock(SymfonyStyle::class);
+        $io = $this->createStub(SymfonyStyle::class);
         file_put_contents($this->tempDir . '/composer.json', "{invalid");
         $this->callMethod('updateComposerJson', [$this->tempDir, $io]);
         $content = file_get_contents($this->tempDir . '/composer.json');

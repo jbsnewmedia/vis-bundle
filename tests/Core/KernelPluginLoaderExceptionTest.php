@@ -22,7 +22,7 @@ class KernelPluginLoaderExceptionTest extends TestCase
         $this->tempDir = sys_get_temp_dir() . '/vis_kernel_exception_test_' . uniqid();
         $this->filesystem = new Filesystem();
         $this->filesystem->mkdir($this->tempDir);
-        $this->classLoader = $this->createMock(ClassLoader::class);
+        $this->classLoader = $this->createStub(ClassLoader::class);
     }
 
     protected function tearDown(): void
@@ -80,6 +80,8 @@ class KernelPluginLoaderExceptionTest extends TestCase
 
     public function testRegisterPluginNamespacesClassMapAuthoritative(): void
     {
+        $this->classLoader = $this->createMock(ClassLoader::class);
+
         $pluginPath = 'plugins/TestPlugin';
         $this->filesystem->mkdir($this->tempDir . '/' . $pluginPath . '/src');
 

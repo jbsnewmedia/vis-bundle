@@ -97,6 +97,20 @@ class VisCoreCreateCommand extends Command
             $this->error = true;
         }
 
+        $controllerFile = $this->kernel->getProjectDir().'/src/Controller/Vis/ProfileController.php';
+        if (!$this->dumpProfileController($controllerFile)) {
+            $this->error = true;
+        }
+
+        $controllerFile = $this->kernel->getProjectDir().'/src/Controller/Vis/ClientSessionController.php';
+        if (!$this->dumpClientSessionController($controllerFile)) {
+            $this->error = true;
+        }
+
+        if (!$this->dumpProfileTemplates()) {
+            $this->error = true;
+        }
+
         if ($useLocales) {
             $controllerFile = $this->kernel->getProjectDir().'/src/Controller/Vis/LocaleController.php';
             if ($this->dumpLocaleController($controllerFile)) {
@@ -149,9 +163,8 @@ class VisCoreCreateCommand extends Command
         return @file_get_contents($skeletonFile);
     }
 
-    protected function dumpMainController(string $controllerFile): bool
+    protected function dumpFileFromSkeleton(string $skeletonFile, string $targetFile): bool
     {
-        $skeletonFile = $this->skeletonDir.'/MainController.php.skeleton';
         $controllerContent = $this->getSkeletonContent($skeletonFile);
 
         if (false === $controllerContent) {
@@ -161,160 +174,80 @@ class VisCoreCreateCommand extends Command
         }
 
         try {
-            $this->filesystem->dumpFile($controllerFile, $controllerContent);
+            $this->filesystem->dumpFile($targetFile, $controllerContent);
         } catch (\Throwable $e) {
-            $this->errorMessages[] = 'Controller cannot be created: '.$controllerFile.' - '.$e->getMessage();
+            $this->errorMessages[] = 'File cannot be created: '.$targetFile.' - '.$e->getMessage();
 
             return false;
         }
 
-        if (!$this->filesystem->exists($controllerFile)) {
-            $this->errorMessages[] = 'Controller cannot be created: '.$controllerFile;
+        if (!$this->filesystem->exists($targetFile)) {
+            $this->errorMessages[] = 'File cannot be created: '.$targetFile;
 
             return false;
         }
 
         return true;
+    }
+
+    protected function dumpMainController(string $controllerFile): bool
+    {
+        return $this->dumpFileFromSkeleton($this->skeletonDir.'/MainController.php.skeleton', $controllerFile);
     }
 
     protected function dumpSecurityController(string $controllerFile): bool
     {
-        $skeletonFile = $this->skeletonDir.'/SecurityController.php.skeleton';
-        $controllerContent = $this->getSkeletonContent($skeletonFile);
-
-        if (false === $controllerContent) {
-            $this->errorMessages[] = 'Skeleton file not found: '.$skeletonFile;
-
-            return false;
-        }
-
-        try {
-            $this->filesystem->dumpFile($controllerFile, $controllerContent);
-        } catch (\Throwable $e) {
-            $this->errorMessages[] = 'Controller cannot be created: '.$controllerFile.' - '.$e->getMessage();
-
-            return false;
-        }
-
-        if (!$this->filesystem->exists($controllerFile)) {
-            $this->errorMessages[] = 'Controller cannot be created: '.$controllerFile;
-
-            return false;
-        }
-
-        return true;
+        return $this->dumpFileFromSkeleton($this->skeletonDir.'/SecurityController.php.skeleton', $controllerFile);
     }
 
     protected function dumpRegistrationController(string $controllerFile): bool
     {
-        $skeletonFile = $this->skeletonDir.'/RegistrationController.php.skeleton';
-        $controllerContent = $this->getSkeletonContent($skeletonFile);
-
-        if (false === $controllerContent) {
-            $this->errorMessages[] = 'Skeleton file not found: '.$skeletonFile;
-
-            return false;
-        }
-
-        try {
-            $this->filesystem->dumpFile($controllerFile, $controllerContent);
-        } catch (\Throwable $e) {
-            $this->errorMessages[] = 'Controller cannot be created: '.$controllerFile.' - '.$e->getMessage();
-
-            return false;
-        }
-
-        if (!$this->filesystem->exists($controllerFile)) {
-            $this->errorMessages[] = 'Controller cannot be created: '.$controllerFile;
-
-            return false;
-        }
-
-        return true;
+        return $this->dumpFileFromSkeleton($this->skeletonDir.'/RegistrationController.php.skeleton', $controllerFile);
     }
 
     protected function dumpLocaleController(string $controllerFile): bool
     {
-        $skeletonFile = $this->skeletonDir.'/LocaleController.php.skeleton';
-        $controllerContent = $this->getSkeletonContent($skeletonFile);
-
-        if (false === $controllerContent) {
-            $this->errorMessages[] = 'Skeleton file not found: '.$skeletonFile;
-
-            return false;
-        }
-
-        try {
-            $this->filesystem->dumpFile($controllerFile, $controllerContent);
-        } catch (\Throwable $e) {
-            $this->errorMessages[] = 'Controller cannot be created: '.$controllerFile.' - '.$e->getMessage();
-
-            return false;
-        }
-
-        if (!$this->filesystem->exists($controllerFile)) {
-            $this->errorMessages[] = 'Controller cannot be created: '.$controllerFile;
-
-            return false;
-        }
-
-        return true;
+        return $this->dumpFileFromSkeleton($this->skeletonDir.'/LocaleController.php.skeleton', $controllerFile);
     }
 
     protected function dumpDarkmodeController(string $controllerFile): bool
     {
-        $skeletonFile = $this->skeletonDir.'/DarkmodeController.php.skeleton';
-        $controllerContent = $this->getSkeletonContent($skeletonFile);
-
-        if (false === $controllerContent) {
-            $this->errorMessages[] = 'Skeleton file not found: '.$skeletonFile;
-
-            return false;
-        }
-
-        try {
-            $this->filesystem->dumpFile($controllerFile, $controllerContent);
-        } catch (\Throwable $e) {
-            $this->errorMessages[] = 'Controller cannot be created: '.$controllerFile.' - '.$e->getMessage();
-
-            return false;
-        }
-
-        if (!$this->filesystem->exists($controllerFile)) {
-            $this->errorMessages[] = 'Controller cannot be created: '.$controllerFile;
-
-            return false;
-        }
-
-        return true;
+        return $this->dumpFileFromSkeleton($this->skeletonDir.'/DarkmodeController.php.skeleton', $controllerFile);
     }
 
     protected function dumpThemeController(string $controllerFile): bool
     {
-        $skeletonFile = $this->skeletonDir.'/ThemeController.php.skeleton';
-        $controllerContent = $this->getSkeletonContent($skeletonFile);
+        return $this->dumpFileFromSkeleton($this->skeletonDir.'/ThemeController.php.skeleton', $controllerFile);
+    }
 
-        if (false === $controllerContent) {
-            $this->errorMessages[] = 'Skeleton file not found: '.$skeletonFile;
+    protected function dumpProfileController(string $controllerFile): bool
+    {
+        return $this->dumpFileFromSkeleton($this->skeletonDir.'/ProfileController.php.skeleton', $controllerFile);
+    }
 
-            return false;
+    protected function dumpClientSessionController(string $controllerFile): bool
+    {
+        return $this->dumpFileFromSkeleton($this->skeletonDir.'/ClientSessionController.php.skeleton', $controllerFile);
+    }
+
+    protected function dumpProfileTemplates(): bool
+    {
+        $templates = [
+            'templates/profile/settings.html.twig.skeleton' => '/templates/profile/settings.html.twig',
+            'templates/profile/password.html.twig.skeleton' => '/templates/profile/password.html.twig',
+            'templates/profile/select.html.twig.skeleton' => '/templates/profile/select.html.twig',
+            'templates/profile/partials/password.html.twig.skeleton' => '/templates/profile/partials/password.html.twig',
+            'templates/profile/partials/select.html.twig.skeleton' => '/templates/profile/partials/select.html.twig',
+        ];
+
+        $success = true;
+        foreach ($templates as $skeletonFile => $targetFile) {
+            if (!$this->dumpFileFromSkeleton($this->skeletonDir.'/'.$skeletonFile, $this->kernel->getProjectDir().$targetFile)) {
+                $success = false;
+            }
         }
 
-        try {
-            $this->filesystem->dumpFile($controllerFile, $controllerContent);
-        } catch (\Throwable $e) {
-            $this->errorMessages[] = 'Controller cannot be created: '.$controllerFile.' - '.$e->getMessage();
-
-            return false;
-        }
-
-        if (!$this->filesystem->exists($controllerFile)) {
-            $this->errorMessages[] = 'Controller cannot be created: '.$controllerFile;
-
-            return false;
-        }
-
-        return true;
+        return $success;
     }
 
     protected function updateVisYaml(string $locales, string $defaultLocale, string $theme): bool

@@ -50,31 +50,67 @@ class VisPluginCreateCommandPrivateTest extends TestCase
         $this->assertDirectoryExists($path . '/src/DependencyInjection');
         $this->assertFileExists($path . '/src/VisTestPluginBundle.php');
         $this->assertFileExists($path . '/composer.json');
+
+        $composer = json_decode((string) file_get_contents($path . '/composer.json'), true);
+        $this->assertIsArray($composer);
+        $this->assertSame(['Acme\\VisTestPluginBundle\\' => 'src/'], $composer['autoload']['psr-4']);
+        $this->assertSame('Acme\\VisTestPluginBundle\\VisTestPluginBundle', $composer['extra']['amicron-platform-plugin-class']);
     }
 
-    public function testAddBundleToConfig(): void
+    public function testActivatePluginInPluginsJson(): void
     {
-        $this->callMethod('addBundleToConfig', ['Test', 'Acme']);
-        $content = file_get_contents($this->tempDir . '/config/bundles.php');
-        $this->assertStringContainsString('Acme\\VisTestPluginBundle\\VisTestPluginBundle::class => [\'all\' => true]', $content);
+        $this->callMethod('activatePluginInPluginsJson', ['Test', 'Acme', 'plugins/acme/vis-test-plugin']);
+
+        $plugins = json_decode((string) file_get_contents($this->tempDir . '/plugins/plugins.json'), true);
+        $this->assertIsArray($plugins);
+        $this->assertCount(1, $plugins);
+        $this->assertSame('plugins/acme/vis-test-plugin', $plugins[0]['path']);
+        $this->assertSame('Acme\\VisTestPluginBundle\\VisTestPluginBundle', $plugins[0]['baseClass']);
+        $this->assertSame('src/', $plugins[0]['autoload']['psr-4']['Acme\\VisTestPluginBundle\\']);
+        $this->assertTrue($plugins[0]['active']);
+    }
+
+    public function testActivatePluginInPluginsJsonAlreadyExists(): void
+    {
+        $this->callMethod('activatePluginInPluginsJson', ['Test', 'Acme', 'plugins/acme/vis-test-plugin']);
+        $this->callMethod('activatePluginInPluginsJson', ['Test', 'Acme', 'plugins/acme/vis-test-plugin']);
+
+        $plugins = json_decode((string) file_get_contents($this->tempDir . '/plugins/plugins.json'), true);
+        $this->assertIsArray($plugins);
+        $this->assertCount(1, $plugins);
+    }
+
+    public function testActivatePluginInPluginsJsonKeepsExistingEntries(): void
+    {
+        $this->filesystem->mkdir($this->tempDir . '/plugins');
+        file_put_contents($this->tempDir . '/plugins/plugins.json', json_encode([
+            ['name' => 'other-plugin', 'active' => true],
+        ]));
+
+        $this->callMethod('activatePluginInPluginsJson', ['Test', 'Acme', 'plugins/acme/vis-test-plugin']);
+
+        $plugins = json_decode((string) file_get_contents($this->tempDir . '/plugins/plugins.json'), true);
+        $this->assertIsArray($plugins);
+        $this->assertCount(2, $plugins);
+        $this->assertSame('other-plugin', $plugins[0]['name']);
+    }
+
+    public function testActivatePluginInPluginsJsonInvalidJson(): void
+    {
+        $this->filesystem->mkdir($this->tempDir . '/plugins');
+        file_put_contents($this->tempDir . '/plugins/plugins.json', "{invalid");
+
+        $this->callMethod('activatePluginInPluginsJson', ['Test', 'Acme', 'plugins/acme/vis-test-plugin']);
+
+        $this->assertSame("{invalid", file_get_contents($this->tempDir . '/plugins/plugins.json'));
     }
 
     public function testUpdateRootComposer(): void
     {
         $this->callMethod('updateRootComposer', ['Test', 'acme/vis-test-plugin', 'Acme']);
-        $composer = json_decode(file_get_contents($this->tempDir . '/composer.json'), true);
+        $composer = json_decode((string) file_get_contents($this->tempDir . '/composer.json'), true);
         $this->assertArrayHasKey('Acme\\VisTestPluginBundle\\', $composer['autoload']['psr-4']);
         $this->assertEquals('acme/vis-test-plugin/src/', $composer['autoload']['psr-4']['Acme\\VisTestPluginBundle\\']);
-    }
-
-    public function testAddBundleToConfigAlreadyExists(): void
-    {
-        $bundleClass = 'Acme\\VisTestPluginBundle\\VisTestPluginBundle';
-        file_put_contents($this->tempDir . '/config/bundles.php', "<?php\nreturn [\n    $bundleClass::class => ['all' => true],\n];\n");
-        $this->callMethod('addBundleToConfig', ['Test', 'Acme']);
-        $content = file_get_contents($this->tempDir . '/config/bundles.php');
-        // Should not be changed if already exists
-        $this->assertEquals("<?php\nreturn [\n    $bundleClass::class => ['all' => true],\n];\n", $content);
     }
 
     public function testAddRoutesToConfigAlreadyExists(): void
@@ -91,13 +127,6 @@ class VisPluginCreateCommandPrivateTest extends TestCase
         $this->callMethod('updateRootComposer', ['Test', 'acme/vis-test-plugin', 'Acme']);
         $content = file_get_contents($this->tempDir . '/composer.json');
         $this->assertEquals("{invalid", $content);
-    }
-
-    public function testAddBundleToConfigNoFile(): void
-    {
-        unlink($this->tempDir . '/config/bundles.php');
-        $this->callMethod('addBundleToConfig', ['Test', 'Acme']);
-        $this->assertFileDoesNotExist($this->tempDir . '/config/bundles.php');
     }
 
     public function testUpdateRootComposerNoFile(): void
@@ -118,7 +147,7 @@ class VisPluginCreateCommandPrivateTest extends TestCase
     {
         file_put_contents($this->tempDir . '/composer.json', json_encode(['name' => 'test']));
         $this->callMethod('updateRootComposer', ['Test', 'acme/vis-test-plugin', 'Acme']);
-        $composer = json_decode(file_get_contents($this->tempDir . '/composer.json'), true);
+        $composer = json_decode((string) file_get_contents($this->tempDir . '/composer.json'), true);
         $this->assertArrayHasKey('autoload', $composer);
         $this->assertArrayHasKey('psr-4', $composer['autoload']);
     }
@@ -186,7 +215,7 @@ class VisPluginCreateCommandPrivateTest extends TestCase
         $this->filesystem->mkdir($pluginPath);
 
         $tester = new \Symfony\Component\Console\Tester\CommandTester($this->command);
-        // 1. name, 2. company, 3. confirm delete, 4. confirm add bundle, 5. confirm update composer, 6. confirm add routes
+        // 1. name, 2. company, 3. confirm delete, 4. confirm activation, 5. confirm update composer, 6. confirm add routes
         $tester->setInputs(['Demo', 'Acme', 'yes', 'no', 'no', 'no']);
         $tester->execute([]);
 

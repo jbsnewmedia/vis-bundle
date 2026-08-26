@@ -7,7 +7,6 @@ namespace JBSNewMedia\VisBundle\Tests\Command;
 use JBSNewMedia\VisBundle\Command\VisPluginCreateCommand;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Filesystem\Filesystem;
-use Symfony\Component\Console\Style\SymfonyStyle;
 
 class VisPluginCreateCommandCoverageTest extends TestCase
 {
@@ -33,12 +32,16 @@ class VisPluginCreateCommandCoverageTest extends TestCase
         return $ref->invokeArgs($object, $args);
     }
 
-    public function testAddBundleToConfigNoFile(): void
+    public function testActivatePluginInPluginsJsonNoFile(): void
     {
         $command = new VisPluginCreateCommand($this->tempDir, $this->filesystem);
-        // bundles.php doesn't exist
-        $this->invokePrivate($command, 'addBundleToConfig', ['Test', 'Company']);
-        $this->assertFileDoesNotExist($this->tempDir . '/config/bundles.php');
+        // plugins.json doesn't exist and gets created with the new entry
+        $this->invokePrivate($command, 'activatePluginInPluginsJson', ['Test', 'Company', 'plugins/company/vis-test-plugin']);
+
+        $plugins = json_decode((string) file_get_contents($this->tempDir . '/plugins/plugins.json'), true);
+        $this->assertIsArray($plugins);
+        $this->assertCount(1, $plugins);
+        $this->assertSame('Company\\VisTestPluginBundle\\VisTestPluginBundle', $plugins[0]['baseClass']);
     }
 
     public function testUpdateRootComposerNoFile(): void
@@ -57,18 +60,16 @@ class VisPluginCreateCommandCoverageTest extends TestCase
         $this->assertFileDoesNotExist($this->tempDir . '/config/routes.yaml');
     }
 
-    public function testAddBundleToConfigAlreadyExists(): void
+    public function testActivatePluginInPluginsJsonInvalidJson(): void
     {
-        $this->filesystem->mkdir($this->tempDir . '/config');
-        $file = $this->tempDir . '/config/bundles.php';
-        $bundleClass = 'Company\\VisTestPluginBundle\\VisTestPluginBundle';
-        file_put_contents($file, "<?php return [ " . $bundleClass . "::class => ['all' => true] ];");
+        $this->filesystem->mkdir($this->tempDir . '/plugins');
+        $file = $this->tempDir . '/plugins/plugins.json';
+        file_put_contents($file, "{invalid");
 
         $command = new VisPluginCreateCommand($this->tempDir, $this->filesystem);
-        $this->invokePrivate($command, 'addBundleToConfig', ['Test', 'Company']);
+        $this->invokePrivate($command, 'activatePluginInPluginsJson', ['Test', 'Company', 'plugins/company/vis-test-plugin']);
 
-        $content = file_get_contents($file);
-        $this->assertEquals(1, substr_count($content, $bundleClass));
+        $this->assertEquals("{invalid", file_get_contents($file));
     }
 
     public function testUpdateRootComposerInvalidJson(): void

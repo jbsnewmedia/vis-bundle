@@ -1,0 +1,176 @@
+<?php
+
+declare(strict_types=1);
+
+namespace App\Controller\Vis;
+
+use Doctrine\ORM\EntityManagerInterface;
+use JBSNewMedia\VisBundle\Controller\VisAbstractController;
+use JBSNewMedia\VisBundle\Entity\User;
+use JBSNewMedia\VisBundle\Model\Setting\Setting;
+use JBSNewMedia\VisBundle\Service\Vis;
+use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
+use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Contracts\Translation\TranslatorInterface;
+
+class ProfileController extends VisAbstractController
+{
+    public function __construct(
+        protected Vis $vis,
+        protected TranslatorInterface $translator,
+    ) {
+    }
+
+    #[Route('/vis/profile/password', name: 'vis_profile_password', methods: ['GET', 'POST'])]
+    public function password(Request $request, UserPasswordHasherInterface $passwordHasher, EntityManagerInterface $entityManager): Response
+    {
+        $this->vis->setTool('manager');
+
+        $user = $this->getUser();
+        if (!$user instanceof User) {
+            return new JsonResponse([
+                'success' => false,
+            ], Response::HTTP_FORBIDDEN);
+        }
+
+        if ($request->isMethod('POST')) {
+            $currentPassword = (string) $request->getPayload()->get('current_password', '');
+            $newPassword = (string) $request->getPayload()->get('new_password', '');
+            $repeatPassword = (string) $request->getPayload()->get('new_password_repeat', '');
+
+            $invalid = [];
+
+            if (!$passwordHasher->isPasswordValid($user, $currentPassword)) {
+                $invalid['current_password'] = $this->translator->trans('profile.password.error.current', domain: 'vis');
+            }
+
+            if (mb_strlen($newPassword) < 8) {
+                $invalid['new_password'] = $this->translator->trans('profile.password.error.length', domain: 'vis');
+            }
+
+            if ($newPassword !== $repeatPassword) {
+                $invalid['new_password_repeat'] = $this->translator->trans('profile.password.error.mismatch', domain: 'vis');
+            }
+
+            if ([] !== $invalid) {
+                return new JsonResponse([
+                    'success' => false,
+                    'invalid' => $invalid,
+                ]);
+            }
+
+            $user->setPassword($passwordHasher->hashPassword($user, $newPassword));
+            $entityManager->flush();
+
+            return new JsonResponse([
+                'success' => true,
+                'message' => $this->translator->trans('profile.password.success', domain: 'vis'),
+            ]);
+        }
+
+        return $this->render($request->isXmlHttpRequest() ? 'profile/partials/password.html.twig' : 'profile/password.html.twig', [
+            'vis' => $this->vis,
+        ]);
+    }
+
+    #[Route('/vis/profile/settings', name: 'vis_profile_settings', methods: ['GET'])]
+    public function settings(): Response
+    {
+        $this->vis->setTool('manager');
+
+        $settings = [];
+        foreach ($this->vis->getTools() as $tool) {
+            $settings = array_merge($settings, $this->vis->getSettings($tool->getId()));
+        }
+        usort($settings, static fn (Setting $a, Setting $b): int => $a->getOrder() <=> $b->getOrder());
+
+        return $this->render('profile/settings.html.twig', [
+            'vis' => $this->vis,
+            'title' => $this->translator->trans('profile.settings.title', domain: 'vis'),
+            'description' => $this->translator->trans('profile.settings.description', domain: 'vis'),
+            'settings' => $settings,
+        ]);
+    }
+
+    #[Route('/vis/profile/client', name: 'vis_profile_client', methods: ['GET'])]
+    public function client(Request $request): Response
+    {
+        $this->vis->setTool('manager');
+
+        $selectedClientId = $this->vis->getSelectedClientId();
+        $options = [];
+        foreach ($this->vis->getClients() as $id => $title) {
+            $options[] = [
+                'label' => $title,
+                'active' => (string) $id === $selectedClientId,
+                'url' => $this->generateUrl('vis_api_client', ['id' => $id, 'timestamp' => '__TIMESTAMP__']),
+            ];
+        }
+
+        return $this->renderSelect($request, $this->translator->trans('profile.client.title', domain: 'vis'), $this->translator->trans('profile.client.description', domain: 'vis'), $options);
+    }
+
+    #[Route('/vis/profile/locale', name: 'vis_profile_locale', methods: ['GET'])]
+    public function locale(Request $request): Response
+    {
+        $this->vis->setTool('manager');
+
+        $currentLocale = $this->vis->getTranslator()->getLocale();
+        $options = [];
+        foreach ($this->vis->getLocales() as $locale) {
+            $options[] = [
+                'label' => $this->translator->trans('locale.'.$locale, domain: 'vis'),
+                'active' => $locale === $currentLocale,
+                'url' => $this->generateUrl('vis_api_locale', ['_locale' => $locale, 'timestamp' => '__TIMESTAMP__']),
+            ];
+        }
+
+        return $this->renderSelect($request, $this->translator->trans('profile.locale.title', domain: 'vis'), $this->translator->trans('profile.locale.description', domain: 'vis'), $options);
+    }
+
+    #[Route('/vis/profile/theme', name: 'vis_profile_theme', methods: ['GET'])]
+    public function theme(Request $request): Response
+    {
+        $this->vis->setTool('manager');
+
+        $currentTheme = $this->vis->getTheme();
+        $options = [
+            [
+                'label' => 'VIS',
+                'active' => 'vis' === $currentTheme,
+                'url' => $this->generateUrl('vis_api_theme', ['slug' => 'default', 'timestamp' => '__TIMESTAMP__']),
+            ],
+        ];
+        foreach ($this->vis->getThemes() as $theme) {
+            if ('vis' === $theme['id']) {
+                continue;
+            }
+            $options[] = [
+                'label' => $theme['name'],
+                'active' => $theme['id'] === $currentTheme,
+                'url' => $this->generateUrl('vis_api_theme', ['slug' => $theme['id'], 'timestamp' => '__TIMESTAMP__']),
+            ];
+        }
+
+        return $this->renderSelect($request, $this->translator->trans('profile.theme.title', domain: 'vis'), $this->translator->trans('profile.theme.description', domain: 'vis'), $options);
+    }
+
+    /**
+     * @param array<int, array{label: string, active: bool, url: string}> $options
+     */
+    private function renderSelect(Request $request, string $title, string $description, array $options): Response
+    {
+        return $this->render(
+            $request->isXmlHttpRequest() ? 'profile/partials/select.html.twig' : 'profile/select.html.twig',
+            [
+                'vis' => $this->vis,
+                'title' => $title,
+                'description' => $description,
+                'options' => $options,
+            ]
+        );
+    }
+}

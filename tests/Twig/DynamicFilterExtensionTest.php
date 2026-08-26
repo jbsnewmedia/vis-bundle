@@ -13,7 +13,7 @@ class DynamicFilterExtensionTest extends TestCase
 {
     public function testGetFilters(): void
     {
-        $twig = $this->createMock(Environment::class);
+        $twig = $this->createStub(Environment::class);
         $extension = new DynamicFilterExtension($twig);
         $filters = $extension->getFilters();
 
@@ -24,7 +24,7 @@ class DynamicFilterExtensionTest extends TestCase
 
     public function testDynamicFilterRaw(): void
     {
-        $twig = $this->createMock(Environment::class);
+        $twig = $this->createStub(Environment::class);
         $extension = new DynamicFilterExtension($twig);
 
         $result = $extension->dynamicFilter('<b>test</b>', 'raw');
@@ -36,7 +36,7 @@ class DynamicFilterExtensionTest extends TestCase
         $twig = $this->createMock(Environment::class);
         $filter = new TwigFilter('upper', 'strtoupper');
 
-        $twig->method('getFilter')->with('upper')->willReturn($filter);
+        $twig->expects($this->exactly(1))->method('getFilter')->with('upper')->willReturn($filter);
 
         $extension = new DynamicFilterExtension($twig);
         $result = $extension->dynamicFilter('test', 'upper');
@@ -45,7 +45,7 @@ class DynamicFilterExtensionTest extends TestCase
 
     public function testDynamicFilterNonExistent(): void
     {
-        $twig = $this->createMock(Environment::class);
+        $twig = $this->createStub(Environment::class);
         $twig->method('getFilter')->willReturn(null);
 
         $extension = new DynamicFilterExtension($twig);
@@ -57,7 +57,7 @@ class DynamicFilterExtensionTest extends TestCase
 
     public function testDynamicFilterNotCallable(): void
     {
-        $twig = $this->createMock(Environment::class);
+        $twig = $this->createStub(Environment::class);
         $filter = new TwigFilter('invalid', null);
 
         $twig->method('getFilter')->willReturn($filter);
@@ -75,7 +75,7 @@ class DynamicFilterExtensionTest extends TestCase
 
         // strtoupper is a good candidate for a filter without extra parameters
         $filter = new TwigFilter('upper', 'strtoupper');
-        $twig->method('getFilter')->with('upper')->willReturn($filter);
+        $twig->expects($this->exactly(1))->method('getFilter')->with('upper')->willReturn($filter);
 
         $extension = new DynamicFilterExtension($twig);
 
@@ -89,7 +89,7 @@ class DynamicFilterExtensionTest extends TestCase
 
         // Filter that returns an integer (scalar but not string)
         $filter = new TwigFilter('strlen', 'strlen');
-        $twig->method('getFilter')->with('strlen')->willReturn($filter);
+        $twig->expects($this->exactly(1))->method('getFilter')->with('strlen')->willReturn($filter);
 
         $extension = new DynamicFilterExtension($twig);
 
@@ -103,7 +103,7 @@ class DynamicFilterExtensionTest extends TestCase
 
         // Filter that returns an array (non-scalar)
         $filter = new TwigFilter('array_return', fn (string $s): array => [$s]);
-        $twig->method('getFilter')->with('array_return')->willReturn($filter);
+        $twig->expects($this->exactly(1))->method('getFilter')->with('array_return')->willReturn($filter);
 
         $extension = new DynamicFilterExtension($twig);
 

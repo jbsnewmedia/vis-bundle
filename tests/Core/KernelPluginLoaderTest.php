@@ -25,8 +25,13 @@ class KernelPluginLoaderTest extends TestCase
         $this->filesystem = new Filesystem();
         $this->filesystem->mkdir($this->tempDir);
 
-        $this->classLoader = $this->createMock(ClassLoader::class);
-        $this->loader = new class($this->classLoader) extends KernelPluginLoader {
+        $this->classLoader = $this->createStub(ClassLoader::class);
+        $this->loader = $this->createLoader($this->classLoader);
+    }
+
+    private function createLoader(ClassLoader $classLoader): KernelPluginLoader
+    {
+        return new class($classLoader) extends KernelPluginLoader {
             public function setPluginInfos(array $infos): void { $this->pluginInfos = $infos; }
             public function callRegisterPluginNamespaces(string $dir): void {
                 $ref = new \ReflectionMethod(KernelPluginLoader::class, 'registerPluginNamespaces');
@@ -40,6 +45,14 @@ class KernelPluginLoaderTest extends TestCase
             }
             protected function loadPluginInfos(): void {}
         };
+    }
+
+    private function useMockClassLoader(): ClassLoader
+    {
+        $this->classLoader = $this->createMock(ClassLoader::class);
+        $this->loader = $this->createLoader($this->classLoader);
+
+        return $this->classLoader;
     }
 
     protected function tearDown(): void
@@ -92,7 +105,7 @@ class KernelPluginLoaderTest extends TestCase
         $this->loader->initializePlugins($this->tempDir);
         $container = new ContainerBuilder();
 
-        $plugin = $this->createMock(AbstractVisBundle::class);
+        $plugin = $this->createStub(AbstractVisBundle::class);
         $plugin->method('isActive')->willReturn(true);
         $pluginClass = $plugin::class;
 
@@ -105,6 +118,7 @@ class KernelPluginLoaderTest extends TestCase
 
     public function testRegisterPluginNamespacesPsr0WithClassMapAuthoritative(): void
     {
+        $this->useMockClassLoader();
         $this->loader->setPluginInfos([
             [
                 'name' => 'Psr0Plugin',
@@ -144,7 +158,7 @@ class KernelPluginLoaderTest extends TestCase
         $this->loader->initializePlugins($this->tempDir);
         $container = new ContainerBuilder();
 
-        $plugin = $this->createMock(AbstractVisBundle::class);
+        $plugin = $this->createStub(AbstractVisBundle::class);
         $plugin->method('isActive')->willReturn(true);
         $pluginClass = $plugin::class;
 
@@ -155,6 +169,7 @@ class KernelPluginLoaderTest extends TestCase
 
     public function testRegisterPluginNamespaces(): void
     {
+        $this->useMockClassLoader();
         $this->loader->setPluginInfos([
             [
                 'name' => 'TestPlugin',
@@ -199,6 +214,7 @@ class KernelPluginLoaderTest extends TestCase
 
     public function testRegisterPluginNamespacesComplex(): void
     {
+        $this->useMockClassLoader();
         $this->loader->setPluginInfos([
             [
                 'name' => 'TestPlugin',
@@ -387,6 +403,7 @@ class KernelPluginLoaderTest extends TestCase
 
     public function testRegisterPluginNamespacesWithClassMapAuthoritative(): void
     {
+        $this->useMockClassLoader();
         $this->loader->setPluginInfos([
             [
                 'name' => 'MapPlugin',
@@ -405,6 +422,7 @@ class KernelPluginLoaderTest extends TestCase
 
     public function testRegisterPluginNamespacesWithBaseClassAsName(): void
     {
+        $this->useMockClassLoader();
         $this->loader->setPluginInfos([
             [
                 'baseClass' => 'BaseClass',

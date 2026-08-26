@@ -1,0 +1,24 @@
+<?php
+
+declare(strict_types=1);
+
+namespace App\Controller\Vis;
+
+use JBSNewMedia\VisBundle\Controller\VisAbstractController;
+use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\Routing\Attribute\Route;
+
+class ClientSessionController extends VisAbstractController
+{
+    #[Route('/vis/api/client/{id}/{timestamp}', name: 'vis_api_client')]
+    public function setClient(Request $request, string $id, string $timestamp): JsonResponse
+    {
+        $this->vis->setSelectedClientId($id);
+
+        return new JsonResponse([
+            'id' => $id,
+            'success' => true,
+        ]);
+    }
+}

@@ -19,13 +19,15 @@ class VisUserAddRemoveRoleEdgeTest extends TestCase
 
     protected function setUp(): void
     {
-        $this->em = $this->createMock(EntityManagerInterface::class);
+        $this->em = $this->createStub(EntityManagerInterface::class);
         $this->repo = $this->createMock(EntityRepository::class);
         $this->em->method('getRepository')->willReturn($this->repo);
     }
 
     public function testAddRoleInvalidEmailThenQuit(): void
     {
+        $this->repo->expects($this->never())->method('findOneBy');
+
         $command = new VisUserAddRoleCommand($this->em);
         $tester = new CommandTester($command);
 
@@ -42,7 +44,7 @@ class VisUserAddRemoveRoleEdgeTest extends TestCase
     {
         $user = new User();
         $user->setEmail('test@example.com');
-        $this->repo->method('findOneBy')->with(['email' => 'test@example.com'])->willReturn($user);
+        $this->repo->expects($this->exactly(1))->method('findOneBy')->with(['email' => 'test@example.com'])->willReturn($user);
 
         $command = new VisUserAddRoleCommand($this->em);
         $tester = new CommandTester($command);
@@ -58,7 +60,7 @@ class VisUserAddRemoveRoleEdgeTest extends TestCase
     {
         $user = new User();
         $user->setEmail('test@example.com');
-        $this->repo->method('findOneBy')->with(['email' => 'test@example.com'])->willReturn($user);
+        $this->repo->expects($this->exactly(1))->method('findOneBy')->with(['email' => 'test@example.com'])->willReturn($user);
 
         $this->em->method('persist');
         $this->em->method('flush')->willThrowException(new \Exception('db down'));
@@ -75,6 +77,8 @@ class VisUserAddRemoveRoleEdgeTest extends TestCase
 
     public function testRemoveRoleAbortOnEmail(): void
     {
+        $this->repo->expects($this->never())->method('findOneBy');
+
         $command = new VisUserRemoveRoleCommand($this->em);
         $tester = new CommandTester($command);
 
@@ -90,7 +94,7 @@ class VisUserAddRemoveRoleEdgeTest extends TestCase
         $user = new User();
         $user->setEmail('test@example.com');
         $user->addRole('ROLE_USER');
-        $this->repo->method('findOneBy')->with(['email' => 'test@example.com'])->willReturn($user);
+        $this->repo->expects($this->exactly(1))->method('findOneBy')->with(['email' => 'test@example.com'])->willReturn($user);
 
         $command = new VisUserRemoveRoleCommand($this->em);
         $tester = new CommandTester($command);
@@ -107,7 +111,7 @@ class VisUserAddRemoveRoleEdgeTest extends TestCase
         $user = new User();
         $user->setEmail('test@example.com');
         $user->addRole('ROLE_ADMIN');
-        $this->repo->method('findOneBy')->with(['email' => 'test@example.com'])->willReturn($user);
+        $this->repo->expects($this->exactly(1))->method('findOneBy')->with(['email' => 'test@example.com'])->willReturn($user);
 
         $this->em->method('persist');
         $this->em->method('flush')->willThrowException(new \Exception('db down'));

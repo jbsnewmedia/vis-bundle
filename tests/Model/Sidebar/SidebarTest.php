@@ -64,7 +64,7 @@ class SidebarTest extends TestCase
 
     public function testSetParentCallbackExceptionParentNotFound(): void
     {
-        $vis = $this->createMock(\JBSNewMedia\VisBundle\Service\Vis::class);
+        $vis = $this->createStub(\JBSNewMedia\VisBundle\Service\Vis::class);
         $vis->method('getSidebar')->willReturn(['existing' => new Sidebar('tool', 'existing')]);
 
         $item = new SidebarItem('tool', 'id', 'Label');
@@ -78,7 +78,7 @@ class SidebarTest extends TestCase
 
     public function testSetParentCallbackExceptionChildNotFound(): void
     {
-        $vis = $this->createMock(\JBSNewMedia\VisBundle\Service\Vis::class);
+        $vis = $this->createStub(\JBSNewMedia\VisBundle\Service\Vis::class);
         $parent = new Sidebar('tool', 'p1');
         $vis->method('getSidebar')->willReturn(['p1' => $parent]);
 

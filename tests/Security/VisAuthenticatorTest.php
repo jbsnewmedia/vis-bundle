@@ -27,12 +27,14 @@ class VisAuthenticatorTest extends TestCase
     protected function setUp(): void
     {
         $this->urlGenerator = $this->createMock(UrlGeneratorInterface::class);
-        $this->translator = $this->createMock(TranslatorInterface::class);
+        $this->translator = $this->createStub(TranslatorInterface::class);
         $this->authenticator = new VisAuthenticator($this->urlGenerator, $this->translator);
     }
 
     public function testSupports(): void
     {
+        $this->urlGenerator->expects($this->never())->method('generate');
+
         $request = new Request();
         $request->attributes->set('_route', 'vis_login');
         $request->setMethod('POST');
@@ -48,8 +50,10 @@ class VisAuthenticatorTest extends TestCase
 
     public function testAuthenticate(): void
     {
-        $request = $this->createMock(Request::class);
-        $session = $this->createMock(SessionInterface::class);
+        $this->urlGenerator->expects($this->never())->method('generate');
+
+        $request = $this->createStub(Request::class);
+        $session = $this->createStub(SessionInterface::class);
         $payload = new InputBag([
             '_username' => 'test@example.com',
             '_password' => 'password123',
@@ -69,13 +73,13 @@ class VisAuthenticatorTest extends TestCase
 
     public function testOnAuthenticationSuccess(): void
     {
-        $request = $this->createMock(Request::class);
-        $session = $this->createMock(SessionInterface::class);
-        $token = $this->createMock(TokenInterface::class);
+        $request = $this->createStub(Request::class);
+        $session = $this->createStub(SessionInterface::class);
+        $token = $this->createStub(TokenInterface::class);
         $firewallName = 'main';
 
         $request->method('getSession')->willReturn($session);
-        $this->urlGenerator->method('generate')->with('vis')->willReturn('/vis');
+        $this->urlGenerator->expects($this->exactly(1))->method('generate')->with('vis')->willReturn('/vis');
         $this->translator->method('trans')->willReturn('Success');
 
         $response = $this->authenticator->onAuthenticationSuccess($request, $token, $firewallName);
@@ -88,8 +92,10 @@ class VisAuthenticatorTest extends TestCase
 
     public function testOnAuthenticationFailure(): void
     {
-        $request = $this->createMock(Request::class);
-        $exception = $this->createMock(AuthenticationException::class);
+        $this->urlGenerator->expects($this->never())->method('generate');
+
+        $request = $this->createStub(Request::class);
+        $exception = $this->createStub(AuthenticationException::class);
 
         $exception->method('getMessageKey')->willReturn('Invalid credentials.');
         $exception->method('getMessageData')->willReturn([]);
@@ -106,7 +112,7 @@ class VisAuthenticatorTest extends TestCase
     public function testGetLoginUrl(): void
     {
         $request = new Request();
-        $this->urlGenerator->method('generate')->with('vis_login')->willReturn('/login');
+        $this->urlGenerator->expects($this->exactly(1))->method('generate')->with('vis_login')->willReturn('/login');
 
         $method = new \ReflectionMethod(VisAuthenticator::class, 'getLoginUrl');
         $method->setAccessible(true);
@@ -116,15 +122,16 @@ class VisAuthenticatorTest extends TestCase
     }
     public function testOnAuthenticationSuccessWithTargetPath(): void
     {
-        $request = $this->createMock(Request::class);
-        $session = $this->createMock(SessionInterface::class);
-        $token = $this->createMock(TokenInterface::class);
+        $request = $this->createStub(Request::class);
+        $session = $this->createStub(SessionInterface::class);
+        $token = $this->createStub(TokenInterface::class);
         $firewallName = 'main';
 
         $request->method('getSession')->willReturn($session);
         // TargetPathTrait uses session to store target path
-        $session->method('get')->with('_security.main.target_path')->willReturn('/target');
+        $session->method('get')->willReturn('/target');
         $this->translator->method('trans')->willReturn('Success');
+        $this->urlGenerator->expects($this->never())->method('generate');
 
         $response = $this->authenticator->onAuthenticationSuccess($request, $token, $firewallName);
 

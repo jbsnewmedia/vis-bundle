@@ -479,9 +479,6 @@ class Vis
         $this->sidebar[$tool] = $sidebar;
     }
 
-    /**
-     * @return array<string, Sidebar>
-     */
     public function addSetting(Setting $item): bool
     {
         if ([] === $item->getRoles()) {
@@ -526,6 +523,9 @@ class Vis
         return $result;
     }
 
+    /**
+     * @return array<string, Sidebar>
+     */
     public function getSidebar(string $tool): array
     {
         if (!$this->isTool($tool)) {

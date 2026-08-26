@@ -15,8 +15,8 @@ class VisTransExtensionTest extends TestCase
 {
     public function testGetFilters(): void
     {
-        $translator = $this->createMock(TranslatorInterface::class);
-        $vis = $this->createMock(Vis::class);
+        $translator = $this->createStub(TranslatorInterface::class);
+        $vis = $this->createStub(Vis::class);
         $extension = new VisTransExtension($translator, $vis);
         $filters = $extension->getFilters();
 
@@ -27,7 +27,7 @@ class VisTransExtensionTest extends TestCase
     public function testTranslateKeyWithDomain(): void
     {
         $translator = $this->createMock(TranslatorInterface::class);
-        $vis = $this->createMock(Vis::class);
+        $vis = $this->createStub(Vis::class);
 
         $translator->expects($this->once())
             ->method('trans')
@@ -48,13 +48,13 @@ class VisTransExtensionTest extends TestCase
     {
         // Mock TranslatorBagInterface
         $translator = $this->createMock(TestTranslatorBag::class);
-        $vis = $this->createMock(Vis::class);
+        $vis = $this->createStub(Vis::class);
         $catalogue = $this->createMock(MessageCatalogueInterface::class);
 
         $vis->method('getToolId')->willReturn('my_tool');
 
         $translator->method('getCatalogue')->willReturn($catalogue);
-        $catalogue->method('has')->with('my_key', 'vis_my_tool')->willReturn(true);
+        $catalogue->expects($this->exactly(1))->method('has')->with('my_key', 'vis_my_tool')->willReturn(true);
 
         $translator->expects($this->once())
             ->method('trans')
@@ -69,8 +69,8 @@ class VisTransExtensionTest extends TestCase
 
     public function testTranslateKeyWithoutDomainDefaultFallback(): void
     {
-        $translator = $this->createMock(TranslatorInterface::class);
-        $vis = $this->createMock(Vis::class);
+        $translator = $this->createStub(TranslatorInterface::class);
+        $vis = $this->createStub(Vis::class);
 
         $vis->method('getToolId')->willReturn('my_tool');
 
@@ -90,7 +90,7 @@ class VisTransExtensionTest extends TestCase
     public function testTranslateKeyWithToolIdButNoTranslatorBag(): void
     {
         $translator = $this->createMock(TranslatorInterface::class);
-        $vis = $this->createMock(Vis::class);
+        $vis = $this->createStub(Vis::class);
 
         $vis->method('getToolId')->willReturn('my_tool');
 

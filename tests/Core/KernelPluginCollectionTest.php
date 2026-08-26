@@ -13,7 +13,7 @@ class KernelPluginCollectionTest extends TestCase
     public function testAddAndGet(): void
     {
         $collection = new KernelPluginCollection();
-        $plugin = $this->createMock(AbstractVisBundle::class);
+        $plugin = $this->createStub(AbstractVisBundle::class);
         $pluginClass = $plugin::class;
 
         $collection->add($plugin);
@@ -25,7 +25,7 @@ class KernelPluginCollectionTest extends TestCase
     public function testAddDuplicate(): void
     {
         $collection = new KernelPluginCollection();
-        $plugin = $this->createMock(AbstractVisBundle::class);
+        $plugin = $this->createStub(AbstractVisBundle::class);
 
         $collection->add($plugin);
         $collection->add($plugin);
@@ -36,10 +36,9 @@ class KernelPluginCollectionTest extends TestCase
     public function testAddList(): void
     {
         $collection = new KernelPluginCollection();
-        $plugin1 = $this->createMock(AbstractVisBundle::class);
-        $plugin2 = $this->getMockBuilder(AbstractVisBundle::class)
-            ->setMockClassName('Plugin2Collection')
-            ->getMock();
+        $plugin1 = $this->createStub(AbstractVisBundle::class);
+        $plugin2 = new class extends AbstractVisBundle {
+        };
 
         $collection->addList([$plugin1, $plugin2]);
         $this->assertCount(2, $collection->all());
@@ -47,13 +46,15 @@ class KernelPluginCollectionTest extends TestCase
 
     public function testGetActives(): void
     {
-        $activePlugin = $this->createMock(AbstractVisBundle::class);
+        $activePlugin = $this->createStub(AbstractVisBundle::class);
         $activePlugin->method('isActive')->willReturn(true);
 
-        $inactivePlugin = $this->getMockBuilder(AbstractVisBundle::class)
-            ->setMockClassName('InactivePlugin')
-            ->getMock();
-        $inactivePlugin->method('isActive')->willReturn(false);
+        $inactivePlugin = new class extends AbstractVisBundle {
+            public function isActive(): bool
+            {
+                return false;
+            }
+        };
 
         $collection = new KernelPluginCollection([$activePlugin, $inactivePlugin]);
 
@@ -64,10 +65,9 @@ class KernelPluginCollectionTest extends TestCase
 
     public function testFilter(): void
     {
-        $plugin1 = $this->createMock(AbstractVisBundle::class);
-        $plugin2 = $this->getMockBuilder(AbstractVisBundle::class)
-            ->setMockClassName('Plugin2Filter')
-            ->getMock();
+        $plugin1 = $this->createStub(AbstractVisBundle::class);
+        $plugin2 = new class extends AbstractVisBundle {
+        };
 
         $collection = new KernelPluginCollection([$plugin1::class => $plugin1, $plugin2::class => $plugin2]);
 

@@ -5,23 +5,80 @@ declare(strict_types=1);
 namespace App\Controller\Vis;
 
 use JBSNewMedia\VisBundle\Controller\VisAbstractController;
+use JBSNewMedia\VisBundle\Model\Topbar\TopbarDropdownLocale;
+use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Authentication\AuthenticationUtils;
 
 class SecurityController extends VisAbstractController
 {
+    public function __construct(
+        private readonly RequestStack $requestStack,
+    ) {
+    }
+
     #[Route(path: '/vis/login', name: 'vis_login')]
     public function login(AuthenticationUtils $authenticationUtils): Response
     {
+        $request = $this->requestStack->getCurrentRequest();
+        if (null !== $request && !$request->getSession()->has('darkmode')) {
+            $request->getSession()->set('darkmode', 'dark');
+        }
+
+        $this->addGuestThemeDropdown();
+
         return $this->render('@Vis/simple/login.html.twig', [
             'vis' => $this->vis,
+            'last_username' => $authenticationUtils->getLastUsername(),
+            'error' => $authenticationUtils->getLastAuthenticationError(),
         ]);
     }
 
     #[Route(path: '/vis/logout', name: 'vis_logout')]
     public function logout(): void
     {
-        throw new \LogicException('This method can be blank - it will be intercepted by the logout key on your firewall.');
+        throw new \LogicException('This method can be blank - it will be intercepted by the logout key on the firewall.');
+    }
+
+    private function addGuestThemeDropdown(): void
+    {
+        $item = new TopbarDropdownLocale('simple', 'dropdown_theme', 'end');
+        $item->setLabel('Theme');
+
+        $currentTheme = $this->vis->getTheme();
+
+        $currentLabel = 'VIS';
+        $data = [
+            'default' => [
+                'route' => 'vis_api_theme',
+                'routeparameters' => ['slug' => 'default', 'timestamp' => '__TIMESTAMP__'],
+                'label' => 'VIS',
+                'icon' => '',
+            ],
+        ];
+
+        foreach ($this->vis->getThemes() as $theme) {
+            if ('vis' === $theme['id']) {
+                continue;
+            }
+
+            $data[$theme['id']] = [
+                'route' => 'vis_api_theme',
+                'routeparameters' => ['slug' => $theme['id'], 'timestamp' => '__TIMESTAMP__'],
+                'label' => $theme['name'],
+                'icon' => '',
+            ];
+
+            if ($theme['id'] === $currentTheme) {
+                $currentLabel = $theme['name'];
+            }
+        }
+
+        $item->setContentFilter('raw');
+        $item->setContent('<i class="fa-solid fa-palette fa-fw"></i>');
+        $item->setDataKey('vis' === $currentTheme ? 'default' : $currentTheme);
+        $item->setData($data);
+        $this->vis->addTopbar($item);
     }
 }

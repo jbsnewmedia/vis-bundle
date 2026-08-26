@@ -20,7 +20,7 @@ class VisUserRemoveRoleCommandTest extends TestCase
     protected function setUp(): void
     {
         $this->entityManager = $this->createMock(EntityManagerInterface::class);
-        $this->repository = $this->createMock(EntityRepository::class);
+        $this->repository = $this->createStub(EntityRepository::class);
         $this->entityManager->method('getRepository')->with(User::class)->willReturn($this->repository);
     }
 

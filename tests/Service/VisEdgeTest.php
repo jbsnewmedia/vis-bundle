@@ -23,11 +23,11 @@ class VisEdgeTest extends TestCase
 
     protected function setUp(): void
     {
-        $this->translator = $this->createMock(TranslatorInterface::class);
-        $this->router = $this->createMock(UrlGeneratorInterface::class);
-        $this->security = $this->createMock(Security::class);
+        $this->translator = $this->createStub(TranslatorInterface::class);
+        $this->router = $this->createStub(UrlGeneratorInterface::class);
+        $this->security = $this->createStub(Security::class);
 
-        $user = $this->createMock(UserInterface::class);
+        $user = $this->createStub(UserInterface::class);
         $user->method('getRoles')->willReturn(['ROLE_USER', 'ROLE_ADMIN']);
         $this->security->method('getUser')->willReturn($user);
 
@@ -35,6 +35,7 @@ class VisEdgeTest extends TestCase
             $this->translator,
             $this->router,
             $this->security,
+            sys_get_temp_dir(),
             ['en', 'de'],
             'en'
         );

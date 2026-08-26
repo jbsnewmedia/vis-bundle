@@ -25,14 +25,15 @@ class VisTest extends TestCase
 
     protected function setUp(): void
     {
-        $this->translator = $this->createMock(TranslatorInterface::class);
-        $this->router = $this->createMock(UrlGeneratorInterface::class);
-        $this->security = $this->createMock(Security::class);
+        $this->translator = $this->createStub(TranslatorInterface::class);
+        $this->router = $this->createStub(UrlGeneratorInterface::class);
+        $this->security = $this->createStub(Security::class);
 
         $this->vis = new Vis(
             $this->translator,
             $this->router,
             $this->security,
+            sys_get_temp_dir(),
             ['en', 'de'],
             'en'
         );
@@ -145,16 +146,17 @@ class VisTest extends TestCase
 
     public function testConstructorSetsRolesFromUser(): void
     {
-        $user = $this->createMock(UserInterface::class);
+        $user = $this->createStub(UserInterface::class);
         $user->method('getRoles')->willReturn(['ROLE_ADMIN']);
 
-        $security = $this->createMock(Security::class);
+        $security = $this->createStub(Security::class);
         $security->method('getUser')->willReturn($user);
 
         $vis = new Vis(
             $this->translator,
             $this->router,
             $security,
+            sys_get_temp_dir(),
             ['en'],
             'en'
         );
@@ -238,7 +240,7 @@ class VisTest extends TestCase
         $topbar = new TopbarDropdownLocale('test_tool');
         $this->assertTrue($this->vis->addTopbar($topbar));
 
-        $visSingleLocale = new Vis($this->translator, $this->router, $this->security, ['en'], 'en');
+        $visSingleLocale = new Vis($this->translator, $this->router, $this->security, sys_get_temp_dir(), ['en'], 'en');
         $this->assertFalse($visSingleLocale->addTopbar($topbar));
     }
 

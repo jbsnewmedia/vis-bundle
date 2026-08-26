@@ -87,7 +87,7 @@ class TopbarModelsTest extends TestCase
 
     public function testTopbarLiveSearchTools(): void
     {
-        $vis = $this->createMock(Vis::class);
+        $vis = $this->createStub(Vis::class);
         $tool = new Tool('my_tool');
         $tool->setTitle('My Tool Title');
 
