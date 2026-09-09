@@ -9,7 +9,16 @@
         "symfony/routing": "^7.4",
         "symfony/translation": "^7.4",
         "symfony/security-bundle": "^7.4",
-        "symfony/framework-bundle": "^7.4"
+        "symfony/framework-bundle": "^7.4",
+        "symfony/form": "^7.4",
+        "symfony/console": "^7.4",
+        "symfony/yaml": "^7.4",
+        "doctrine/collections": "^2.0",
+        "doctrine/orm": "^3.0",
+        "symfony/dependency-injection": "^7.4",
+        "symfony/validator": "^7.4",
+        "composer/class-map-generator": "^1.7",
+        "doctrine/doctrine-bundle": "^2.0"
     },
     "config": {
         "allow-plugins": {

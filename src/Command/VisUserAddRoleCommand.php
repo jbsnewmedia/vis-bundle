@@ -51,7 +51,7 @@ class VisUserAddRoleCommand extends Command
             if (0 === count($violations)) {
                 $user = $this->entityManager->getRepository(User::class)->findOneBy(['email' => $email]);
 
-                if (null === $user) {
+                if (!$user instanceof User) {
                     $io->error('User with email '.$email.' not found.');
 
                     return Command::FAILURE;

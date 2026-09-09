@@ -15,7 +15,6 @@ return RectorConfig::configure()
     ->withPhpSets(php82: true)
 
     ->withSets([
-        SymfonySetList::SYMFONY_74,
         SymfonySetList::SYMFONY_CODE_QUALITY,
         SymfonySetList::SYMFONY_CONSTRUCTOR_INJECTION,
     ])
@@ -24,5 +23,4 @@ return RectorConfig::configure()
         InlineConstructorDefaultToPropertyRector::class,
         DeclareStrictTypesRector::class,
     ])
-
-    ->withParallel();
+    ;

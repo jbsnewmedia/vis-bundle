@@ -14,9 +14,7 @@ class VisBundle extends AbstractBundle
 {
     public function getContainerExtension(): ?ExtensionInterface
     {
-        if (null === $this->extension) {
-            $this->extension = new VisExtension();
-        }
+        $this->extension ??= new VisExtension();
 
         if (false === $this->extension) {
             return null;

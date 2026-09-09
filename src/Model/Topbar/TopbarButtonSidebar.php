@@ -16,9 +16,7 @@ class TopbarButtonSidebar extends TopbarButton
         array $options = [],
     ) {
         parent::__construct($tool, $id);
-        if (!isset($options['display'])) {
-            $options['display'] = 'small';
-        }
+        $options['display'] ??= 'small';
 
         if ('large' === $options['display']) {
             $options['class'] = 'd-flex d-md-none';

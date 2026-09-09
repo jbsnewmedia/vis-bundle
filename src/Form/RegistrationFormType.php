@@ -14,6 +14,9 @@ use Symfony\Component\Validator\Constraints\IsTrue;
 use Symfony\Component\Validator\Constraints\Length;
 use Symfony\Component\Validator\Constraints\NotBlank;
 
+/**
+ * @extends AbstractType<User>
+ */
 class RegistrationFormType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options): void
@@ -35,12 +38,12 @@ class RegistrationFormType extends AbstractType
                     new NotBlank([
                         'message' => 'Please enter a password',
                     ]),
-                    new Length([
-                        'min' => 6,
-                        'minMessage' => 'Your password should be at least {{ limit }} characters',
-                        'max' => 4096,
-                        'maxMessage' => 'Your password should be at most {{ limit }} characters',
-                    ]),
+                    new Length(
+                        min: 6,
+                        minMessage: 'Your password should be at least {{ limit }} characters',
+                        max: 4096,
+                        maxMessage: 'Your password should be at most {{ limit }} characters',
+                    ),
                 ],
             ])
         ;

@@ -1,79 +1,79 @@
 {
-  "name": "jbsnewmedia/vis-bundle",
-  "type": "symfony-bundle",
-  "license": "MIT",
-  "description": "VisBundle is a comprehensive Symfony bundle designed as a complete admin interface, integrating user and role management with dynamic sidebar and topbar components for building robust administration panels.",
-  "authors": [
-    {
-      "name": "Juergen Schwind",
-      "email": "juergen.schwind@jbs-newmedia.de"
-    }
-  ],
-  "autoload": {
-    "psr-4": {
-        "JBSNewMedia\\VisBundle\\": "src/"
-    }
-  },
+    "name": "jbsnewmedia/vis-bundle",
+    "type": "symfony-bundle",
+    "license": "MIT",
+    "description": "VisBundle is a comprehensive Symfony bundle designed as a complete admin interface, integrating user and role management with dynamic sidebar and topbar components for building robust administration panels.",
+    "authors": [
+        {
+            "name": "Juergen Schwind",
+            "email": "juergen.schwind@jbs-newmedia.de"
+        }
+    ],
+    "autoload": {
+        "psr-4": {
+            "JBSNewMedia\\VisBundle\\": "src/"
+        }
+    },
     "require": {
         "php": ">=8.2",
         "avalynx/avalynx-admin": "^1.0",
-    "fortawesome/font-awesome": "^7.0",
-    "jbsnewmedia/avalynx-web-pack": "^1.0",
-    "jbsnewmedia/bootstrap-bundle": "^1.0",
-    "jbsnewmedia/symfony-web-pack": "^1.0",
-    "symfony/framework-bundle": "^7.4",
-    "symfony/finder": "^7.4",
-    "symfony/yaml": "^7.4",
-    "symfony/uid": "^7.4",
-    "composer/class-map-generator": "^1.7"
-  },
-  "require-dev": {
-    "bamarni/composer-bin-plugin": "^1.8"
-  },
-  "config": {
-    "allow-plugins": {
-      "bamarni/composer-bin-plugin": true
+        "fortawesome/font-awesome": "^7.0",
+        "jbsnewmedia/avalynx-web-pack": "^1.0",
+        "jbsnewmedia/bootstrap-bundle": "^1.0",
+        "jbsnewmedia/symfony-web-pack": "^1.0",
+        "symfony/framework-bundle": "^7.4",
+        "symfony/finder": "^7.4",
+        "symfony/yaml": "^7.4",
+        "symfony/uid": "^7.4",
+        "composer/class-map-generator": "^1.7"
+    },
+    "require-dev": {
+        "bamarni/composer-bin-plugin": "^1.8"
+    },
+    "config": {
+        "allow-plugins": {
+            "bamarni/composer-bin-plugin": true
+        }
+    },
+    "extra": {
+        "bamarni-bin": {
+        "bin-links": false,
+        "target-directory": "vendor-bin",
+        "forward-command": true
+        }
+    },
+    "scripts": {
+        "bin-ecs-install": ["composer bin ecs install"],
+        "bin-ecs-update": ["composer bin ecs update"],
+        "bin-ecs": ["vendor-bin/ecs/vendor/bin/php-cs-fixer check --allow-risky=yes"],
+        "bin-ecs-fix": ["vendor-bin/ecs/vendor/bin/php-cs-fixer fix --allow-risky=yes"],
+        "bin-ecs-v": ["vendor-bin/ecs/vendor/bin/php-cs-fixer -V"],
+
+        "bin-phpstan-install": ["composer bin phpstan install"],
+        "bin-phpstan-update": ["composer bin phpstan update"],
+        "bin-phpstan": ["vendor-bin/phpstan/vendor/bin/phpstan analyse --configuration=phpstan-global.neon"],
+        "bin-phpstan-v": ["vendor-bin/phpstan/vendor/bin/phpstan -V"],
+
+        "bin-phpunit-install": ["composer bin phpunit install"],
+        "bin-phpunit-update": ["composer bin phpunit update"],
+        "bin-phpunit": ["vendor-bin/phpunit/vendor/bin/phpunit"],
+        "bin-phpunit-no-coverage": ["vendor-bin/phpunit/vendor/bin/phpunit --configuration=phpunit-no-coverage.xml.dist"],
+        "bin-phpunit-coverage": ["XDEBUG_MODE=coverage vendor-bin/phpunit/vendor/bin/phpunit --configuration=phpunit-coverage.xml.dist --coverage-html var/coverage"],
+        "bin-phpunit-v": ["vendor-bin/phpunit/vendor/bin/phpunit --version"],
+
+        "bin-rector-install": ["composer bin rector install"],
+        "bin-rector-update": ["composer bin rector update"],
+        "bin-rector": ["vendor-bin/rector/vendor/bin/rector --dry-run"],
+        "bin-rector-process": ["vendor-bin/rector/vendor/bin/rector process"],
+        "bin-rector-v": ["vendor-bin/rector/vendor/bin/rector -V"],
+
+        "test": ["@bin-phpunit-no-coverage"],
+        "test-coverage": ["@bin-phpunit-coverage"],
+        "test-full": ["@bin-phpunit"],
+        "test-watch": ["@bin-phpunit --testdox"],
+
+        "ci": ["@bin-ecs", "@bin-rector", "@bin-phpstan", "@bin-phpunit-no-coverage"],
+        "ci-fix": ["@bin-ecs-fix", "@bin-rector-process", "@bin-phpstan", "@bin-phpunit-no-coverage"],
+        "ci-coverage": ["@bin-ecs", "@bin-rector", "@bin-phpstan", "@bin-phpunit-coverage"]
     }
-  },
-  "extra": {
-    "bamarni-bin": {
-      "bin-links": false,
-      "target-directory": "vendor-bin",
-      "forward-command": true
-    }
-  },
-  "scripts": {
-      "bin-ecs-install": ["composer bin ecs install"],
-      "bin-ecs-update": ["composer bin ecs update"],
-      "bin-ecs": ["vendor-bin/ecs/vendor/bin/php-cs-fixer check --allow-risky=yes"],
-      "bin-ecs-fix": ["vendor-bin/ecs/vendor/bin/php-cs-fixer fix --allow-risky=yes"],
-      "bin-ecs-v": ["vendor-bin/ecs/vendor/bin/php-cs-fixer -V"],
-
-      "bin-phpstan-install": ["composer bin phpstan install"],
-      "bin-phpstan-update": ["composer bin phpstan update"],
-      "bin-phpstan": ["vendor-bin/phpstan/vendor/bin/phpstan analyse --configuration=phpstan-global.neon"],
-      "bin-phpstan-v": ["vendor-bin/phpstan/vendor/bin/phpstan -V"],
-
-      "bin-phpunit-install": ["composer bin phpunit install"],
-      "bin-phpunit-update": ["composer bin phpunit update"],
-      "bin-phpunit": ["vendor-bin/phpunit/vendor/bin/phpunit"],
-      "bin-phpunit-no-coverage": ["vendor-bin/phpunit/vendor/bin/phpunit --configuration=phpunit-no-coverage.xml.dist"],
-      "bin-phpunit-coverage": ["XDEBUG_MODE=coverage vendor-bin/phpunit/vendor/bin/phpunit --configuration=phpunit-coverage.xml.dist --coverage-html var/coverage"],
-      "bin-phpunit-v": ["vendor-bin/phpunit/vendor/bin/phpunit --version"],
-
-      "bin-rector-install": ["composer bin rector install"],
-      "bin-rector-update": ["composer bin rector update"],
-      "bin-rector": ["vendor-bin/rector/vendor/bin/rector --dry-run"],
-      "bin-rector-process": ["vendor-bin/rector/vendor/bin/rector process"],
-      "bin-rector-v": ["vendor-bin/rector/vendor/bin/rector -V"],
-
-      "test": ["@bin-phpunit-no-coverage"],
-      "test-coverage": ["@bin-phpunit-coverage"],
-      "test-full": ["@bin-phpunit"],
-      "test-watch": ["@bin-phpunit --testdox"],
-
-      "ci": ["@bin-ecs", "@bin-rector", "@bin-phpstan", "@bin-phpunit-no-coverage"],
-      "ci-fix": ["@bin-ecs-fix", "@bin-rector-process", "@bin-phpstan", "@bin-phpunit-no-coverage"],
-      "ci-coverage": ["@bin-ecs", "@bin-rector", "@bin-phpstan", "@bin-phpunit-coverage"]
-  }
 }

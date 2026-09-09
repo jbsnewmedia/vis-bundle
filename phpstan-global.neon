@@ -4,4 +4,8 @@ parameters:
     paths:
         - src
     level: max
+    bootstrapFiles:
+        - autoload.php
+    composerAutoloaderProjectPaths:
+        - autoload.php
 

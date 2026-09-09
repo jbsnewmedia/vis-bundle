@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace JBSNewMedia\VisBundle\Entity;
 
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use JBSNewMedia\VisBundle\Repository\VisUserRepository;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
@@ -49,9 +51,16 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(nullable: true)]
     private ?string $password = null;
 
+    /**
+     * @var Collection<int, UserToClient>
+     */
+    #[ORM\OneToMany(mappedBy: 'user', targetEntity: UserToClient::class)]
+    private Collection $clients;
+
     public function __construct()
     {
         $this->id = Uuid::v7();
+        $this->clients = new ArrayCollection();
     }
 
     public function getId(): ?Uuid
@@ -148,6 +157,51 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         $this->password = $password;
 
         return $this;
+    }
+
+    /**
+     * @return Collection<int, UserToClient>
+     */
+    public function getClients(): Collection
+    {
+        return $this->clients;
+    }
+
+    public function addUserToClient(UserToClient $userToClient): static
+    {
+        if (!$this->clients->contains($userToClient)) {
+            $this->clients->add($userToClient);
+            $userToClient->setUser($this);
+        }
+
+        return $this;
+    }
+
+    public function removeUserToClient(UserToClient $userToClient): static
+    {
+        if ($this->clients->removeElement($userToClient)) {
+            if ($userToClient->getUser() === $this) {
+                $userToClient->setUser($this);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return list<string>
+     */
+    public function getManagedClientIds(): array
+    {
+        $ids = [];
+        foreach ($this->clients as $userToClient) {
+            $client = $userToClient->getClient();
+            if (null !== $client && null !== $client->getId()) {
+                $ids[] = (string) $client->getId();
+            }
+        }
+
+        return array_values(array_unique($ids));
     }
 
     public function getCreatedAt(): ?\DateTimeImmutable

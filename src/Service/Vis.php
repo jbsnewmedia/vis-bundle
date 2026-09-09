@@ -155,11 +155,16 @@ class Vis
     }
 
     /**
+     * Adds/merges the clients of one tool into the global client map.
+     * Plugins register their clients independently (each tool contributes
+     * its own relations), so merging prevents one plugin from wiping the
+     * client data of another (last-write-wins bug).
+     *
      * @param array<string, string> $clients
      */
     public function setClients(array $clients): void
     {
-        $this->clients = $clients;
+        $this->clients = array_merge($this->clients, $clients);
     }
 
     /**

@@ -69,7 +69,7 @@ class ThemeCompileCommand extends Command
         $themes = [];
         $entries = is_dir($themesDir) ? (glob($themesDir.'/*/scss/theme.scss') ?: []) : [];
         foreach ($entries as $scssFile) {
-            $theme = basename(dirname(dirname($scssFile)));
+            $theme = basename(dirname($scssFile, 2));
             if ('' === $only || $theme === $only) {
                 $themes[$theme] = $scssFile;
             }
@@ -106,7 +106,7 @@ class ThemeCompileCommand extends Command
                 continue;
             }
 
-            $cssDir = dirname(dirname($scssFile)).'/css';
+            $cssDir = dirname($scssFile, 2).'/css';
             if (!is_dir($cssDir) && !@mkdir($cssDir, 0777, true) && !is_dir($cssDir)) {
                 $io->error(sprintf('Failed to create directory "%s".', $cssDir));
                 $failed = true;

@@ -32,9 +32,7 @@ class DynamicFilterExtension extends AbstractExtension
             return $string;
         }
 
-        if (!isset($this->filter[$filterName])) {
-            $this->filter[$filterName] = $this->twig->getFilter($filterName);
-        }
+        $this->filter[$filterName] ??= $this->twig->getFilter($filterName);
 
         if (null === $this->filter[$filterName]) {
             throw new \RuntimeException(sprintf('Filter "%s" does not exist.', $filterName));

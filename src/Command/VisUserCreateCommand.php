@@ -56,7 +56,7 @@ class VisUserCreateCommand extends Command
                     $ioInput = $io->askHidden('Please enter your password (at least 6 characters): ');
                     $password = is_string($ioInput) ? trim($ioInput) : '';
 
-                    $passwordViolations = $validator->validate($password, new Length(['min' => 6]));
+                    $passwordViolations = $validator->validate($password, new Length(min: 6));
 
                     if (0 === count($passwordViolations)) {
                         $user = new User();
